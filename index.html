@@ -3,14 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Archivo Secreto del Lab</title>
+<title>Archivo Secreto del Lab — Grabación de DJ Sets en Buenos Aires</title>
+<meta name="description" content="Registro audiovisual independiente. Grabación de DJ sets en Buenos Aires, alquiler de cabina DJ profesional. +118 sets grabados. Escena electrónica porteña.">
+<meta name="keywords" content="grabar dj set Buenos Aires, grabación dj set Argentina, cabina dj alquiler Buenos Aires, donde grabar dj set Buenos Aires, registro audiovisual dj, archivo secreto del lab, dj sets electrónica Buenos Aires">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://archivosecretodellab.com">
+<meta property="og:title" content="Archivo Secreto del Lab — Grabación de DJ Sets en Buenos Aires">
+<meta property="og:description" content="Registro audiovisual independiente. +118 sets grabados. Escena electrónica porteña.">
+<meta property="og:url" content="https://archivosecretodellab.com">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_AR">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"MusicVenue","name":"Archivo Secreto del Lab","description":"Registro audiovisual independiente de DJ sets en Buenos Aires. Grabación profesional y alquiler de cabina DJ.","url":"https://archivosecretodellab.com","address":{"@type":"PostalAddress","addressLocality":"Buenos Aires","addressCountry":"AR"},"sameAs":["https://www.instagram.com/archivosecretodellab","https://www.youtube.com/@ArchivoSecretodelLab"]}</script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
 
 :root {
   --k:#060606; --b:#1b00e6; --bd:#1100bb; --bg:rgba(27,0,230,.3);
   --el:#5533ff; --soon:#08001a; --soon-br:rgba(85,51,255,.5);
-  --w:#f0ece2; --wd:rgba(240,236,226,.46); --wf:rgba(240,236,226,.08);
+  --w:#f0ece2; --wd:rgba(255,255,255,.76); --wf:rgba(240,236,226,.09);
   --wm:rgba(240,236,226,.18); --green:#00c967; --red:#ff3b3b;
   --TH:66px; --NH:44px; --TK:36px;
 }
@@ -19,6 +29,14 @@ html,body{width:100%;height:100%;background:var(--k);color:var(--w);font-family:
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:var(--b)}
 a{color:inherit;text-decoration:none}
 button{cursor:pointer;background:none;border:none;font-family:'IBM Plex Mono',monospace;color:var(--w)}
+strong{font-weight:700;color:#fff}
+em{color:var(--b);font-style:normal}
+/* SUBNAV */
+.subnav{display:flex;align-items:center;border-bottom:1px solid var(--wf);padding:0 40px;overflow-x:auto;background:rgba(0,0,0,.25);position:sticky;top:0;z-index:50}
+.subnav::-webkit-scrollbar{display:none}
+.snt{font-size:9px;letter-spacing:.18em;color:var(--wd);text-transform:uppercase;padding:0 14px;height:38px;display:flex;align-items:center;border-bottom:2px solid transparent;transition:all .18s;white-space:nowrap;cursor:pointer}
+.snt:hover{color:#fff}.snt.on{color:var(--b);border-bottom-color:var(--b);font-weight:700}
+.subpg{display:none;min-height:100%}.subpg.on{display:block}
 
 /* NOISE / CRT overlay */
 #noise{position:fixed;inset:0;pointer-events:none;z-index:9100;opacity:.045;
@@ -222,9 +240,43 @@ input[type=file]{display:none}
 .cal-btn{display:inline-flex;align-items:center;gap:12px;font-size:10px;letter-spacing:.28em;text-transform:uppercase;background:var(--b);color:var(--w);padding:13px 26px;border:none;cursor:pointer;transition:background .2s}
 .cal-btn:hover{background:var(--bd)}
 
-/* RENTA */
-.rpg{padding:48px 40px;max-width:820px}
-.renta-btns{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:0}
+/* AGENDA */
+.ag-layout{display:grid;grid-template-columns:1fr 360px;height:100%;overflow:hidden}
+.ag-left{overflow-y:auto;padding:44px 48px;border-right:1px solid var(--wf)}
+.ag-right{overflow-y:auto;padding:36px 28px;background:rgba(0,0,0,.18)}
+.ag-eye{font-size:9px;letter-spacing:.32em;color:var(--b);text-transform:uppercase;margin-bottom:12px}
+.ag-title{font-family:'Space Mono',monospace;font-size:clamp(42px,5vw,68px);font-weight:700;line-height:.88;letter-spacing:-.03em;color:#fff;margin-bottom:18px}
+.ag-desc{font-size:13px;letter-spacing:.04em;color:var(--wd);line-height:1.9;margin-bottom:32px;max-width:480px}
+.ag-sec-title{font-size:9px;letter-spacing:.32em;color:var(--b);text-transform:uppercase;margin-bottom:18px;padding-bottom:9px;border-bottom:1px solid var(--wf)}
+.ag-field{margin-bottom:18px}
+.ag-lbl{font-size:8.5px;letter-spacing:.24em;color:var(--wd);text-transform:uppercase;margin-bottom:7px}
+.ag-inp{width:100%;background:rgba(255,255,255,.04);border:none;border-bottom:1px solid var(--wm);color:#fff;font-size:13px;padding:9px 0;outline:none;font-family:'IBM Plex Mono',monospace;transition:border-color .2s}
+.ag-inp:focus{border-bottom-color:var(--b)}
+.ag-inp::placeholder{color:rgba(255,255,255,.22)}
+.ag-ta{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--wm);color:#fff;font-size:12px;padding:10px;outline:none;resize:vertical;min-height:80px;font-family:'IBM Plex Mono',monospace}
+.ag-ta:focus{border-color:var(--b)}
+.ag-radio-row{display:flex;gap:22px;margin-top:5px}
+.ag-radio{font-size:12px;letter-spacing:.06em;color:var(--wd);display:flex;align-items:center;gap:7px;cursor:pointer}
+.ag-radio input{accent-color:var(--b)}
+.ag-submit{display:inline-flex;align-items:center;gap:12px;font-size:10px;letter-spacing:.3em;text-transform:uppercase;background:var(--b);color:#fff;padding:14px 28px;border:none;cursor:pointer;transition:background .2s;font-family:'IBM Plex Mono',monospace;margin-top:4px}
+.ag-submit:hover{background:var(--bd)}
+.ag-cal-title{font-family:'Space Mono',monospace;font-size:17px;font-weight:700;color:#fff;margin-bottom:5px}
+.ag-cal-sub{font-size:9px;letter-spacing:.2em;color:var(--wd);text-transform:uppercase;margin-bottom:20px}
+.cal-month-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.cal-month-lbl{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:#fff}
+.cal-nav-btn{font-size:9px;letter-spacing:.16em;color:var(--wd);padding:5px 9px;border:1px solid var(--wf);cursor:pointer;transition:all .18s;background:none;font-family:'IBM Plex Mono',monospace}
+.cal-nav-btn:hover{color:#fff;border-color:var(--wm)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:16px}
+.cal-hdr{font-size:7.5px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);text-align:center;padding:4px 0}
+.cal-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:11px;color:rgba(255,255,255,.22);cursor:default;font-family:'IBM Plex Mono',monospace}
+.cal-day.avail{background:rgba(27,0,230,.18);color:#fff;cursor:pointer;border:1px solid rgba(27,0,230,.35);transition:all .18s}
+.cal-day.avail:hover,.cal-day.avail.sel{background:var(--b);color:#fff;border-color:var(--b)}
+.cal-day.today{color:var(--b);font-weight:700}
+.slot{display:flex;align-items:center;gap:12px;padding:9px 13px;border:1px solid var(--wf);margin-bottom:2px;cursor:pointer;transition:all .18s}
+.slot:hover,.slot.sel{background:rgba(27,0,230,.15);border-color:var(--b)}
+.slot-time{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:#fff;min-width:56px}
+.slot-lbl{font-size:9px;letter-spacing:.12em;color:var(--wd);text-transform:uppercase}
+/* RENTA */.renta-btns{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:0}
 .renta-btn{display:flex;align-items:center;gap:16px;padding:20px 24px;font-family:'IBM Plex Mono',monospace;cursor:pointer;transition:all .2s;text-decoration:none;border:1px solid var(--wf)}
 .renta-btn:hover{border-color:transparent;transform:translateY(-1px)}
 .rbtn-title{font-size:12px;letter-spacing:.1em;font-weight:700;color:#fff;margin-bottom:4px}
@@ -343,6 +395,11 @@ input[type=file]{display:none}
 <!-- NOISE + SCANLINES (Windows 98 vibe) -->
 <div id="noise"></div>
 <div id="scan"></div>
+<div aria-hidden="true" style="position:absolute;left:-9999px;font-size:1px;color:transparent;pointer-events:none">
+  <h1>Archivo Secreto del Lab — Grabación de DJ Sets en Buenos Aires</h1>
+  <h2>Cabina DJ alquiler Buenos Aires — Registro audiovisual independiente</h2>
+  <p>Donde grabar tu dj set en Buenos Aires. Estudio de grabación para DJs en Argentina. Más de 118 sets grabados.</p>
+</div>
 
 <!-- BOOT -->
 <div id="boot">
@@ -392,14 +449,10 @@ input[type=file]{display:none}
 
   <div id="nav">
     <div class="nt on" data-pg="home" onclick="navTo('home',this)">Inicio</div>
-    <div class="nt" data-pg="djs" onclick="navTo('djs',this)">Djs</div>
-    <div class="nt" data-pg="sets" onclick="navTo('sets',this)">Sets</div>
-    <div class="nt" data-pg="jams" onclick="navTo('jams',this)">Dj Jams</div>
-    <div class="nt" data-pg="common" onclick="navTo('common',this)">Common Livesets</div>
-    <div class="nt" data-pg="custom" onclick="navTo('custom',this)">Custom Live Sets</div>
-    <div class="nt" data-pg="public" onclick="navTo('public',this)">Public Livesets</div>
+    <div class="nt" data-pg="djsets" onclick="navTo('djsets',this)">Dj Sets</div>
+    <div class="nt" data-pg="agenda" onclick="navTo('agenda',this)">Graba tu Set</div>
+    <div class="nt" data-pg="renta" onclick="navTo('renta',this)">Renta de Equipos</div>
     <div class="nt" data-pg="contacto" onclick="navTo('contacto',this)">Contáctanos</div>
-    <div class="nt" data-pg="renta" onclick="navTo('renta',this)">Renta de equipos</div>
   </div>
 
   <div id="content">
@@ -420,44 +473,134 @@ input[type=file]{display:none}
       </div>
     </div>
 
-    <!-- DJS -->
-    <div id="pg-djs" class="pg">
-      <div class="fbar">
-        <button class="fb on" onclick="filterDjs('all',this)">Todos</button>
-        <button class="fb" onclick="filterDjs('soon',this)">Próximamente</button>
-        <input class="srch" id="srch-djs" placeholder="Buscar artista..." oninput="filterDjs('search',null)">
+    <!-- DJ SETS — página unificada con sub-tabs -->
+    <div id="pg-djsets" class="pg">
+      <!-- Sub-nav -->
+      <div class="subnav">
+        <div class="snt on" data-sub="djs" onclick="subnavTo('djs',this)">Todos los Djs</div>
+        <div class="snt" data-sub="jams" onclick="subnavTo('jams',this)">Dj Jams</div>
+        <div class="snt" data-sub="common" onclick="subnavTo('common',this)">Common Livesets</div>
+        <div class="snt" data-sub="custom" onclick="subnavTo('custom',this)">Custom Live Sets</div>
+        <div class="snt" data-sub="public" onclick="subnavTo('public',this)">Public Livesets</div>
+        <div class="snt" data-sub="generos" onclick="subnavTo('generos',this)">Por Género</div>
       </div>
-      <div class="rc" id="rc-djs"></div>
-      <div class="pgrid" id="grid-djs"></div>
-    </div>
 
-    <!-- SETS -->
-    <div id="pg-sets" class="pg"></div>
-
-    <!-- DJ JAMS -->
-    <div id="pg-jams" class="pg"></div>
-
-    <!-- COMMON LIVESETS -->
-    <div id="pg-common" class="pg">
-      <div class="fbar">
-        <input class="srch" placeholder="Buscar..." oninput="filterSection('common',this.value)" style="margin-left:0">
-      </div>
-      <div class="pgrid" id="grid-common"></div>
-    </div>
-
-    <!-- CUSTOM LIVE SETS -->
-    <div id="pg-custom" class="pg">
-      <div class="pgrid" id="grid-custom"></div>
-    </div>
-
-    <!-- PUBLIC LIVESETS -->
-    <div id="pg-public" class="pg">
-      <div class="jsec">
-        <div class="jh">
-          <div class="jtit">Don Gato Edition</div>
-          <div class="jdate">Public Liveset · Exteriores · Buenos Aires</div>
+      <!-- SUB: TODOS LOS DJS -->
+      <div id="sub-djs" class="subpg on">
+        <div class="fbar">
+          <button class="fb on" onclick="filterDjs('all',this)">Todos</button>
+          <button class="fb" onclick="filterDjs('soon',this)">Próximamente</button>
+          <button class="fb" id="sort-alpha" onclick="sortDjs('alpha',this)" style="margin-left:8px">A→Z</button>
+          <button class="fb" id="sort-oldest" onclick="sortDjs('oldest',this)">Más antiguo</button>
+          <button class="fb" id="sort-newest" onclick="sortDjs('newest',this)">Más reciente</button>
+          <input class="srch" id="srch-djs" placeholder="Buscar artista..." oninput="filterDjs('search',null)">
         </div>
-        <div class="jgrid" id="grid-public"></div>
+        <div class="rc" id="rc-djs"></div>
+        <div class="pgrid" id="grid-djs"></div>
+      </div>
+
+      <!-- SUB: DJ JAMS -->
+      <div id="sub-jams" class="subpg"></div>
+
+      <!-- SUB: COMMON LIVESETS -->
+      <div id="sub-common" class="subpg">
+        <div class="fbar">
+          <input class="srch" placeholder="Buscar..." oninput="filterSection('common',this.value)" style="margin-left:0">
+        </div>
+        <div class="pgrid" id="grid-common"></div>
+      </div>
+
+      <!-- SUB: CUSTOM LIVE SETS -->
+      <div id="sub-custom" class="subpg">
+        <div style="padding:24px 40px 8px;font-size:9px;letter-spacing:.22em;color:var(--wd);text-transform:uppercase">3 Sets · Performers externos con producción propia</div>
+        <div class="pgrid" id="grid-custom"></div>
+      </div>
+
+      <!-- SUB: PUBLIC LIVESETS -->
+      <div id="sub-public" class="subpg">
+        <div class="jsec">
+          <div class="jh">
+            <div class="jtit">Don Gato Edition</div>
+            <div class="jdate">Public Liveset · Exteriores · Buenos Aires</div>
+          </div>
+          <div class="jgrid" id="grid-public"></div>
+        </div>
+      </div>
+
+      <!-- SUB: POR GÉNERO -->
+      <div id="sub-generos" class="subpg"></div>
+
+    </div>
+
+    <!-- AGENDA — Graba tu Set -->
+    <div id="pg-agenda" class="pg">
+      <div class="ag-layout">
+
+        <!-- LEFT: Info + Formulario -->
+        <div class="ag-left">
+          <div class="ag-hero">
+            <div class="ag-eye">Archivo Secreto del Lab · Buenos Aires</div>
+            <div class="ag-title">Graba<br>tu Set</div>
+            <div class="ag-desc">Grabamos de lunes a lunes. El equipo revisa tu solicitud y te confirma fecha y horario disponible. Sin costo — solo necesitás tu música y tus ganas.</div>
+          </div>
+
+          <div class="ag-form" id="ag-form">
+            <div class="ag-sec-title">Tu información</div>
+            <div class="ag-field">
+              <div class="ag-lbl">Nombre artístico *</div>
+              <input class="ag-inp" id="ag-artist" placeholder="Tu nombre de Dj o proyecto">
+            </div>
+            <div class="ag-field">
+              <div class="ag-lbl">Email de contacto *</div>
+              <input class="ag-inp" id="ag-email" type="email" placeholder="tu@email.com">
+            </div>
+            <div class="ag-field">
+              <div class="ag-lbl">Género musical *</div>
+              <input class="ag-inp" id="ag-genre" placeholder="House, Techno, DnB, Riddim...">
+            </div>
+            <div class="ag-field">
+              <div class="ag-lbl">Redes sociales y links</div>
+              <input class="ag-inp" id="ag-links" placeholder="Instagram, SoundCloud, YouTube...">
+            </div>
+            <div class="ag-field">
+              <div class="ag-lbl">¿Ya completaste el formulario de registro?</div>
+              <div class="ag-radio-row">
+                <label class="ag-radio"><input type="radio" name="ag-reg" value="si"> Sí, ya me registré</label>
+                <label class="ag-radio"><input type="radio" name="ag-reg" value="no" checked> No todavía</label>
+              </div>
+            </div>
+            <div class="ag-field">
+              <div class="ag-lbl">¿Tenés alguna fecha preferida?</div>
+              <input class="ag-inp" id="ag-pref" placeholder="Ej: semana del 15 de marzo, fines de semana...">
+            </div>
+            <div class="ag-field">
+              <div class="ag-lbl">Mensaje adicional (opcional)</div>
+              <textarea class="ag-ta" id="ag-msg" placeholder="Contanos algo sobre tu proyecto o lo que querés grabar..."></textarea>
+            </div>
+            <button class="ag-submit" onclick="submitAgenda()">Enviar solicitud →</button>
+            <div id="ag-status" style="font-size:10px;letter-spacing:.14em;color:var(--wd);margin-top:14px;min-height:16px;line-height:1.8"></div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Calendario de disponibilidad -->
+        <div class="ag-right">
+          <div class="ag-cal-title">Disponibilidad</div>
+          <div class="ag-cal-sub">Fechas habilitadas por el equipo</div>
+          <div id="ag-calendar"></div>
+          <div class="ag-slots" id="ag-slots">
+            <div style="font-size:10px;letter-spacing:.12em;color:var(--wd);line-height:2;padding:16px 0">
+              Seleccioná una fecha disponible para ver los horarios.
+            </div>
+          </div>
+          <div style="margin-top:28px;padding-top:20px;border-top:1px solid var(--wf)">
+            <div style="font-size:9px;letter-spacing:.22em;color:var(--wd);text-transform:uppercase;margin-bottom:10px">¿Preferís hablar primero?</div>
+            <a class="renta-btn wa-booking" href="https://wa.link/n7wg41" target="_blank" style="display:inline-flex;border:none">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+              <div><div class="rbtn-title">Consultar por WhatsApp</div><div class="rbtn-sub">Respuesta rápida →</div></div>
+            </a>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -754,6 +897,19 @@ const DJS = [
  {i:'104',artist:'Majomushi',alias:'Majomushi',genre:'Por confirmar',exp:'',bio:'Próximamente en el archivo. Graba en la DJ JAM del 08/03/2026.',type:'DJ JAM',session:'',links:'',reg:'Mar 2026',isSoon:true},
  {i:'105',artist:'Malaiikah',alias:'Malaiikah',genre:'Por confirmar',exp:'',bio:'Próximamente en el archivo. Graba en la DJ JAM del 08/03/2026.',type:'DJ JAM',session:'',links:'',reg:'Mar 2026',isSoon:true},
  {i:'106',artist:'Arika',alias:'Arika',genre:'Por confirmar',exp:'',bio:'Próximamente en el archivo. Graba en la DJ JAM del 08/03/2026.',type:'DJ JAM',session:'',links:'',reg:'Mar 2026',isSoon:true},
+ // Artistas del sheet no incluidos previamente
+ {i:'107',artist:'Andres Galeano',alias:'Andres Galeano',genre:'House · Techno',exp:'',bio:'Grabó entre ASDL003 y ASDL004 — uno de los primeros common livesets del archivo.',type:'Common Liveset',session:'Solo',links:'',reg:'May 2025'},
+ {i:'108',artist:'Ju4mpi',alias:'Ju4mpi',genre:'House · Techno',exp:'',bio:'Common Liveset grabado entre ASDL010 y ASDL011.',type:'Common Liveset',session:'Solo',links:'',reg:'Oct 2025'},
+ {i:'109',artist:'Suvmaster',alias:'Suvmaster',genre:'House · Techno',exp:'',bio:'Parte del lineup de la DJ JAM ASDL002 — 07/05/2025.',type:'DJ JAM',session:'Solo',links:'',reg:'May 2025'},
+ {i:'110',artist:'Vortex',alias:'Vortex',genre:'House · Techno',exp:'',bio:'Parte del lineup de la DJ JAM ASDL002 — 07/05/2025.',type:'DJ JAM',session:'Solo',links:'',reg:'May 2025'},
+ {i:'111',artist:'Acu',alias:'Acu',genre:'House · Techno',exp:'',bio:'Parte del lineup de la DJ JAM ASDL002 — 07/05/2025.',type:'DJ JAM',session:'Solo',links:'',reg:'May 2025'},
+ {i:'112',artist:'Lyanna',alias:'Lyanna',genre:'House · Techno',exp:'',bio:'Parte del lineup de la DJ JAM ASDL002 — 07/05/2025.',type:'DJ JAM',session:'Solo',links:'',reg:'May 2025'},
+ {i:'113',artist:'Ivan Corda',alias:'Ivan Corda',genre:'House · Techno',exp:'',bio:'Parte del lineup de la DJ JAM ASDL003 — 24/05/2025.',type:'DJ JAM',session:'Solo',links:'',reg:'May 2025'},
+ {i:'114',artist:'Ezra',alias:'Ezra',genre:'House · Techno',exp:'',bio:'Parte del lineup de la DJ JAM ASDL003 — 24/05/2025.',type:'DJ JAM',session:'Solo',links:'',reg:'May 2025'},
+ {i:'115',artist:'Jony Peder',alias:'Jony Peder',genre:'House · Techno',exp:'',bio:'Parte del lineup de la DJ JAM ASDL003 — 24/05/2025.',type:'DJ JAM',session:'Solo',links:'',reg:'May 2025'},
+ {i:'116',artist:'Olu',alias:'Olu',genre:'House · Techno',exp:'',bio:'Parte del lineup de la DJ JAM ASDL003 — 24/05/2025.',type:'DJ JAM',session:'Solo',links:'',reg:'May 2025'},
+ {i:'117',artist:'Wearsprada',alias:'Wearsprada',genre:'Por confirmar',exp:'',bio:'Archivo Público — Don Gato Edition.',type:'Public Liveset',session:'Solo',links:'',reg:'Nov 2025'},
+ {i:'118',artist:'Saiti',alias:'Saiti',genre:'House · Techno',exp:'Más de 5 años',bio:'Fundador del Archivo Secreto del Lab. Parte del lineup de la DJ JAM ASDL007.',type:'DJ JAM',session:'Solo',links:'',reg:'Sep 2025'},
 ];
 
 // GENRE CATEGORIES
@@ -765,56 +921,174 @@ const GENRES = [
  {name:'Experimental',color:'#1b00e6',subs:['Ambient','Dark Wave','Cold Wave','EBM','Electro','Breakbeat'],ids:['011','060','066','067','084','095']},
 ];
 
-// JAMS DATA
+// JAMS DATA — orden exacto según sheet cronológico
 const JAMS = [
- {id:'ASDL002',sets:[
-  {artist:'Lenny Øwen',b2b:false,soon:false,djId:'082'},{artist:'Suvmaster',b2b:false,soon:false},{artist:'Vortex',b2b:false,soon:false},
-  {artist:'Acu',b2b:false,soon:false},{artist:'Lyanna',b2b:false,soon:false},{artist:'Naderix',b2b:false,soon:false,djId:'099'},{artist:'Sax',b2b:false,soon:false,djId:'024'}]},
- {id:'ASDL003',sets:[
-  {artist:'Ivan Corda',b2b:false},{artist:'Ezra',b2b:false},{artist:'Jony Peder',b2b:false},
-  {artist:'Nielo',b2b:false},{artist:'Di-Moss',b2b:false,djId:'048'},{artist:'Olu',b2b:false}]},
- {id:'ASDL004',sets:[
-  {artist:'Martin G',b2b:false,djId:'005'},{artist:'Abbica',b2b:false,djId:'012'},{artist:'Mati Slast',b2b:false,djId:'010'},
-  {artist:'Lucio Ka',b2b:false,djId:'004'},{artist:'Sature',b2b:true,djId:'009'},{artist:'Umresh',b2b:false,djId:'011'},
-  {artist:'Siko',b2b:false,djId:'015'},{artist:'Risco B2B Mati Pino',b2b:true},{artist:'Jorrón',b2b:false,djId:'003'},
-  {artist:'Falso',b2b:false,djId:'008'},{artist:'Blackmain',b2b:false,djId:'013'},{artist:'Lomakin',b2b:false,djId:'006'}]},
- {id:'ASDL005',sets:[
-  {artist:'Taborda',b2b:false,djId:'001'},{artist:'Farrs (Set 1)',b2b:false,djId:'019'},{artist:'Atua',b2b:false,djId:'067'},
-  {artist:'Bvlly',b2b:false,djId:'017'},{artist:'Mara Kolevitch',b2b:false,djId:'022'},{artist:'Farrs (Set 2)',b2b:false,djId:'019'},
-  {artist:'Boronik B2B Sax',b2b:true}]},
- {id:'ASDL006',sets:[
-  {artist:'Agus Olivo',b2b:false,djId:'030'},{artist:'Antonella Belen',b2b:false,djId:'029'},{artist:'Felipe Ferreyra',b2b:false,djId:'027'},
-  {artist:'Mortel',b2b:false,djId:'035'},{artist:'Santi Paez',b2b:false,djId:'032'},{artist:'Ruku',b2b:false,djId:'033'},
-  {artist:'Nujire',b2b:false,djId:'034'}]},
- {id:'ASDL007',sets:[
-  {artist:'Saiti',b2b:false},{artist:'Di-Moss',b2b:false,djId:'048'},{artist:'Sio B2B Perty',b2b:true},
-  {artist:'Kpuccina',b2b:false,djId:'014'},{artist:'N!nΞ',b2b:false,djId:'018'},{artist:'Cataclismo',b2b:false,djId:'021'},
-  {artist:'Adhila',b2b:false,djId:'020'},{artist:'Santi Delfino',b2b:false,djId:'036'},{artist:'Santos',b2b:false,djId:'026'}]},
- {id:'ASDL008',sets:[
-  {artist:'Nujire B2B D1no Dubz',b2b:true},{artist:'Agus Safi',b2b:false,djId:'039'},{artist:'Lugha',b2b:false,djId:'042'},
-  {artist:'Soulder',b2b:false,djId:'056'},{artist:'Victoria Poletti',b2b:false,djId:'044'},{artist:'Agus Costa B2B Agus Domene',b2b:true},
-  {artist:'Grecia',b2b:false,djId:'066'}]},
- {id:'ASDL009',sets:[
-  {artist:'Komi',b2b:false,djId:'052'},{artist:'Bvlly (2do set)',b2b:false,djId:'017'},{artist:'Juli Harley',b2b:false,djId:'050'},
-  {artist:'Bau Olivares',b2b:false,djId:'055'},{artist:'Carmelo',b2b:false,djId:'051'},{artist:'Gabell',b2b:false,djId:'046'},
-  {artist:'Waxx',b2b:false,djId:'045'},{artist:'Jorrón',b2b:false,djId:'003'},{artist:'Neêkhø',b2b:false,djId:'057'}]},
- {id:'ASDL010',sets:[
-  {artist:'Rawdon',b2b:false,djId:'053'},{artist:'Marcos Alvarez',b2b:false,djId:'059'},{artist:'Pacho',b2b:false,djId:'061'},
-  {artist:'Jeili B2B Tucumalo',b2b:true},{artist:'El Hereje',b2b:false,djId:'058'},{artist:'Roxie',b2b:false,djId:'047'},
-  {artist:'Luxray',b2b:false,djId:'065'}]},
- {id:'ASDL011',sets:[
-  {artist:'Ribz',b2b:false,djId:'091'},{artist:'Letargiko',b2b:false,djId:'068'},{artist:'Marshall',b2b:false,djId:'089'},
-  {artist:'P4iva B2B Deliyus',b2b:true},{artist:'Marcos Alvarez (2do set)',b2b:false,djId:'059'},{artist:'Tusimonium',b2b:false,djId:'076'},
-  {artist:'Rober Ayala',b2b:false,djId:'093'}]},
- {id:'ASDL012',sets:[
-  {artist:'Ishikawaka B2B Arika',b2b:true,soon:true},{artist:'Malaiikah',b2b:false,soon:true,djId:'105'},{artist:'Babi',b2b:false,djId:'100'},
-  {artist:'Celes Ronda',b2b:false,soon:true,djId:'101'},{artist:'Majomushi',b2b:false,soon:true,djId:'104'},{artist:'Magma',b2b:false,soon:true,djId:'102'},
-  {artist:'Adhila (2do set)',b2b:false,djId:'020'}],upcoming:true},
+ {id:'ASDL001',date:'Desconocida',sets:[
+  {artist:'Dj Jam (Intro)',b2b:false,note:'Set oculto'},
+  {artist:'Aziza',b2b:false,note:'Primer set del archivo · Oculto'},
+  {artist:'Boronik',b2b:false,djId:'025',note:'1/3 sets · Oculto'},
+  {artist:'Nielo (Custom)',b2b:false,note:'Con gente de Disco Domingo · Oculto'},
+  {artist:'Siko',b2b:false,djId:'015',note:'1/5 sets · Oculto'},
+  {artist:'Atua',b2b:false,djId:'067',note:'1/3 sets · Oculto'},
+  {artist:'Dimoss',b2b:false,djId:'048',note:'1/3 sets · Oculto'},
+ ],hidden:true},
+ {id:'ASDL002',date:'07/05/2025',sets:[
+  {artist:'Lenny Øwen',b2b:false,djId:'082'},
+  {artist:'Suvmaster',b2b:false},
+  {artist:'Vortex',b2b:false},
+  {artist:'Acu',b2b:false},
+  {artist:'Lyanna',b2b:false},
+  {artist:'Naderix',b2b:false,djId:'099',note:'1/2 sets'},
+  {artist:'Sax',b2b:false,djId:'024',note:'2/3 sets'},
+ ]},
+ {id:'ASDL003',date:'24/05/2025',sets:[
+  {artist:'Ivan Corda',b2b:false},
+  {artist:'Ezra',b2b:false},
+  {artist:'Jony Peder',b2b:false},
+  {artist:'Nielo (Custom)',b2b:false,note:'Con gente de Disco Domingo'},
+  {artist:'Dimoss',b2b:false,djId:'048',note:'2/3 sets'},
+  {artist:'Olu',b2b:false},
+ ]},
+ {id:'ASDL004',date:'15/06/2025',sets:[
+  {artist:'Martin G',b2b:false,djId:'005'},
+  {artist:'Abbica',b2b:false,djId:'012'},
+  {artist:'Mati Slast',b2b:false,djId:'010'},
+  {artist:'Lucio Ka',b2b:false,djId:'004'},
+  {artist:'Sature',b2b:true,djId:'009'},
+  {artist:'Umresh',b2b:false,djId:'011'},
+  {artist:'Siko',b2b:false,djId:'015',note:'2/5 sets'},
+  {artist:'Risco B2B Mati Pino',b2b:true},
+  {artist:'Fomo → Jorrón',b2b:false,djId:'003',note:'1/2 sets · Nombre actualizado a Jorrón'},
+  {artist:'Falso',b2b:false,djId:'008'},
+  {artist:'Blackmain',b2b:false,djId:'013'},
+  {artist:'Lomakin',b2b:false,djId:'006'},
+ ]},
+ {id:'ASDL005',date:'13/07/2025',sets:[
+  {artist:'Taborda',b2b:false,djId:'001'},
+  {artist:'Farrs (Set 1 de 2)',b2b:false,djId:'019'},
+  {artist:'Farrs (Set 2 de 2)',b2b:false,djId:'019'},
+  {artist:'Atua',b2b:false,djId:'067',note:'2/3 sets'},
+  {artist:'Bvlly',b2b:false,djId:'017',note:'1/2 sets'},
+  {artist:'Mara Kolevitch',b2b:false,djId:'022'},
+  {artist:'Boronik B2B Sax',b2b:true},
+ ]},
+ {id:'ASDL006',date:'31/08/2025',sets:[
+  {artist:'Agus Olivo',b2b:false,djId:'030'},
+  {artist:'Antonella Belen',b2b:false,djId:'029'},
+  {artist:'Felipe Ferreyra',b2b:false,djId:'027'},
+  {artist:'Mortel',b2b:false,djId:'035',note:'1/2 sets'},
+  {artist:'Santi Paez',b2b:false,djId:'032'},
+  {artist:'Ruku',b2b:false,djId:'033'},
+  {artist:'Nujire',b2b:false,djId:'034',note:'1/2 sets'},
+ ]},
+ {id:'ASDL007',date:'14/09/2025',sets:[
+  {artist:'Saiti',b2b:false},
+  {artist:'Dimoss',b2b:false,djId:'048',note:'3/3 sets'},
+  {artist:'Sio B2B Perty',b2b:true},
+  {artist:'Kpuccina',b2b:false,djId:'014',note:'2/2 sets'},
+  {artist:'Nine',b2b:false,djId:'018',note:'1/2 sets'},
+  {artist:'Cataclismo',b2b:false,djId:'021'},
+  {artist:'Adhila',b2b:false,djId:'020',note:'1/2 sets'},
+  {artist:'Santi Delfino',b2b:false,djId:'036'},
+ ]},
+ {id:'ASDL008',date:'28/09/2025',sets:[
+  {artist:'Nujire B2B D1no Dubz',b2b:true,note:'2/2 sets de Nujire'},
+  {artist:'Safi',b2b:false,djId:'039'},
+  {artist:'Lugha',b2b:false,djId:'042'},
+  {artist:'Soulder',b2b:false,djId:'056'},
+  {artist:'Victoria Poletti',b2b:false,djId:'044'},
+  {artist:'Agus Costa B2B Agus Domene',b2b:true},
+ ]},
+ {id:'ASDL009',date:'05/10/2025',sets:[
+  {artist:'Komi',b2b:false,djId:'052'},
+  {artist:'Bvlly',b2b:false,djId:'017',note:'2/2 sets'},
+  {artist:'Juli Harley',b2b:false,djId:'050'},
+  {artist:'Bau Olivares',b2b:false,djId:'055'},
+  {artist:'Carmelo',b2b:false,djId:'051'},
+  {artist:'Gabell',b2b:false,djId:'046'},
+  {artist:'Waxx',b2b:false,djId:'045'},
+  {artist:'Jorrón',b2b:false,djId:'003',note:'2/2 sets'},
+ ]},
+ {id:'ASDL010',date:'26/10/2025',sets:[
+  {artist:'Rawdon aka Dj Verano',b2b:false,djId:'053'},
+  {artist:'Marcos Alvarez',b2b:false,djId:'059',note:'1/2 sets'},
+  {artist:'Pacho',b2b:false,djId:'061'},
+  {artist:'Jeili B2B Tucumalo',b2b:true},
+  {artist:'El Hereje',b2b:false,djId:'058'},
+  {artist:'Roxie',b2b:false,djId:'047'},
+ ]},
+ {id:'ASDL011',date:'01/02/2026',sets:[
+  {artist:'Ribz (Custom)',b2b:false,djId:'091'},
+  {artist:'Letargiko',b2b:false,djId:'068'},
+  {artist:'Marshall',b2b:false,djId:'089'},
+  {artist:'P4iva B2B Deliyus',b2b:true},
+  {artist:'Marcos Alvarez',b2b:false,djId:'059',note:'2/2 sets'},
+  {artist:'Tusimonium',b2b:false,djId:'076',note:'2/2 sets'},
+ ]},
+ {id:'ASDL012',date:'22/02/2026',sets:[
+  {artist:'Tinxhh',b2b:false,djId:'088'},
+  {artist:'Hachi',b2b:false,djId:'094'},
+  {artist:'Naderix',b2b:false,djId:'099',note:'2/2 sets'},
+  {artist:'Brey',b2b:false,djId:'092'},
+  {artist:'Sound Six',b2b:false,djId:'073',note:'2/2 sets'},
+ ]},
+ {id:'ASDL013',date:'08/03/2026',sets:[
+  {artist:'Ishikawaka B2B Arika',b2b:true,soon:true},
+  {artist:'Malaiikah',b2b:false,soon:true,djId:'105'},
+  {artist:'Babi.wav',b2b:false,soon:true,djId:'100'},
+  {artist:'Celes Ronda',b2b:false,soon:true,djId:'101'},
+  {artist:'Majomushi',b2b:false,soon:true,djId:'104'},
+  {artist:'Djmagma',b2b:false,soon:true,djId:'102'},
+  {artist:'Adhila',b2b:false,soon:true,djId:'020',note:'2/2 sets'},
+ ],upcoming:true},
 ];
 
-const COMMON_ORDER = ['096','090','087','025','046b','024','086','085','083','038','074','015','081','079','023','067','081','080','076','073','028','077','071','031','054','063','042','037','060','016','099'];
-const CUSTOM_IDS = ['070','084','091'];
-const PUBLIC_IDS = ['072','078','018','035','015','107'];// 107=wearsprada placeholder
+// ORDEN EXACTO según sheet cronológico
+// Post ASDL003: Andres Galeano
+// Post ASDL004: Evgeni Troshkov, Kpuccina (1/2)
+// Post ASDL010: Aixa Yael, Venusino, Underdust, Neikita, Thiago Lautaro, Ju4mpi, Arthur Cheffer, Lef, Alex Hediger, Sound Six (1/2), Tusimonium (1/2), Teknils, Siko (3/5), Atua (3/3), Kaif, Nmin, Nink09, Siko (4/5), Tromix, Mark Straits, Viktor Nahvel (Custom), Dj Brivn, Rebekaos, Leon Ellus, Neskau, Sax (3/3), Boronik (3/3)
+// Post ASDL011: Briket
+const COMMON_ORDER = [
+  // Post ASDL003
+  'CL-andres-galeano',
+  // Post ASDL004
+  '016', // Evgeni Troshkov
+  '014', // Kpuccina (1/2)
+  // Post ASDL010 (orden del sheet)
+  '060', // Aixa Yael
+  '063', // Venusino
+  '040', // Underdust
+  '054', // Neikita
+  '069', // Thiago Lautaro
+  'CL-ju4mpi',
+  '071', // Arthur Cheffer
+  '077', // Lef
+  '028', // Alex Hediger
+  '073', // Sound Six (1/2)
+  '076', // Tusimonium (1/2)
+  '080', // Teknils
+  '015', // Siko (3/5)
+  '067', // Atua (3/3)
+  '023', // Kaif
+  '079', // Nmin
+  '081', // N1nk09
+  '015b',// Siko (4/5) — segundo common
+  '074', // Tromix
+  '038', // Mark Straits
+  '046b',// Dj Brivn
+  '083', // Rebekaos
+  '085', // Leon Ellus
+  '086', // Neskau
+  '024', // Sax (3/3)
+  '025', // Boronik (3/3)
+  // Post ASDL011
+  '096', // Briket
+];
+
+const CUSTOM_IDS = ['070','084','091']; // Zlata, Viktor Nahvel, Ribz
+
+// Archivo Público — Don Gato (orden del sheet)
+const PUBLIC_IDS = ['072','078','018','035','015','WP']; // Konkor, (b)Eva, Nine, Mortel, Siko, Wearsprada
 
 // ═══════════════════════════════════════════════════════
 // NAVIGATION
@@ -825,16 +1099,126 @@ function navTo(pg, el){
   const target = document.getElementById('pg-'+pg);
   if(target) target.classList.add('on');
   if(el) el.classList.add('on');
-  if(pg==='djs') renderDjs();
-  if(pg==='sets') renderSets();
-  if(pg==='jams') renderJams();
-  if(pg==='common') renderCommon();
-  if(pg==='custom') renderCustom();
-  if(pg==='public') renderPublic();
+  if(pg==='djsets'){
+    renderDjs();
+    // renderizar subnav activo
+    const activeSub=document.querySelector('.snt.on');
+    if(activeSub) subnavTo(activeSub.dataset.sub, activeSub);
+    else subnavTo('djs', document.querySelector('.snt'));
+  }
+  if(pg==='agenda') initCalendar();
   document.getElementById('content').scrollTop = 0;
 }
 function goHome(){
   navTo('home', document.querySelector('[data-pg=home]'));
+}
+function subnavTo(sub, el){
+  document.querySelectorAll('.subpg').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.snt').forEach(n=>n.classList.remove('on'));
+  const target=document.getElementById('sub-'+sub);
+  if(target) target.classList.add('on');
+  if(el) el.classList.add('on');
+  // render según sub
+  if(sub==='jams'){const c=document.getElementById('sub-jams');if(c&&!c.innerHTML.trim())renderJamsInto(c);}
+  if(sub==='common') renderCommon();
+  if(sub==='custom') renderCustom();
+  if(sub==='public') renderPublic();
+  if(sub==='generos'){const c=document.getElementById('sub-generos');if(c&&!c.innerHTML.trim())renderGeneros(c);}
+}
+
+// ═══ AGENDA / CALENDARIO ═══
+let calYear=new Date().getFullYear(), calMonth=new Date().getMonth();
+let selectedDate=null, selectedSlot=null;
+let availability={}; // {'2026-03-15':['18:00','20:00']}
+let agendaRequests=[];
+
+function initCalendar(){ renderCal(); }
+
+function renderCal(){
+  const lbl=document.getElementById('cal-month-lbl');
+  const grid=document.getElementById('cal-grid');
+  if(!lbl||!grid) return;
+  const meses=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  lbl.textContent=meses[calMonth]+' '+calYear;
+  const firstDay=new Date(calYear,calMonth,1).getDay();
+  const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+  const today=new Date();
+  const days=['D','L','M','X','J','V','S'];
+  let html=days.map(d=>`<div class="cal-hdr">${d}</div>`).join('');
+  for(let i=0;i<firstDay;i++) html+=`<div class="cal-day"></div>`;
+  for(let d=1;d<=daysInMonth;d++){
+    const dateStr=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isAvail=!!availability[dateStr];
+    const isToday=today.getDate()===d&&today.getMonth()===calMonth&&today.getFullYear()===calYear;
+    const isSel=selectedDate===dateStr;
+    html+=`<div class="cal-day${isAvail?' avail':''}${isToday?' today':''}${isSel?' sel':''}" ${isAvail?`onclick="selectDate('${dateStr}')"`:''}>${d}</div>`;
+  }
+  grid.innerHTML=html;
+  renderSlots();
+}
+
+function calPrev(){ calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderCal(); }
+function calNext(){ calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderCal(); }
+
+function selectDate(date){
+  selectedDate=date; selectedSlot=null;
+  const inp=document.getElementById('ag-pref');
+  if(inp) inp.value=date.split('-').reverse().join('/');
+  renderCal();
+}
+
+function renderSlots(){
+  const c=document.getElementById('ag-slots');
+  if(!c) return;
+  if(!selectedDate||!availability[selectedDate]){
+    c.innerHTML=`<div style="font-size:11px;letter-spacing:.1em;color:var(--wd);line-height:2;padding:10px 0">Seleccioná una <strong>fecha disponible</strong> para ver los horarios.</div>`;
+    return;
+  }
+  const slots=availability[selectedDate];
+  c.innerHTML=`<div style="font-size:9px;letter-spacing:.2em;color:var(--b);text-transform:uppercase;margin-bottom:10px">Horarios disponibles — ${selectedDate.split('-').reverse().join('/')}</div>`+
+    slots.map(s=>`<div class="slot${selectedSlot===s?' sel':''}" onclick="selectSlot('${s}')">
+      <div class="slot-time">${s}</div>
+      <div class="slot-lbl">Sesión disponible</div>
+    </div>`).join('');
+}
+
+function selectSlot(s){
+  selectedSlot=s;
+  const inp=document.getElementById('ag-pref');
+  if(inp&&selectedDate) inp.value=selectedDate.split('-').reverse().join('/')+' — '+s;
+  renderSlots();
+}
+
+async function submitAgenda(){
+  const artist=(document.getElementById('ag-artist')||{}).value?.trim()||'';
+  const email=(document.getElementById('ag-email')||{}).value?.trim()||'';
+  const genre=(document.getElementById('ag-genre')||{}).value?.trim()||'';
+  const links=(document.getElementById('ag-links')||{}).value?.trim()||'';
+  const reg=document.querySelector('input[name="ag-reg"]:checked')?.value||'no';
+  const pref=(document.getElementById('ag-pref')||{}).value?.trim()||'';
+  const msg=(document.getElementById('ag-msg')||{}).value?.trim()||'';
+  const st=document.getElementById('ag-status');
+
+  if(!artist||!email){if(st){st.textContent='⚠ Completá al menos el nombre artístico y el email.';st.style.color='var(--red)';}return;}
+
+  const req={artist,email,genre,links,reg,pref,msg,date:new Date().toLocaleDateString('es-AR'),slot:selectedSlot,fecha:selectedDate};
+  agendaRequests.push(req);
+
+  // Enviar por Brevo si hay config
+  if(window._brevoKey&&window._brevoFrom){
+    const body=`Nueva solicitud de grabación:\n\nArtista: ${artist}\nEmail: ${email}\nGénero: ${genre}\nLinks: ${links}\nYa registrado: ${reg}\nFecha preferida: ${pref}\nMensaje: ${msg}`;
+    try{
+      await fetch('https://api.brevo.com/v3/smtp/email',{
+        method:'POST',headers:{'Content-Type':'application/json','api-key':window._brevoKey},
+        body:JSON.stringify({sender:{name:'ASDL Agenda',email:window._brevoFrom},to:[{email:window._brevoFrom}],subject:`[Agenda] ${artist} quiere grabar`,textContent:body})
+      });
+    }catch(e){}
+  }
+
+  if(st){st.textContent=`✓ Solicitud enviada. El equipo te contacta a ${email} a la brevedad.`;st.style.color='var(--green)';}
+  // Reset
+  ['ag-artist','ag-email','ag-genre','ag-links','ag-pref','ag-msg'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  selectedDate=null;selectedSlot=null;renderCal();
 }
 
 // ═══════════════════════════════════════════════════════
@@ -918,20 +1302,107 @@ function runCounter(){
 // RENDER DJS
 // ═══════════════════════════════════════════════════════
 let djFilter='all';
+let djSort='default';
 function renderDjs(filter){
-  if(filter!==undefined)djFilter=filter;
+  if(filter!==undefined) djFilter=filter;
   const q=(document.getElementById('srch-djs')||{}).value||'';
   let list=[...DJS];
   if(djFilter==='soon') list=list.filter(d=>d.isSoon||SOON.includes(d.artist));
-  if(q) list=list.filter(d=>d.artist.toLowerCase().includes(q.toLowerCase())||d.genre.toLowerCase().includes(q.toLowerCase()));
+  if(q) list=list.filter(d=>d.artist.toLowerCase().includes(q.toLowerCase())||(d.genre||'').toLowerCase().includes(q.toLowerCase()));
+  // SORT
+  if(djSort==='alpha') list.sort((a,b)=>a.artist.localeCompare(b.artist,'es'));
+  else if(djSort==='oldest') list.sort((a,b)=>parseReg(a.reg)-parseReg(b.reg));
+  else if(djSort==='newest') list.sort((a,b)=>parseReg(b.reg)-parseReg(a.reg));
   const grid=document.getElementById('grid-djs');
-  document.getElementById('rc-djs').textContent=`${list.length} artistas`;
-  grid.innerHTML=list.map(d=>gcHTML(d)).join('');
+  const rc=document.getElementById('rc-djs');
+  if(rc) rc.textContent=`${list.length} artistas`;
+  if(grid) grid.innerHTML=list.map(d=>gcHTML(d)).join('');
+}
+function parseReg(reg){
+  if(!reg) return 0;
+  const meses={Ene:0,Feb:1,Mar:2,Abr:3,May:4,Jun:5,Jul:6,Ago:7,Sep:8,Oct:9,Nov:10,Dic:11};
+  const parts=reg.split(' ');
+  if(parts.length>=2){const m=meses[parts[0]];const y=parseInt(parts[1]);if(m!==undefined&&y) return y*12+m;}
+  return 0;
 }
 function filterDjs(f,el){
-  if(el){document.querySelectorAll('#pg-djs .fb').forEach(b=>b.classList.remove('on'));el.classList.add('on');}
+  if(el){document.querySelectorAll('#sub-djs .fb:not([id^="sort"])').forEach(b=>b.classList.remove('on'));el.classList.add('on');}
   renderDjs(f==='search'?undefined:f);
 }
+function sortDjs(s,el){
+  djSort=djSort===s?'default':s;
+  document.querySelectorAll('[id^="sort-"]').forEach(b=>b.classList.remove('on'));
+  if(djSort!=='default'&&el) el.classList.add('on');
+  renderDjs();
+}
+
+// ═══════════════════════════════════════════════════════
+// RENDER POR GÉNERO
+// ═══════════════════════════════════════════════════════
+let generoFilter=null;
+function renderGeneros(c){
+  if(!c) return;
+  // Géneros expandidos
+  const GENRES_EXT=[
+    {name:'Techno',color:'#1b00e6',subs:['Techno Melódico','Hard Techno','Hardgroove','Acid','Industrial','Schranz','PSY Trance','Trance','Bounce','Tribal','Hipnótico','Minimal Techno','Dark Techno']},
+    {name:'House',color:'#1b00e6',subs:['Tech House','Deep Tech','Minimal','Micro House','Indie Dance','Disco','Afro House','Funk','Organic House','Deep House','Progressive House']},
+    {name:'Bass Music',color:'#1b00e6',subs:['Drum & Bass','Liquid DnB','Soulful DnB','Dubstep','Riddim','UK Garage','Breaks','Jungle','Tear Out']},
+    {name:'Urban & Global',color:'#1b00e6',subs:['Hip Hop','Reggaeton','Dembow','Baile Funk','Dancehall','Perreo','Open Format','Amapiano']},
+    {name:'Experimental',color:'#1b00e6',subs:['Ambient','EBM','Electro','Dark Wave','Cold Wave','Noise','Breakbeat','Hyperpop']},
+  ];
+  let activeFilter=null;
+  function matchGenre(d,genName,sub){
+    const g=(d.genre||'').toLowerCase();
+    if(sub) return g.includes(sub.toLowerCase());
+    // match por nombre de categoría amplia
+    if(genName==='Techno') return /techno|trance|acid|industrial|schranz|hardgroove|tribal|psy|bounce|hipnótico/i.test(g);
+    if(genName==='House') return /house|disco|funk|indie dance|afro|organic|micro|minimal/i.test(g);
+    if(genName==='Bass Music') return /drum|bass|dnb|dubstep|riddim|garage|breaks|jungle/i.test(g);
+    if(genName==='Urban & Global') return /hip hop|reggaeton|dembow|baile funk|dancehall|perreo|open format|amapiano/i.test(g);
+    if(genName==='Experimental') return /ambient|ebm|electro|dark wave|cold wave|noise|breakbeat|hyperpop/i.test(g);
+    return false;
+  }
+  function build(filterSub,filterGen){
+    return GENRES_EXT.map(g=>{
+      let artists=DJS.filter(d=>matchGenre(d,g.name,filterSub&&filterGen===g.name?filterSub:null));
+      artists=[...new Map(artists.map(a=>[a.i,a])).values()];
+      if(!artists.length) return '';
+      const chipHTML=g.subs.map(s=>{
+        const isActive=filterSub===s&&filterGen===g.name;
+        return `<div class="sgchip${isActive?' sgchip-on':''}" style="cursor:pointer" onclick="filterGenero('${g.name.replace(/'/g,"\\'")}','${s.replace(/'/g,"\\'")}',this)">${s}</div>`;
+      }).join('');
+      return `<div class="gsec">
+        <div class="gtit">${g.name} <span style="font-size:11px;color:var(--wd);font-family:'IBM Plex Mono',monospace;font-weight:400">${artists.length} artistas</span></div>
+        <div class="gsub-row">${chipHTML}</div>
+        <div class="gartists">${artists.map(d=>{
+          const soon=d.isSoon||SOON.includes(d.artist);
+          return `<div class="ga${soon?' soon':''}" onclick="fichaFrom='djsets';openFicha('${d.i}')">
+            <div class="ga-n">${d.artist}</div>
+            <div class="ga-s">${(d.genre||'').split('·')[0].trim()}</div>
+          </div>`;
+        }).join('')}</div>
+      </div>`;
+    }).join('');
+  }
+  c.innerHTML=`<div id="generos-inner">${build(null,null)}</div>`;
+  // Exponemos función de filtro al scope global via closure
+  window.filterGenero=function(gen,sub,el){
+    const inner=document.getElementById('generos-inner');
+    if(!inner) return;
+    // Toggle: si ya está activo, quitar filtro
+    const wasActive=el&&el.classList.contains('sgchip-on');
+    inner.innerHTML=build(wasActive?null:sub, wasActive?null:gen);
+    // Re-attach
+    window.filterGenero=arguments.callee;
+  };
+}
+
+// CSS extra para chips activos y sgchip hover
+(function(){
+  const s=document.createElement('style');
+  s.textContent=`.sgchip{transition:all .18s}.sgchip:hover{background:rgba(27,0,230,.2);border-color:var(--b);color:#fff}.sgchip-on{background:var(--b)!important;border-color:var(--b)!important;color:#fff!important}`;
+  document.head.appendChild(s);
+})();
 
 function gcHTML(d){
   const soon=d.isSoon||SOON.includes(d.artist);
@@ -984,20 +1455,23 @@ function renderSets(){
 // ═══════════════════════════════════════════════════════
 function renderJams(){
   const pg=document.getElementById('pg-jams');
-  pg.innerHTML=JAMS.map(jam=>{
-    const cards=jam.sets.map(s=>{
+  pg.innerHTML=JAMS.map(j=>{
+    const isNext=!!j.upcoming;
+    const isHidden=!!j.hidden;
+    const cards=j.sets.map(s=>{
       const soon=s.soon||false;
-      return `<div class="jc${soon?' soon':''}" onclick="${s.djId?`fichaFrom='jams';openFicha('${s.djId}')`:''}">
+      const hidden=s.note&&s.note.includes('culto');
+      return `<div class="jc${soon?' soon':''}" style="${hidden?'opacity:.45;':''}${s.djId?'cursor:pointer':'cursor:default'}" onclick="${s.djId?`fichaFrom='jams';openFicha('${s.djId}')`:''}" title="${s.note||''}">
         <div class="jc-a">${s.artist}</div>
-        <div class="jc-d">${s.b2b?'B2B · ':''}${soon?'Próximamente':'Set grabado'}</div>
+        <div class="jc-d">${s.b2b?'B2B · ':''}${soon?'Próximamente':hidden?'Set oculto':'Set grabado'}</div>
+        ${s.note&&!hidden?`<div style="font-size:7px;letter-spacing:.14em;color:rgba(240,236,226,.3);margin-top:4px;text-transform:uppercase">${s.note}</div>`:''}
       </div>`;
     }).join('');
-    const upcoming=jam.upcoming?' · 08/03/2026 – Próxima':'';
-    return `<div class="jsec">
+    return `<div class="jsec" style="${isHidden?'opacity:.5':''}">
       <div class="jh">
-        <div class="jtit">DJ JAM ${jam.id}</div>
-        <div class="jdate">${jam.upcoming?'08/03/2026 — Próxima':'Jornada grabada'}${upcoming}</div>
-        <div class="jcnt">${jam.sets.length} sets</div>
+        <div class="jtit" style="${isNext?'color:var(--el)':''}">DJ JAM ${j.id}</div>
+        <div class="jdate">${j.date||''}${isNext?' — <span style="color:var(--el)">PRÓXIMA</span>':isHidden?' — Sets ocultos':''}</div>
+        <div class="jcnt">${j.sets.length} sets</div>
       </div>
       <div class="jgrid">${cards}</div>
     </div>`;
@@ -1008,19 +1482,30 @@ function renderJams(){
 // RENDER COMMON / CUSTOM / PUBLIC
 // ═══════════════════════════════════════════════════════
 function renderCommon(){
-  const list=COMMON_ORDER.map(id=>DJS.find(d=>d.i===id)).filter(Boolean);
-  document.getElementById('grid-common').innerHTML=list.map(d=>gcHTML(d)).join('');
+  // Mapeamos los IDs especiales a artistas reales
+  const idMap = {
+    'CL-andres-galeano': '107',
+    'CL-ju4mpi': '108',
+    '015b': '015', // Siko 4/5 — mismo artista, segundo common
+    'WP': '117',
+  };
+  const list = COMMON_ORDER.map(id => {
+    const realId = idMap[id] || id;
+    return DJS.find(d => d.i === realId);
+  }).filter(Boolean);
+  document.getElementById('grid-common').innerHTML = list.map(d => gcHTML(d)).join('');
 }
 function renderCustom(){
-  const list=CUSTOM_IDS.map(id=>DJS.find(d=>d.i===id)).filter(Boolean);
-  document.getElementById('grid-custom').innerHTML=list.map(d=>gcHTML(d)).join('');
+  const list = CUSTOM_IDS.map(id => DJS.find(d => d.i === id)).filter(Boolean);
+  document.getElementById('grid-custom').innerHTML = list.map(d => gcHTML(d)).join('');
 }
 function renderPublic(){
-  const pubIds=['072','078','018','035','015'];
-  const list=pubIds.map(id=>DJS.find(d=>d.i===id)).filter(Boolean);
-  // add Wearsprada placeholder
-  list.push({i:'WP',artist:'Wearsprada',alias:'Wearsprada',genre:'Por confirmar',type:'Public Liveset',reg:'Nov 2025'});
-  document.getElementById('grid-public').innerHTML=list.map(d=>gcHTML(d)).join('');
+  const idMap = {'WP':'117'};
+  const list = PUBLIC_IDS.map(id => {
+    const realId = idMap[id] || id;
+    return DJS.find(d => d.i === realId);
+  }).filter(Boolean);
+  document.getElementById('grid-public').innerHTML = list.map(d => gcHTML(d)).join('');
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1175,6 +1660,7 @@ function adminTab(tab){
   else if(tab==='jams') renderAdminJams(cont);
   else if(tab==='agenda') renderAdminAgenda(cont);
   else if(tab==='email') renderAdminEmail(cont);
+  else if(tab==='agenda-admin') renderAdminAgendaTab(cont);
 }
 
 function renderAdminOverview(c){
@@ -1741,6 +2227,21 @@ async function sendCampaign(){
     st.style.color=fail?'var(--red)':'var(--green)';
   }
 }
+function renderJamsInto(c){
+  if(!c)return;
+  c.innerHTML=JAMS.map(j=>{
+    const isNext=!!j.upcoming;
+    const cards=j.sets.map(s=>{
+      const soon=s.soon||false,hidden=s.hidden||false;
+      return `<div class="jc${soon?' soon':''}${hidden?' hidden-set':''}" style="cursor:${s.djId&&!hidden?'pointer':'default'}" ${s.djId&&!hidden?`onclick="fichaFrom='djsets';openFicha('${s.djId}')"`:''}><div class="jc-a">${s.artist}</div><div class="jc-d">${s.b2b?'B2B · ':''}${soon?'Próximamente':hidden?'Oculto':'Grabado'}</div>${s.note&&!hidden?`<div class="jc-note">${s.note}</div>`:''}</div>`;}).join('');
+    return `<div class="jsec"><div class="jh"><div class="jtit" style="${isNext?'color:var(--el)':''}">${j.id}</div><div class="jdate">${j.date||''}${isNext?' · PRÓXIMA':j.hidden?' · Oculta':''}</div><div class="jcnt">${j.sets.length} sets</div></div><div class="jgrid">${cards}</div></div>`;}).join('');
+}
+function renderAdminAgendaTab(c){
+  const avDates=Object.keys(availability);
+  c.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:2px"><div style="background:rgba(255,255,255,.03);border:1px solid var(--wf);padding:24px"><div style="font-size:9px;letter-spacing:.28em;color:var(--b);text-transform:uppercase;margin-bottom:14px">Fechas disponibles</div><div style="display:flex;gap:8px;margin-bottom:10px"><input class="afi" id="av-date" type="date" style="width:150px"><input class="afi" id="av-slots" placeholder="18:00,20:00" style="flex:1"><button class="afsave" onclick="addAvailability()">+ Agregar</button></div><div>${avDates.length?avDates.map(d=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:rgba(27,0,230,.08);border:1px solid rgba(27,0,230,.2);font-size:10px;color:var(--wd);margin-bottom:2px"><span><strong style="color:#fff">${d}</strong> — ${availability[d].join(', ')}</span><button class="tdbtn" onclick="removeAvailability('${d}')">Quitar</button></div>`).join(''):`<div style="font-size:10px;color:var(--wd)">Sin fechas cargadas.</div>`}</div></div><div style="background:rgba(255,255,255,.03);border:1px solid var(--wf);padding:24px"><div style="font-size:9px;letter-spacing:.28em;color:var(--b);text-transform:uppercase;margin-bottom:14px">Solicitudes (${agendaRequests.length})</div>${agendaRequests.length?agendaRequests.map(r=>`<div style="padding:10px 0;border-bottom:1px solid var(--wf)"><div style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:#fff">${r.artist}</div><div style="font-size:10px;color:var(--wd);line-height:1.9">${r.email} · ${r.genre||'—'}</div>${r.msg?`<div style="font-size:10px;color:var(--wd);font-style:italic">"${r.msg}"</div>`:''}</div>`).join(''):`<div style="font-size:11px;color:var(--wd)">Sin solicitudes.</div>`}</div></div>`;
+}
+function addAvailability(){const d=(document.getElementById('av-date')||{}).value,s=(document.getElementById('av-slots')||{}).value;if(!d||!s)return;availability[d]=s.split(',').map(x=>x.trim()).filter(Boolean);adminTab('agenda-admin');}
+function removeAvailability(d){delete availability[d];adminTab('agenda-admin');}
 setTimeout(()=>{
   initCards();
   runCounter();
