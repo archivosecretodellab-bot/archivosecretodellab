@@ -545,17 +545,30 @@ input[type=file]{display:none}
           </div>
 
           <div class="ag-form" id="ag-form">
-            <div class="ag-sec-title">Tu información</div>
+            <div class="ag-sec-title">Tu sesión</div>
+            <div class="ag-field">
+              <div class="ag-lbl">Tipo de sesión</div>
+              <div class="ag-radio-row">
+                <label class="ag-radio"><input type="radio" name="ag-tipo" value="Solo" checked> Solo — $<span id="precio-solo">60.000</span></label>
+                <label class="ag-radio"><input type="radio" name="ag-tipo" value="B2B"> B2B — $<span id="precio-b2b">80.000</span></label>
+              </div>
+            </div>
+            <div class="ag-sec-title" style="margin-top:24px">Tu información</div>
             <div class="ag-field">
               <div class="ag-lbl">Nombre artístico *</div>
-              <input class="ag-inp" id="ag-artist" placeholder="Tu nombre de Dj o proyecto">
+              <input class="ag-inp" id="ag-artist" placeholder="Tu nombre de Dj o proyecto" oninput="checkComunidadDebounce(this.value)">
             </div>
+            <div id="ag-comunidad-badge" style="display:none;margin-bottom:14px;padding:10px 14px;background:rgba(27,0,230,.15);border:1px solid rgba(27,0,230,.4);font-size:10px;letter-spacing:.14em;color:var(--b);text-transform:uppercase">🔵 Artista de la comunidad — 10% OFF aplicado</div>
             <div class="ag-field">
               <div class="ag-lbl">Email de contacto *</div>
               <input class="ag-inp" id="ag-email" type="email" placeholder="tu@email.com">
             </div>
             <div class="ag-field">
-              <div class="ag-lbl">Género musical *</div>
+              <div class="ag-lbl">WhatsApp <span id="ag-wa-req" style="color:var(--red);font-size:8px"></span></div>
+              <input class="ag-inp" id="ag-whatsapp" placeholder="+54 9 11 ...">
+            </div>
+            <div class="ag-field">
+              <div class="ag-lbl">Género musical</div>
               <input class="ag-inp" id="ag-genre" placeholder="House, Techno, DnB, Riddim...">
             </div>
             <div class="ag-field">
@@ -563,21 +576,18 @@ input[type=file]{display:none}
               <input class="ag-inp" id="ag-links" placeholder="Instagram, SoundCloud, YouTube...">
             </div>
             <div class="ag-field">
-              <div class="ag-lbl">¿Ya completaste el formulario de registro?</div>
+              <div class="ag-lbl">¿Ya completaste el formulario de registro del Archivo?</div>
               <div class="ag-radio-row">
                 <label class="ag-radio"><input type="radio" name="ag-reg" value="si"> Sí, ya me registré</label>
-                <label class="ag-radio"><input type="radio" name="ag-reg" value="no" checked> No todavía</label>
+                <label class="ag-radio"><input type="radio" name="ag-reg" value="no" checked> Todavía no</label>
               </div>
             </div>
             <div class="ag-field">
-              <div class="ag-lbl">¿Tenés alguna fecha preferida?</div>
-              <input class="ag-inp" id="ag-pref" placeholder="Ej: semana del 15 de marzo, fines de semana...">
+              <div class="ag-lbl">Mensaje adicional</div>
+              <textarea class="ag-ta" id="ag-msg" placeholder="Contanos sobre tu proyecto, si es B2B con quién..."></textarea>
             </div>
-            <div class="ag-field">
-              <div class="ag-lbl">Mensaje adicional (opcional)</div>
-              <textarea class="ag-ta" id="ag-msg" placeholder="Contanos algo sobre tu proyecto o lo que querés grabar..."></textarea>
-            </div>
-            <button class="ag-submit" onclick="submitAgenda()">Enviar solicitud →</button>
+            <button class="ag-submit" onclick="submitAgenda()">Confirmar reserva →</button>
+            <div id="ag-status" style="font-size:11px;letter-spacing:.1em;color:var(--wd);margin-top:14px;min-height:18px;line-height:1.8"></div>
             <div id="ag-status" style="font-size:10px;letter-spacing:.14em;color:var(--wd);margin-top:14px;min-height:16px;line-height:1.8"></div>
           </div>
         </div>
@@ -778,6 +788,108 @@ input[type=file]{display:none}
   <span id="rp-text">Radio ASDL — Próximamente</span>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+// ═══════════════════════════════════════════════
+// SUPABASE CONFIG
+// ═══════════════════════════════════════════════
+const SUPA_URL = 'https://mpitudvbhvymedzkxwvp.supabase.co';
+const SUPA_KEY = 'sb_publishable_77y9OkI7HG3O5nCx3agPdQ_FnpGKQZi';
+const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+// Config global (precios, textos) — se carga desde Supabase
+let CFG = {
+  precio_solo: 60000,
+  precio_b2b: 80000,
+  senia: 15000,
+  descuento_comunidad: 10,
+  horario_inicio: 11,
+  horario_fin: 19,
+  texto_confirmacion: 'AGENDADO. 🌀 Prepará tu USB, nos vemos pronto en el Archivo.',
+};
+
+async function loadConfig(){
+  try {
+    const {data} = await sb.from('config').select('key,value');
+    if(data) data.forEach(r => {
+      const v = isNaN(r.value) ? r.value : Number(r.value);
+      CFG[r.key] = v;
+    });
+  } catch(e){ console.warn('Config fallback a defaults'); }
+}
+
+// Disponibilidad desde Supabase (override del objeto local)
+async function loadDisponibilidad(){
+  try {
+    const {data} = await sb.from('disponibilidad').select('*').eq('activo', true);
+    if(data) {
+      availability = {};
+      data.forEach(r => { availability[r.fecha] = r.horarios; });
+      renderCal();
+    }
+  } catch(e){}
+}
+
+// Buscar DJ por nombre artístico — devuelve {existe, esComunidad, datos}
+async function buscarDJ(nombre){
+  try {
+    const {data} = await sb.from('djs')
+      .select('*')
+      .ilike('nombre_artistico', nombre.trim())
+      .limit(1);
+    if(data && data.length > 0){
+      const dj = data[0];
+      const esComunidad = dj.total_sets >= 1;
+      return {existe: true, esComunidad, datos: dj};
+    }
+  } catch(e){}
+  return {existe: false, esComunidad: false, datos: null};
+}
+
+// Guardar reserva en Supabase + notificar por Brevo
+async function guardarReserva(reserva){
+  try {
+    const {error} = await sb.from('reservas').insert([reserva]);
+    if(error) throw error;
+    // Notificar al equipo por email
+    await notificarEquipo(reserva);
+    return {ok: true};
+  } catch(e){
+    return {ok: false, error: e.message};
+  }
+}
+
+async function notificarEquipo(r){
+  if(!window._brevoKey || !window._brevoFrom) return;
+  const tipo = r.es_comunidad ? '🔵 Comunidad (10% OFF)' : '🟢 Nuevo artista';
+  const precio = r.tipo === 'B2B' ? CFG.precio_b2b : CFG.precio_solo;
+  const final = r.es_comunidad ? Math.round(precio * 0.9) : precio;
+  const body = `Nueva reserva en el Archivo:\n\n` +
+    `Artista: ${r.nombre_artistico}\n` +
+    `Tipo: ${r.tipo}\n` +
+    `Fecha: ${r.fecha} — ${r.horario}hs\n` +
+    `Email: ${r.email}\n` +
+    `WhatsApp: ${r.whatsapp || '—'}\n` +
+    `Género: ${r.genero || '—'}\n` +
+    `Estado: ${tipo}\n` +
+    `Precio: $${final.toLocaleString('es-AR')}\n` +
+    `Seña: $${CFG.senia.toLocaleString('es-AR')}\n` +
+    `Ya registrado: ${r.ya_registrado ? 'Sí' : 'No'}\n` +
+    `${r.mensaje ? 'Mensaje: '+r.mensaje : ''}`;
+  try {
+    await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','api-key': window._brevoKey},
+      body: JSON.stringify({
+        sender: {name:'ASDL Reservas', email: window._brevoFrom},
+        to: [{email: window._brevoFrom}],
+        subject: `[Reserva] ${r.nombre_artistico} — ${r.fecha} ${r.horario}hs`,
+        textContent: body
+      })
+    });
+  } catch(e){}
+}
+</script>
 <script>
 // ═══════════════════════════════════════════════════════
 // DATA
@@ -1190,35 +1302,108 @@ function selectSlot(s){
 }
 
 async function submitAgenda(){
-  const artist=(document.getElementById('ag-artist')||{}).value?.trim()||'';
-  const email=(document.getElementById('ag-email')||{}).value?.trim()||'';
-  const genre=(document.getElementById('ag-genre')||{}).value?.trim()||'';
-  const links=(document.getElementById('ag-links')||{}).value?.trim()||'';
-  const reg=document.querySelector('input[name="ag-reg"]:checked')?.value||'no';
-  const pref=(document.getElementById('ag-pref')||{}).value?.trim()||'';
-  const msg=(document.getElementById('ag-msg')||{}).value?.trim()||'';
-  const st=document.getElementById('ag-status');
+  const artist = (document.getElementById('ag-artist')||{}).value?.trim()||'';
+  const email  = (document.getElementById('ag-email')||{}).value?.trim()||'';
+  const genre  = (document.getElementById('ag-genre')||{}).value?.trim()||'';
+  const links  = (document.getElementById('ag-links')||{}).value?.trim()||'';
+  const tipo   = document.querySelector('input[name="ag-tipo"]:checked')?.value||'Solo';
+  const reg    = document.querySelector('input[name="ag-reg"]:checked')?.value||'no';
+  const msg    = (document.getElementById('ag-msg')||{}).value?.trim()||'';
+  const st     = document.getElementById('ag-status');
 
-  if(!artist||!email){if(st){st.textContent='⚠ Completá al menos el nombre artístico y el email.';st.style.color='var(--red)';}return;}
-
-  const req={artist,email,genre,links,reg,pref,msg,date:new Date().toLocaleDateString('es-AR'),slot:selectedSlot,fecha:selectedDate};
-  agendaRequests.push(req);
-
-  // Enviar por Brevo si hay config
-  if(window._brevoKey&&window._brevoFrom){
-    const body=`Nueva solicitud de grabación:\n\nArtista: ${artist}\nEmail: ${email}\nGénero: ${genre}\nLinks: ${links}\nYa registrado: ${reg}\nFecha preferida: ${pref}\nMensaje: ${msg}`;
-    try{
-      await fetch('https://api.brevo.com/v3/smtp/email',{
-        method:'POST',headers:{'Content-Type':'application/json','api-key':window._brevoKey},
-        body:JSON.stringify({sender:{name:'ASDL Agenda',email:window._brevoFrom},to:[{email:window._brevoFrom}],subject:`[Agenda] ${artist} quiere grabar`,textContent:body})
-      });
-    }catch(e){}
+  if(!artist || !email){
+    if(st){st.textContent='⚠ Completá nombre artístico y email.';st.style.color='var(--red)';}
+    return;
+  }
+  if(!selectedDate || !selectedSlot){
+    if(st){st.textContent='⚠ Seleccioná una fecha y horario disponible.';st.style.color='var(--red)';}
+    return;
   }
 
-  if(st){st.textContent=`✓ Solicitud enviada. El equipo te contacta a ${email} a la brevedad.`;st.style.color='var(--green)';}
-  // Reset
-  ['ag-artist','ag-email','ag-genre','ag-links','ag-pref','ag-msg'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  selectedDate=null;selectedSlot=null;renderCal();
+  if(st){st.textContent='Verificando artista...';st.style.color='var(--wd)';}
+
+  // Verificar si ya existe en la base
+  const {existe, esComunidad, datos} = await buscarDJ(artist);
+  const precio = tipo==='B2B' ? CFG.precio_b2b : CFG.precio_solo;
+  const precioFinal = esComunidad ? Math.round(precio * (1 - CFG.descuento_comunidad/100)) : precio;
+
+  // Si no existe, necesitamos whatsapp obligatorio
+  const waInput = document.getElementById('ag-whatsapp');
+  const wa = waInput?.value?.trim()||'';
+  if(!existe && !wa){
+    if(st){st.textContent='⚠ Primera vez en el archivo — necesitamos tu WhatsApp.';st.style.color='var(--red)';}
+    if(waInput) waInput.style.borderBottomColor='var(--red)';
+    return;
+  }
+
+  if(st){st.textContent='Guardando reserva...';st.style.color='var(--wd)';}
+
+  const reserva = {
+    nombre_artistico: artist,
+    email,
+    whatsapp: wa || datos?.whatsapp || '',
+    genero: genre || datos?.genero || '',
+    links,
+    tipo,
+    fecha: selectedDate,
+    horario: selectedSlot,
+    ya_registrado: reg==='si',
+    mensaje: msg,
+    es_comunidad: esComunidad,
+    descuento: esComunidad,
+    precio_base: precioFinal,
+    senia: CFG.senia,
+    estado: 'Pendiente'
+  };
+
+  const result = await guardarReserva(reserva);
+
+  if(result.ok){
+    // Si es nuevo DJ, insertarlo en la base
+    if(!existe){
+      await sb.from('djs').upsert([{
+        nombre_artistico: artist,
+        email,
+        whatsapp: wa,
+        genero: genre,
+        links,
+        tipo_set: tipo,
+        total_sets: 0,
+        es_comunidad: false
+      }], {onConflict:'nombre_artistico', ignoreDuplicates:true});
+    }
+    // EL DESBLOQUEO — efecto visual
+    desbloqueo(esComunidad, precioFinal);
+  } else {
+    if(st){st.textContent='⚠ Error al guardar. Intentá de nuevo.';st.style.color='var(--red)';}
+  }
+}
+
+function desbloqueo(esComunidad, precio){
+  const overlay = document.createElement('div');
+  overlay.style.cssText = `position:fixed;inset:0;background:#0000FF;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;transition:opacity 0.3s;padding:40px;text-align:center`;
+  overlay.innerHTML = `
+    <div style="font-size:clamp(40px,8vw,90px);margin-bottom:20px">🌀</div>
+    <div style="font-family:'Space Mono',monospace;font-size:clamp(22px,4vw,48px);font-weight:700;color:#fff;letter-spacing:-.02em;margin-bottom:20px;line-height:1.1">AGENDADO.</div>
+    <div style="font-size:clamp(13px,1.5vw,18px);color:rgba(255,255,255,.85);letter-spacing:.08em;line-height:1.9;max-width:520px;margin-bottom:28px">
+      ${CFG.texto_confirmacion}<br>
+      <strong style="color:#fff">A continuación, te vamos a enviar los pasos a seguir a través de WhatsApp.</strong>
+    </div>
+    ${esComunidad ? `<div style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);padding:12px 24px;margin-bottom:20px;font-size:13px;letter-spacing:.12em;color:#fff;text-transform:uppercase">🔵 Comunidad — 10% OFF aplicado · $${precio.toLocaleString('es-AR')}</div>` : `<div style="font-size:13px;letter-spacing:.12em;color:rgba(255,255,255,.7);margin-bottom:20px">Seña: $${CFG.senia.toLocaleString('es-AR')} · Total: $${precio.toLocaleString('es-AR')}</div>`}
+    <button onclick="this.parentElement.remove();resetAgenda()" style="font-size:10px;letter-spacing:.3em;text-transform:uppercase;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.4);color:#fff;padding:12px 28px;cursor:pointer;font-family:'IBM Plex Mono',monospace;transition:background .2s" onmouseover="this.style.background='rgba(255,255,255,.25)'" onmouseout="this.style.background='rgba(255,255,255,.15)'">← Volver al archivo</button>
+  `;
+  document.body.appendChild(overlay);
+  requestAnimationFrame(()=>{ overlay.style.opacity='1'; });
+}
+
+function resetAgenda(){
+  ['ag-artist','ag-email','ag-genre','ag-links','ag-whatsapp','ag-pref','ag-msg'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  selectedDate=null;selectedSlot=null;
+  const st=document.getElementById('ag-status');
+  if(st){st.textContent='';};
+  renderCal();
 }
 
 // ═══════════════════════════════════════════════════════
@@ -2242,10 +2427,39 @@ function renderAdminAgendaTab(c){
 }
 function addAvailability(){const d=(document.getElementById('av-date')||{}).value,s=(document.getElementById('av-slots')||{}).value;if(!d||!s)return;availability[d]=s.split(',').map(x=>x.trim()).filter(Boolean);adminTab('agenda-admin');}
 function removeAvailability(d){delete availability[d];adminTab('agenda-admin');}
+
+// Check comunidad con debounce
+let _ccTimer=null;
+function checkComunidadDebounce(val){
+  clearTimeout(_ccTimer);if(val.length<2)return;
+  _ccTimer=setTimeout(()=>checkComunidad(val),700);
+}
+async function checkComunidad(nombre){
+  if(!nombre||nombre.length<2)return;
+  const {existe,esComunidad}=await buscarDJ(nombre);
+  const badge=document.getElementById('ag-comunidad-badge');
+  const waReq=document.getElementById('ag-wa-req');
+  if(badge) badge.style.display=esComunidad?'block':'none';
+  if(waReq) waReq.textContent=!existe?'* obligatorio':'';
+}
+
+// INIT
 setTimeout(()=>{
   initCards();
   runCounter();
 },2500);
+
+// Cargar config y disponibilidad desde Supabase
+(async()=>{
+  await loadConfig();
+  await loadDisponibilidad();
+  // Actualizar precios en el formulario
+  const ps=document.getElementById('precio-solo');
+  const pb=document.getElementById('precio-b2b');
+  if(ps) ps.textContent=Number(CFG.precio_solo).toLocaleString('es-AR');
+  if(pb) pb.textContent=Number(CFG.precio_b2b).toLocaleString('es-AR');
+})();
+
 renderDjs();
 renderCommon();
 renderCustom();
