@@ -96,10 +96,10 @@ background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0
 .nt.on{color:var(--w);border-bottom-color:var(--b)}
 
 /* CONTENT */
-#content{overflow:hidden;height:100%;position:relative}
+#content{overflow-y:auto;height:100%}
 .pg{display:none;min-height:100%}
 .pg.on{display:block}
-#pg-archivo.on{display:block;overflow-y:scroll;height:100%;width:100%}
+#pg-archivo.on{display:block;overflow-y:auto;height:100%;position:absolute;top:0;left:0;right:0;bottom:0}
 
 /* LANDING */
 #pg-home{position:relative;overflow:hidden;height:100%}
