@@ -2266,14 +2266,40 @@ function renderPublic(){
 // ═══════════════════════════════════════════════════════
 // FICHA
 // ═══════════════════════════════════════════════════════
-function openFicha(id){
-  const dj=DJS.find(d=>d.i===id); if(!dj) return;
-  const soon=dj.isSoon||SOON.includes(dj.artist);
+async function openFicha(id){
+  // Buscar en array local primero, luego en Supabase
+  let dj = DJS.find(d=>d.i===id);
+  
+  // Si no está en el array local, buscar en Supabase
+  if(!dj){
+    try{
+      const {data} = await sb.from('djs').select('*').eq('id', id).single();
+      if(data){
+        dj = {
+          i: data.id,
+          artist: data.nombre_artistico,
+          alias: data.nombre_artistico,
+          genre: data.genero||'—',
+          exp: data.experiencia||'—',
+          bio: data.bio||'—',
+          links: data.links||'',
+          email: data.email||'',
+          type: data.total_sets>0 ? 'Registrado' : 'Lead',
+          session: 'Solo',
+          reg: data.created_at ? new Date(data.created_at).toLocaleDateString('es-AR') : '—',
+          isLead: data.total_sets===0
+        };
+      }
+    }catch(e){}
+  }
+  
+  if(!dj){ console.warn('DJ no encontrado:', id); return; }
+  
+  const soon = dj.isSoon||SOON.includes(dj.artist);
 
   document.getElementById('f-ref').textContent=`SET_${dj.i} / Archivo`;
   document.getElementById('back-btn').onclick=closeFicha;
 
-  // LEFT
   const photoHTML=photos[id]
     ?`<img src="${photos[id]}" alt="${dj.artist}">`
     :`<div class="pph"><svg width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>Subir foto</span></div>`;
@@ -2289,11 +2315,10 @@ function openFicha(id){
     <div class="fa-name">${dj.artist}</div>
     <div class="fa-alias">${dj.alias!==dj.artist?dj.alias:'aka — '+dj.artist}</div>
     <div class="fa-genre">${dj.genre||'Por confirmar'}</div>
-    <div class="fa-foot">${dj.type||''}${dj.session?' · '+dj.session:''}</div>
+    <div class="fa-foot">${dj.isLead?'🔵 Lead — pendiente de grabación':dj.type||''}${dj.session&&!dj.isLead?' · '+dj.session:''}</div>
     ${dj.redirect?`<div class="redir${soon?' soon-r':''}" onclick="openFicha('${dj.redirect.id}')">→ Ver también: ${dj.redirect.name}</div>`:''}
   `;
 
-  // YT THUMBNAIL
   const ytUrl=videos[id]||'';
   const ytThumb=ytUrl
     ?`<div class="yt-panel"><a class="yt-thumb" href="${ytUrl}" target="_blank">
@@ -2315,24 +2340,25 @@ function openFicha(id){
       <div class="fsl${soonLbl}">Datos</div>
       <div class="f2">
         <div><div class="fi-l">Trayectoria</div><div class="fi-v">${dj.exp||'—'}</div></div>
-        <div><div class="fi-l">Formato</div><div class="fi-v">${dj.type||'—'}</div></div>
+        <div><div class="fi-l">Formato</div><div class="fi-v">${dj.isLead?'Pendiente de grabación':dj.type||'—'}</div></div>
         <div><div class="fi-l">Modalidad</div><div class="fi-v">${dj.session||'—'}</div></div>
         <div><div class="fi-l">ID Archivo</div><div class="fi-v">SET_${dj.i}</div></div>
         <div><div class="fi-l">Registro</div><div class="fi-v">${dj.reg||'—'}</div></div>
+        ${dj.email?`<div><div class="fi-l">Email</div><div class="fi-v" style="font-size:10px">${dj.email}</div></div>`:''}
       </div>
     </div>
     ${dj.links?`<div class="fs">
       <div class="fsl${soonLbl}">Redes y plataformas</div>
       <div class="fsv mono">${dj.links}</div>
     </div>`:''}
-    <div class="fs">
+    ${!dj.isLead?`<div class="fs">
       <div class="fsl${soonLbl}">Set en YouTube</div>
       ${ytThumb}
       <div style="margin-top:14px">
         <input class="url-inp" id="yt_${id}" placeholder="https://youtube.com/..." value="${ytUrl}">
         <button class="url-save" onclick="saveYT('${id}')">Guardar enlace</button>
       </div>
-    </div>
+    </div>`:''}
     ${dj.multi?`<div class="fs">
       <div class="fsl${soonLbl}">Múltiples sets</div>
       <div class="fsv mono">${dj.multi.map(s=>`· ${s}`).join('<br>')}</div>
@@ -2343,7 +2369,6 @@ function openFicha(id){
   f.style.display='flex';
   requestAnimationFrame(()=>f.classList.add('show'));
 }
-
 function closeFicha(){
   const f=document.getElementById('ficha');
   f.classList.remove('show');
@@ -2639,145 +2664,154 @@ function addSet(){
   adminTab('sets');
 }
 
-function renderAdminArtists(c){
+async function renderAdminArtists(c){
+  c.innerHTML=`<div style="font-size:10px;color:var(--wd);padding:10px">Cargando...</div>`;
+
+  let leads=[];
+  try{
+    const {data}=await sb.from('djs').select('*').eq('total_sets',0).order('nombre_artistico');
+    if(data) leads=data;
+  }catch(e){}
+
   c.innerHTML=`
-  <!-- IMPORTAR DESDE GOOGLE SHEETS -->
   <div style="background:rgba(255,255,255,.03);border:1px solid var(--wf);padding:20px;margin-bottom:20px">
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:14px">
       <div>
-        <div style="font-size:9px;letter-spacing:.28em;color:var(--b);text-transform:uppercase;margin-bottom:4px">Importar leads desde Google Form / Sheets</div>
-        <div style="font-size:10px;letter-spacing:.08em;color:var(--wd)">Conectá tu Google Sheet del formulario de registro para importar contactos al sistema.</div>
+        <div style="font-size:9px;letter-spacing:.28em;color:var(--b);text-transform:uppercase;margin-bottom:4px">Importar desde Google Form</div>
+        <div style="font-size:10px;color:var(--wd)">Solo importa artistas nuevos — los que ya están en el sistema se omiten automáticamente por AKA.</div>
       </div>
       ${gcalToken
-        ? `<span style="font-size:8px;letter-spacing:.18em;color:var(--green);text-transform:uppercase">✓ Google conectado</span>`
-        : `<button onclick="gcalLogin(()=>adminTab('artists'))" style="font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;padding:8px 16px;background:rgba(27,0,230,.2);border:1px solid rgba(27,0,230,.4);color:#fff;cursor:pointer;font-family:'IBM Plex Mono',monospace">→ Conectar Google</button>`
+        ?`<span style="font-size:8px;letter-spacing:.18em;color:var(--green);text-transform:uppercase">✓ Google conectado</span>`
+        :`<button onclick="gcalLogin(()=>adminTab('artists'))" style="font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;padding:8px 16px;background:rgba(27,0,230,.2);border:1px solid rgba(27,0,230,.4);color:#fff;cursor:pointer;font-family:'IBM Plex Mono',monospace">→ Conectar Google</button>`
       }
     </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
-      <div style="flex:1;min-width:200px">
-        <div style="font-size:8px;letter-spacing:.18em;color:var(--wd);text-transform:uppercase;margin-bottom:5px">ID del Google Sheet</div>
-        <input class="afi" id="sheets-id" placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms" style="width:100%"
-          value="${localStorage.getItem('asdl_sheets_id')||''}">
-        <div style="font-size:8px;color:rgba(255,255,255,.2);margin-top:3px">Lo encontrás en la URL del Sheet: docs.google.com/spreadsheets/d/<strong>ID</strong>/edit</div>
-      </div>
-      <div style="min-width:120px">
-        <div style="font-size:8px;letter-spacing:.18em;color:var(--wd);text-transform:uppercase;margin-bottom:5px">Rango (opcional)</div>
-        <input class="afi" id="sheets-range" placeholder="A:Z" style="width:100%" value="A:Z">
-      </div>
-      <button class="afsave" onclick="runSheetsImport()" style="white-space:nowrap">↓ Importar</button>
-    </div>
-    <div id="sheets-status" style="font-size:10px;letter-spacing:.1em;margin-top:10px;min-height:14px"></div>
+    <button class="afsave" onclick="importFormSheet()" style="width:100%">↓ Importar respuestas del Form (solo nuevos)</button>
+    <div id="sheets-status" style="font-size:10px;color:var(--wd);margin-top:10px;min-height:14px"></div>
     <div id="sheets-preview" style="margin-top:14px"></div>
   </div>
 
-  <!-- TABLA DE ARTISTAS -->
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-    <div style="font-size:9px;letter-spacing:.22em;color:var(--b);text-transform:uppercase">Artistas registrados — ${DJS.length}</div>
-    <button class="tdbtn" onclick="exportCSV()">↓ Exportar CSV</button>
+  <div style="font-size:9px;letter-spacing:.22em;color:var(--b);text-transform:uppercase;margin-bottom:10px">
+    Artistas grabados — ${DJS.length}
+    <button class="tdbtn" onclick="exportCSV()" style="margin-left:12px">↓ CSV</button>
   </div>
-  <table class="atable">
-    <thead><tr><th>Id</th><th>Artista</th><th>Exp</th><th>Sesión</th><th>Reg</th><th>Notas</th></tr></thead>
+  <table class="atable" style="margin-bottom:28px">
+    <thead><tr><th>Id</th><th>Artista</th><th>Género</th><th>Exp</th><th>Sesión</th><th>Reg</th><th></th></tr></thead>
     <tbody>${DJS.map(d=>`<tr>
-      <td>${d.i}</td><td class="td-a">${d.artist}</td>
+      <td>${d.i}</td>
+      <td class="td-a">${d.artist}</td>
+      <td style="font-size:10px;color:var(--wd);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.genre||'—'}</td>
       <td>${d.exp||'—'}</td><td>${d.session||'—'}</td><td>${d.reg||'—'}</td>
-      <td><button class="tdbtn" onclick="openNotes('${d.i}','${d.artist}')">Notas</button></td>
+      <td><button class="tdbtn" onclick="fichaFrom='admin';openFicha('${d.i}')">Ver ficha</button></td>
     </tr>`).join('')}</tbody>
-  </table>`;
+  </table>
+
+  <div style="font-size:9px;letter-spacing:.22em;color:var(--b);text-transform:uppercase;margin-bottom:10px">
+    Leads / Pendientes de grabación — ${leads.length}
+  </div>
+  ${leads.length?`
+  <table class="atable">
+    <thead><tr><th>Artista</th><th>Género</th><th>Exp</th><th>Email</th><th>Redes</th><th></th></tr></thead>
+    <tbody>${leads.map(d=>`<tr>
+      <td class="td-a">${d.nombre_artistico}</td>
+      <td style="font-size:10px;color:var(--wd);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.genero||'—'}</td>
+      <td style="font-size:10px">${d.experiencia||'—'}</td>
+      <td style="font-size:9px;color:var(--wd)">${d.email||'—'}</td>
+      <td style="font-size:9px;color:var(--wd);max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.links||'—'}</td>
+      <td><button class="tdbtn" onclick="openFicha('${d.id}')">Ver ficha</button></td>
+    </tr>`).join('')}</tbody>
+  </table>`:`<div style="font-size:11px;color:var(--wd);padding:12px 0">Sin leads aún. Importá las respuestas del Form arriba.</div>`}
+  `;
 }
 
-async function runSheetsImport(){
-  const id = (document.getElementById('sheets-id')||{}).value?.trim();
-  const range = (document.getElementById('sheets-range')||{}).value?.trim()||'A:Z';
-  const st = document.getElementById('sheets-status');
-  const preview = document.getElementById('sheets-preview');
-
-  if(!id){ if(st){st.textContent='⚠ Ingresá el ID del Google Sheet.';st.style.color='var(--red)';} return; }
-  if(!gcalToken){ if(st){st.textContent='⚠ Primero conectá Google.';st.style.color='var(--red)';} return; }
-
-  if(st){st.textContent='Importando...';st.style.color='var(--wd)';}
-  localStorage.setItem('asdl_sheets_id', id);
-
-  const rows = await importFromSheets(id, range);
-  if(!rows){ if(st){st.textContent='⚠ Error al leer el Sheet. Verificá el ID y los permisos.';st.style.color='var(--red)';} return; }
-  if(rows.length < 2){ if(st){st.textContent='El Sheet está vacío o no tiene datos.';st.style.color='var(--wd)';} return; }
-
-  const headers = rows[0];
-  const data = rows.slice(1);
-
-  if(st){st.textContent=`✓ ${data.length} filas importadas. Revisá la previsualización y confirmá.`;st.style.color='var(--green)';}
-
-  // Preview de las primeras 5 filas
-  preview.innerHTML=`
-    <div style="font-size:9px;letter-spacing:.2em;color:var(--b);text-transform:uppercase;margin-bottom:10px">Previsualización (primeras 5 filas)</div>
-    <div style="overflow-x:auto">
-      <table class="atable" style="font-size:9px">
-        <thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead>
-        <tbody>${data.slice(0,5).map(r=>`<tr>${headers.map((_,i)=>`<td>${r[i]||'—'}</td>`).join('')}</tr>`).join('')}</tbody>
-      </table>
-    </div>
-    <div style="margin-top:12px;font-size:9px;letter-spacing:.14em;color:var(--wd)">¿Qué columna es el email y cuál el nombre artístico?</div>
-    <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap">
-      <div>
-        <div style="font-size:8px;color:var(--wd);margin-bottom:4px;letter-spacing:.12em">Columna EMAIL</div>
-        <select class="afi" id="col-email" style="width:160px">
-          ${headers.map((h,i)=>`<option value="${i}">${h}</option>`).join('')}
-        </select>
-      </div>
-      <div>
-        <div style="font-size:8px;color:var(--wd);margin-bottom:4px;letter-spacing:.12em">Columna NOMBRE ARTÍSTICO</div>
-        <select class="afi" id="col-nombre" style="width:160px">
-          ${headers.map((h,i)=>`<option value="${i}">${h}</option>`).join('')}
-        </select>
-      </div>
-      <div>
-        <div style="font-size:8px;color:var(--wd);margin-bottom:4px;letter-spacing:.12em">Columna WHATSAPP (opcional)</div>
-        <select class="afi" id="col-wa" style="width:160px">
-          <option value="-1">— No incluir</option>
-          ${headers.map((h,i)=>`<option value="${i}">${h}</option>`).join('')}
-        </select>
-      </div>
-    </div>
-    <button class="afsave" style="margin-top:14px" onclick="confirmSheetsImport(${JSON.stringify(data).replace(/'/g,'&#39;')})">↑ Guardar en Supabase (${data.length} contactos)</button>
-    <div id="import-confirm-status" style="font-size:10px;color:var(--wd);margin-top:8px"></div>`;
-
-  sheetsData = data;
-}
-
-async function confirmSheetsImport(data){
-  const colEmail = parseInt(document.getElementById('col-email').value);
-  const colNombre = parseInt(document.getElementById('col-nombre').value);
-  const colWa = parseInt(document.getElementById('col-wa').value);
-  const st = document.getElementById('import-confirm-status');
-
-  if(st){st.textContent='Guardando...';st.style.color='var(--wd)';}
-
-  const toInsert = data
-    .filter(r => r[colEmail] && r[colNombre])
-    .map(r => ({
-      nombre_artistico: r[colNombre]?.trim()||'',
-      email: r[colEmail]?.trim().toLowerCase()||'',
-      whatsapp: colWa>=0 ? r[colWa]?.trim()||'' : '',
-      es_comunidad: false,
-      total_sets: 0
-    }));
-
-  let ok=0, fail=0;
-  // Insertar en batches de 50
-  for(let i=0;i<toInsert.length;i+=50){
-    const batch=toInsert.slice(i,i+50);
-    try{
-      const {error}=await sb.from('djs').upsert(batch,{onConflict:'nombre_artistico',ignoreDuplicates:true});
-      if(error) fail+=batch.length;
-      else ok+=batch.length;
-    }catch(e){ fail+=batch.length; }
+async function importFormSheet(){
+  const st=document.getElementById('sheets-status');
+  const preview=document.getElementById('sheets-preview');
+  if(!gcalToken){
+    if(st){st.textContent='⚠ Primero conectá Google.';st.style.color='var(--red)';}
+    return;
   }
+  if(st){st.textContent='Leyendo Google Sheet...';st.style.color='var(--wd)';}
+
+  const rows=await importFromSheets('1admYkp9bi1DSxM8MrOx6tySuFHs3lHgnEM5jIGxFqLQ','A:H');
+  if(!rows||rows.length<2){
+    if(st){st.textContent='⚠ No se pudo leer el Sheet. Verificá que Google esté conectado.';st.style.color='var(--red)';}
+    return;
+  }
+
+  const headers=rows[0];
+  const data=rows.slice(1);
+
+  const iEmail=headers.findIndex(h=>h.toLowerCase().includes('correo')||h.toLowerCase().includes('email'));
+  const iAka  =headers.findIndex(h=>h.toLowerCase().includes('artístico')||h.toLowerCase().includes('aka'));
+  const iGenre=headers.findIndex(h=>h.toLowerCase().includes('género'));
+  const iExp  =headers.findIndex(h=>h.toLowerCase().includes('tiempo')||h.toLowerCase().includes('cuánto'));
+  const iBio  =headers.findIndex(h=>h.toLowerCase().includes('público')||h.toLowerCase().includes('supiera'));
+  const iLinks=headers.findIndex(h=>h.toLowerCase().includes('encontrarte')||h.toLowerCase().includes('instagram'));
+
+  const existingAkas=new Set(DJS.map(d=>d.artist.toLowerCase().trim()));
+
+  const nuevos=data.filter(r=>{
+    const aka=(r[iAka]||'').trim().toLowerCase();
+    return aka && !existingAkas.has(aka);
+  });
 
   if(st){
-    st.textContent=`✓ ${ok} contactos guardados en Supabase${fail?` · ${fail} errores`:''}`;
-    st.style.color=fail?'var(--red)':'var(--green)';
+    st.textContent=`✓ ${data.length} registros · ${data.length-nuevos.length} ya en el sistema · ${nuevos.length} nuevos`;
+    st.style.color='var(--green)';
   }
+
+  if(!nuevos.length){
+    if(preview) preview.innerHTML=`<div style="font-size:11px;color:var(--wd);padding:10px 0">Todos los registros ya están en el sistema.</div>`;
+    return;
+  }
+
+  if(preview) preview.innerHTML=`
+    <div style="font-size:9px;letter-spacing:.2em;color:var(--b);text-transform:uppercase;margin-bottom:10px">Nuevos — ${nuevos.length}</div>
+    <div style="overflow-x:auto;margin-bottom:14px">
+      <table class="atable" style="font-size:9px">
+        <thead><tr><th>AKA</th><th>Género</th><th>Exp</th><th>Email</th></tr></thead>
+        <tbody>${nuevos.slice(0,8).map(r=>`<tr>
+          <td>${r[iAka]||'—'}</td>
+          <td>${r[iGenre]||'—'}</td>
+          <td>${r[iExp]||'—'}</td>
+          <td style="font-size:8px">${r[iEmail]||'—'}</td>
+        </tr>`).join('')}
+        ${nuevos.length>8?`<tr><td colspan="4" style="color:var(--wd);font-style:italic">... y ${nuevos.length-8} más</td></tr>`:''}
+        </tbody>
+      </table>
+    </div>
+    <button class="afsave" onclick="confirmSheetImport()" style="width:100%">↑ Confirmar — importar ${nuevos.length} leads</button>
+    <div id="import-result" style="font-size:10px;color:var(--wd);margin-top:8px;min-height:14px"></div>
+  `;
+
+  window._pendingImport=nuevos.map(r=>({
+    nombre_artistico:(r[iAka]||'').trim(),
+    email:(r[iEmail]||'').trim().toLowerCase(),
+    genero:(r[iGenre]||'').trim(),
+    experiencia:(r[iExp]||'').trim(),
+    bio:(r[iBio]||'').trim(),
+    links:(r[iLinks]||'').trim(),
+    es_comunidad:false,
+    total_sets:0
+  })).filter(d=>d.nombre_artistico);
 }
 
+async function confirmSheetImport(){
+  const st=document.getElementById('import-result');
+  const data=window._pendingImport||[];
+  if(!data.length) return;
+  if(st){st.textContent='Guardando...';st.style.color='var(--wd)';}
+  let ok=0,fail=0;
+  for(let i=0;i<data.length;i+=50){
+    const batch=data.slice(i,i+50);
+    try{
+      const {error}=await sb.from('djs').upsert(batch,{onConflict:'nombre_artistico',ignoreDuplicates:true});
+      if(error) fail+=batch.length; else ok+=batch.length;
+    }catch(e){fail+=batch.length;}
+  }
+  if(st){st.textContent=`✓ ${ok} leads guardados${fail?` · ${fail} errores`:''}`;st.style.color=fail?'var(--red)':'var(--green)';}
+  setTimeout(()=>adminTab('artists'),1200);
+}
 function renderAdminJams(c){
   c.innerHTML=JAMS.map(j=>`
     <div style="margin-bottom:28px;padding-bottom:28px;border-bottom:1px solid var(--wf)">
@@ -2833,9 +2867,19 @@ function exportCSV(){
   a.download='ASDL_artistas.csv';a.click();
 }
 
-function renderAdminEmail(c){
+async function renderAdminEmail(c){
   const djEmails=DJS.filter(d=>d.email).map(d=>d.email);
-  const totalContacts=djEmails.length;
+
+  // Cargar leads de Supabase
+  let leads=[];
+  try{
+    const {data}=await sb.from('djs').select('nombre_artistico,email').eq('total_sets',0).not('email','is',null);
+    if(data) leads=data.filter(d=>d.email);
+  }catch(e){}
+
+  const totalGrabados=djEmails.length;
+  const totalLeads=leads.length;
+  const totalContacts=totalGrabados+totalLeads;
 
   const templates=[
     {id:'newsletter',name:'Newsletter General',icon:'📢',desc:'Novedades del archivo, sets nuevos, hitos del lab'},
@@ -2877,12 +2921,44 @@ function renderAdminEmail(c){
       </div>
 
       <div class="em-section">
-        <div class="em-sec-title">Lista de contactos</div>
-        <div class="em-contacts-box">
-          <div class="em-cnum">${totalContacts}</div>
-          <div class="em-clbl">Djs registrados en el archivo</div>
-          <div style="font-size:9px;letter-spacing:.12em;color:var(--wd);margin-top:8px">Correos obtenidos del formulario de ingreso. Todos dieron su email voluntariamente al registrarse.</div>
+        <div class="em-sec-title">Listas de contactos</div>
+
+        <!-- Lista 1: Grabados -->
+        <div class="em-contacts-box" style="margin-bottom:8px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+            <div>
+              <div class="em-cnum" style="font-size:28px">${totalGrabados}</div>
+              <div class="em-clbl">🎛 Artistas grabados</div>
+            </div>
+            <button class="tdbtn" onclick="selectEmailList('grabados',this)" style="color:var(--b);border-color:rgba(27,0,230,.4)">Seleccionar</button>
+          </div>
+          <div style="font-size:9px;color:var(--wd)">Artistas que ya pasaron por el Archivo. Tienen set grabado.</div>
         </div>
+
+        <!-- Lista 2: Leads -->
+        <div class="em-contacts-box" style="background:rgba(255,255,255,.04);border-color:var(--wf)">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+            <div>
+              <div class="em-cnum" style="font-size:28px">${totalLeads}</div>
+              <div class="em-clbl">🔵 Leads / Pendientes</div>
+            </div>
+            <button class="tdbtn" onclick="selectEmailList('leads',this)">Seleccionar</button>
+          </div>
+          <div style="font-size:9px;color:var(--wd)">Registrados en el Form pero aún no grabaron. Importalos desde la tab Artistas.</div>
+        </div>
+
+        <!-- Botón ambas listas -->
+        <button class="tdbtn" style="width:100%;margin-top:8px;padding:10px" onclick="selectEmailList('all',this)">📋 Usar ambas listas (${totalContacts} contactos)</button>
+
+        <!-- Link del form -->
+        <div style="margin-top:16px;padding:12px;background:rgba(255,255,255,.03);border:1px solid var(--wf)">
+          <div style="font-size:9px;letter-spacing:.2em;color:var(--b);text-transform:uppercase;margin-bottom:8px">Link de registro</div>
+          <div style="font-size:10px;color:var(--wd);margin-bottom:8px">Incluí este link en tus emails para que nuevos artistas se registren.</div>
+          <button class="em-link-btn" onclick="insertLink('form')" style="width:100%">📝 Insertar link del Form</button>
+        </div>
+
+        <div id="list-selected" style="font-size:9px;letter-spacing:.16em;color:var(--green);margin-top:8px;min-height:14px"></div>
+
         <div style="margin-top:14px">
           <div class="em-lbl" style="margin-bottom:8px">Agregar contacto externo</div>
           <div style="display:flex;gap:8px">
@@ -3019,11 +3095,23 @@ function insertLink(type){
     yt:'https://www.youtube.com/@ArchivoSecretodelLab/videos',
     'wa-sonido':'https://wa.link/xsg7l0',
     'wa-cabina':'https://wa.link/n7wg41',
-    cal:'https://calendly.com/archivo-secreto-dellab/asdl-sessions-1?month=2026-03',
+    cal:'https://archivosecretodellab.com/#agenda',
     ig:'https://www.instagram.com/archivosecretodellab',
+    form:'https://docs.google.com/forms/d/e/1FAIpQLSdcHcquRv5OqFvUXBpBEr2S5OoFnYrPL9W8pY3Q7n8X9ZbAnQ/viewform',
   };
   const ta=document.getElementById('em-body');
   if(ta&&links[type]){ta.value+='\n'+links[type];ta.focus();}
+}
+
+// Listas de email — selección de destinatarios
+let _selectedList = 'grabados';
+function selectEmailList(list, el){
+  _selectedList = list;
+  document.querySelectorAll('.em-section button.tdbtn').forEach(b=>b.style.background='');
+  if(el) el.style.background='rgba(27,0,230,.25)';
+  const lbl = document.getElementById('list-selected');
+  const nombres = {grabados:'🎛 Artistas grabados seleccionados',leads:'🔵 Leads seleccionados','all':'📋 Ambas listas seleccionadas'};
+  if(lbl){lbl.textContent=nombres[list]||''}
 }
 
 function previewEmail(){
