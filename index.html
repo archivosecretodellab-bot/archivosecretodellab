@@ -240,7 +240,47 @@ input[type=file]{display:none}
 .cal-btn{display:inline-flex;align-items:center;gap:12px;font-size:10px;letter-spacing:.28em;text-transform:uppercase;background:var(--b);color:var(--w);padding:13px 26px;border:none;cursor:pointer;transition:background .2s}
 .cal-btn:hover{background:var(--bd)}
 
-/* AGENDA */
+/* CALENDARIO 30 DÍAS */
+.cal30{width:100%}
+.cal30-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.cal30-title{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:#fff}
+.cal30-nav{display:flex;gap:4px}
+.cal30-nav button{font-size:9px;letter-spacing:.14em;color:var(--wd);padding:5px 9px;border:1px solid var(--wf);cursor:pointer;background:none;font-family:'IBM Plex Mono',monospace;transition:all .18s}
+.cal30-nav button:hover{color:#fff;border-color:var(--wm)}
+.cal30-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px}
+.cal30-dow{font-size:7.5px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);text-align:center;padding:4px 0}
+.cal30-day{position:relative;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;cursor:default;transition:all .15s;border:1px solid transparent}
+.cal30-day.empty{background:transparent;border-color:transparent}
+.cal30-day.past{color:rgba(255,255,255,.12);background:rgba(255,255,255,.02)}
+.cal30-day.avail{background:rgba(27,0,230,.15);color:#fff;cursor:pointer;border-color:rgba(27,0,230,.3)}
+.cal30-day.avail:hover{background:rgba(27,0,230,.3);border-color:var(--b)}
+.cal30-day.sel{background:var(--b);color:#fff;border-color:var(--b)}
+.cal30-day.blocked{background:rgba(255,59,59,.08);color:rgba(255,255,255,.2);border-color:rgba(255,59,59,.15);cursor:not-allowed}
+.cal30-day.today{box-shadow:inset 0 0 0 1px var(--b)}
+.cal30-day.gcal{background:rgba(0,201,103,.08);border-color:rgba(0,201,103,.2);color:rgba(255,255,255,.5)}
+.cal30-dot{position:absolute;bottom:3px;width:4px;height:4px;border-radius:50%}
+.cal30-dot.blue{background:var(--b)}
+.cal30-dot.green{background:var(--green)}
+.cal30-dot.red{background:var(--red)}
+/* SLOTS */
+.slots-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:12px}
+.slot-btn{padding:8px 6px;border:1px solid var(--wf);font-size:10px;letter-spacing:.12em;color:var(--wd);cursor:pointer;transition:all .18s;background:none;font-family:'IBM Plex Mono',monospace;text-align:center}
+.slot-btn:hover{border-color:var(--b);color:#fff;background:rgba(27,0,230,.15)}
+.slot-btn.sel{background:var(--b);color:#fff;border-color:var(--b)}
+.slot-btn.taken{background:rgba(255,59,59,.06);color:rgba(255,255,255,.2);border-color:rgba(255,59,59,.12);cursor:not-allowed}
+.slot-btn.gcal-taken{background:rgba(0,201,103,.06);color:rgba(255,255,255,.2);border-color:rgba(0,201,103,.15);cursor:not-allowed}
+/* LEYENDA */
+.cal-legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;padding-top:10px;border-top:1px solid var(--wf)}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:8px;letter-spacing:.12em;color:rgba(255,255,255,.4);text-transform:uppercase}
+.leg-dot{width:8px;height:8px;border-radius:1px;flex-shrink:0}
+.cal30-day.inactive{color:rgba(255,255,255,.25);background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.08);cursor:pointer}
+.cal30-day.inactive:hover{background:rgba(27,0,230,.12);border-color:rgba(27,0,230,.3);color:#fff}
+.cal30-day.multi-sel{background:rgba(27,0,230,.35)!important;border-color:rgba(27,0,230,.8)!important;outline:2px solid var(--b);color:#fff!important}
+/* ADMIN CALENDAR */
+.admin-cal30{user-select:none}
+.admin-cal30 .cal30-day.avail{cursor:pointer}
+.admin-cal30 .cal30-day.avail:hover{background:rgba(255,59,59,.15);border-color:rgba(255,59,59,.3)}
+
 .ag-layout{display:grid;grid-template-columns:1fr 360px;height:100%;overflow:hidden}
 .ag-left{overflow-y:auto;padding:44px 48px;border-right:1px solid var(--wf)}
 .ag-right{overflow-y:auto;padding:36px 28px;background:rgba(0,0,0,.18)}
@@ -541,7 +581,7 @@ input[type=file]{display:none}
           <div class="ag-hero">
             <div class="ag-eye">Archivo Secreto del Lab · Buenos Aires</div>
             <div class="ag-title">Graba<br>tu Set</div>
-            <div class="ag-desc">Grabamos de lunes a lunes. El equipo revisa tu solicitud y te confirma fecha y horario disponible. Sin costo — solo necesitás tu música y tus ganas.</div>
+            <div class="ag-desc">Grabamos <strong>de lunes a domingo</strong>. Seleccioná una fecha disponible, completá el formulario y el equipo confirma tu reserva. Solo necesitás tu <strong>USB y tus ganas</strong>.</div>
           </div>
 
           <div class="ag-form" id="ag-form">
@@ -595,18 +635,20 @@ input[type=file]{display:none}
         <!-- RIGHT: Calendario de disponibilidad -->
         <div class="ag-right">
           <div class="ag-cal-title">Disponibilidad</div>
-          <div class="ag-cal-sub">Fechas habilitadas por el equipo</div>
-          <div id="ag-calendar"></div>
-          <div class="ag-slots" id="ag-slots">
-            <div style="font-size:10px;letter-spacing:.12em;color:var(--wd);line-height:2;padding:16px 0">
-              Seleccioná una fecha disponible para ver los horarios.
-            </div>
+          <div class="ag-cal-sub" id="cal-subtitle">Próximos 30 días · Seleccioná fecha y horario</div>
+          <div class="cal30" id="cal30-public"></div>
+          <div id="slots-public" style="margin-top:4px"></div>
+          <div class="cal-legend">
+            <div class="leg-item"><div class="leg-dot" style="background:rgba(27,0,230,.5)"></div>Disponible</div>
+            <div class="leg-item"><div class="leg-dot" style="background:rgba(255,59,59,.4)"></div>No disponible</div>
+            <div class="leg-item"><div class="leg-dot" style="background:rgba(0,201,103,.4)"></div>Ocupado</div>
+            <div class="leg-item"><div class="leg-dot" style="box-shadow:inset 0 0 0 1px var(--b)"></div>Hoy</div>
           </div>
-          <div style="margin-top:28px;padding-top:20px;border-top:1px solid var(--wf)">
+          <div style="margin-top:24px;padding-top:18px;border-top:1px solid var(--wf)">
             <div style="font-size:9px;letter-spacing:.22em;color:var(--wd);text-transform:uppercase;margin-bottom:10px">¿Preferís hablar primero?</div>
-            <a class="renta-btn wa-booking" href="https://wa.link/n7wg41" target="_blank" style="display:inline-flex;border:none">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-              <div><div class="rbtn-title">Consultar por WhatsApp</div><div class="rbtn-sub">Respuesta rápida →</div></div>
+            <a href="https://wa.link/n7wg41" target="_blank" style="display:inline-flex;align-items:center;gap:12px;background:#128C7E;padding:12px 20px;color:#fff;font-size:10px;letter-spacing:.2em;text-transform:uppercase;text-decoration:none;transition:background .2s" onmouseover="this.style.background='#0e7268'" onmouseout="this.style.background='#128C7E'">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+              Consultar por WhatsApp →
             </a>
           </div>
         </div>
@@ -639,7 +681,7 @@ input[type=file]{display:none}
           <div class="cal-box">
             <div class="cal-title">Reservá tu espacio en el Lab</div>
             <div class="cal-desc">Grabamos de lunes a lunes. Avisamos la apertura de cada convocatoria por Instagram. Las sesiones se coordinan con antelación para garantizar la calidad del resultado.</div>
-            <a class="cal-btn" href="https://calendly.com/archivo-secreto-dellab/asdl-sessions-1?month=2026-03" target="_blank">→ Reservar turno en Calendly</a>
+            <a class="cal-btn" onclick="navTo('agenda')" style="cursor:pointer">→ Reservar sesión →</a>
           </div>
         </div>
       </div>
@@ -705,11 +747,11 @@ input[type=file]{display:none}
             </div>
           </a>
 
-          <a class="renta-btn cal-sesion" href="https://calendly.com/archivo-secreto-dellab/asdl-sessions-1?month=2026-03" target="_blank">
+          <a class="renta-btn cal-sesion" onclick="navTo('agenda')" style="cursor:pointer">
             <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>
             <div>
               <div class="rbtn-title">Agendar sesión de grabación</div>
-              <div class="rbtn-sub">Reservar turno en Calendly →</div>
+              <div class="rbtn-sub">Agendar sesión →</div>
             </div>
           </a>
 
@@ -765,7 +807,7 @@ input[type=file]{display:none}
     <div class="ant" onclick="adminTab('sets')" data-at="sets">Sets</div>
     <div class="ant" onclick="adminTab('artists')" data-at="artists">Artistas</div>
     <div class="ant" onclick="adminTab('jams')" data-at="jams">Dj Jams</div>
-    <div class="ant" onclick="adminTab('agenda')" data-at="agenda">Agenda</div>
+    <div class="ant" onclick="adminTab('agenda-admin')" data-at="agenda-admin">Agenda</div>
     <div class="ant" onclick="adminTab('email')" data-at="email">Email Marketing</div>
   </div>
   <div class="acont" id="a-cont"></div>
@@ -789,7 +831,171 @@ input[type=file]{display:none}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://apis.google.com/js/api.js"></script>
+<script src="https://accounts.google.com/gsi/client"></script>
 <script>
+// ═══════════════════════════════════════════════
+// GOOGLE CALENDAR CONFIG
+// ═══════════════════════════════════════════════
+const GCAL_CLIENT_ID = '823780854866-4c207ghjqr6h9dgmj73fakei2uijs03i.apps.googleusercontent.com';
+const GCAL_CALENDAR_ID = 'archivo.secreto.dellab@gmail.com';
+const GCAL_SCOPES = 'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/spreadsheets.readonly';
+let gcalToken = null;
+let gcalInited = false;
+let sheetsData = []; // contactos importados de Google Sheets
+
+function initGoogleCalendar(){
+  if(gcalInited) return;
+  gcalInited = true;
+  if(typeof gapi === 'undefined') return;
+  gapi.load('client', async ()=>{
+    try{
+      await gapi.client.init({
+        discoveryDocs:[
+          'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest',
+          'https://sheets.googleapis.com/$discovery/rest?version=v4'
+        ]
+      });
+    }catch(e){ console.warn('GCal init error:', e); }
+  });
+}
+
+// Importar contactos desde Google Sheets
+async function importFromSheets(spreadsheetId, range='A:Z'){
+  if(!gcalToken){ alert('Primero conectá Google Calendar / Sheets.'); return null; }
+  try{
+    const resp = await gapi.client.sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range
+    });
+    return resp.result.values || [];
+  }catch(e){
+    console.error('Sheets error:', e);
+    return null;
+  }
+}
+
+function gcalLogin(cb){
+  let attempts = 0;
+  const tryLogin = () => {
+    attempts++;
+    const googleReady = typeof google !== 'undefined' && google.accounts && google.accounts.oauth2;
+    const gapiReady = typeof gapi !== 'undefined' && gapi.client && gapi.client.calendar;
+    
+    if(googleReady && gapiReady){
+      const client = google.accounts.oauth2.initTokenClient({
+        client_id: GCAL_CLIENT_ID,
+        scope: GCAL_SCOPES,
+        callback:(resp)=>{
+          if(resp.error){ console.error('GCal auth error:', resp.error); return; }
+          gcalToken = resp.access_token;
+          gapi.client.setToken({access_token: gcalToken});
+          if(cb) cb();
+        }
+      });
+      client.requestAccessToken();
+    } else if(googleReady && !gapiReady && attempts === 1){
+      // gapi cargó pero client no — forzar init
+      gcalInited = false;
+      initGoogleCalendar();
+      setTimeout(tryLogin, 800);
+    } else if(attempts < 25){
+      setTimeout(tryLogin, 400);
+    } else {
+      alert('No se pudo cargar el SDK de Google. Recargá la página e intentá de nuevo.');
+    }
+  };
+  tryLogin();
+}
+
+// Traer eventos del calendario (próximos 30 días)
+async function gcalGetEvents(){
+  if(!gcalToken) return [];
+  try{
+    const now = new Date();
+    const in30 = new Date(); in30.setDate(in30.getDate()+30);
+    const resp = await gapi.client.calendar.events.list({
+      calendarId: GCAL_CALENDAR_ID,
+      timeMin: now.toISOString(),
+      timeMax: in30.toISOString(),
+      singleEvents: true,
+      orderBy: 'startTime',
+      maxResults: 100
+    });
+    return resp.result.items || [];
+  }catch(e){ return []; }
+}
+
+// Crear evento en Google Calendar
+async function gcalCreateEvent(reserva){
+  if(!gcalToken) return null;
+  const fecha = reserva.fecha;
+  const hora = reserva.horario;
+  const [h,m] = hora.split(':').map(Number);
+  const start = new Date(`${fecha}T${String(h).padStart(2,'0')}:${String(m||0).padStart(2,'0')}:00`);
+  const end = new Date(start.getTime() + 60*60*1000); // +1 hora
+
+  const description = buildCalendarDescription(reserva);
+
+  try{
+    const resp = await gapi.client.calendar.events.insert({
+      calendarId: GCAL_CALENDAR_ID,
+      resource:{
+        summary: `🌀 ${reserva.nombre_artistico} — ${reserva.tipo||'Solo'} | ASDL`,
+        description,
+        start:{ dateTime: start.toISOString(), timeZone:'America/Argentina/Buenos_Aires' },
+        end:{ dateTime: end.toISOString(), timeZone:'America/Argentina/Buenos_Aires' },
+        colorId: reserva.es_comunidad ? '9' : '1',
+        reminders:{ useDefault:false, overrides:[
+          {method:'email', minutes:1440},
+          {method:'popup', minutes:60}
+        ]}
+      }
+    });
+    return resp.result;
+  }catch(e){ return null; }
+}
+
+function buildCalendarDescription(r){
+  const precio = r.tipo==='B2B' ? CFG.precio_b2b : CFG.precio_solo;
+  const final = r.es_comunidad ? Math.round(precio*(1-CFG.descuento_comunidad/100)) : precio;
+  return `🌀 ${r.tipo||'Solo'}
+📅 ${formatFecha(r.fecha)} — ${r.horario}hs
+📍 https://maps.app.goo.gl/1QK2bs521oTQSVJW9
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DATOS DEL ARTISTA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Artista: ${r.nombre_artistico}
+Género: ${r.genero||'—'}
+Email: ${r.email}
+WhatsApp: ${r.whatsapp||'—'}
+Ya registrado: ${r.ya_registrado?'Sí':'No'}
+Comunidad: ${r.es_comunidad?'Sí — 10% OFF':'No'}
+Precio final: $${final.toLocaleString('es-AR')}
+Seña: $${CFG.senia.toLocaleString('es-AR')}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+REGLAS DEL ARCHIVO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Grabamos sonido y video para dejar registro real de la escena local. Para avisarnos que llegaste, mandá un mensaje a @archivosecretodellab en Instagram.
+
+La seña no es reembolsable. Tolerancia máxima: 10 minutos.
+
+📜 REGLAS:
+1. Máximo un acompañante por artista.
+2. No vestir colores oscuros ni negro.
+3. Solo el DJ entra a la cabina.
+4. Lavate las manos antes de tocar la consola.
+5. Sin alcohol durante la grabación.
+6. Cuidado con comidas y bebidas cerca de los equipos.
+7. El set visual no se toca.
+8. Si estás adentro, estás presente.
+9. Si grabás algo, etiquetanos @archivosecretodellab
+
+Archivo Secreto del Lab 👁️‍🗨️`;
+}
+
 // ═══════════════════════════════════════════════
 // SUPABASE CONFIG
 // ═══════════════════════════════════════════════
@@ -825,7 +1031,7 @@ async function loadDisponibilidad(){
     if(data) {
       availability = {};
       data.forEach(r => { availability[r.fecha] = r.horarios; });
-      renderCal();
+      renderCal30(document.getElementById('cal30-public'),'public');
     }
   } catch(e){}
 }
@@ -889,8 +1095,6 @@ async function notificarEquipo(r){
     });
   } catch(e){}
 }
-</script>
-<script>
 // ═══════════════════════════════════════════════════════
 // DATA
 // ═══════════════════════════════════════════════════════
@@ -1238,68 +1442,521 @@ function subnavTo(sub, el){
   if(sub==='generos'){const c=document.getElementById('sub-generos');if(c&&!c.innerHTML.trim())renderGeneros(c);}
 }
 
-// ═══ AGENDA / CALENDARIO ═══
-let calYear=new Date().getFullYear(), calMonth=new Date().getMonth();
-let selectedDate=null, selectedSlot=null;
-let availability={}; // {'2026-03-15':['18:00','20:00']}
-let agendaRequests=[];
+// ═══════════════════════════════════════════════
+// CALENDARIO 30 DÍAS — Motor principal
+// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════════════
+// VARIABLES GLOBALES — CALENDARIO Y AGENDA
+// ═══════════════════════════════════════════════
+let calYear = new Date().getFullYear();
+let calMonth = new Date().getMonth();
+let selectedDate = null;
+let selectedSlot = null;
+let availability = {};
+let agendaRequests = [];
 
-function initCalendar(){ renderCal(); }
+let gcalEvents = []; // eventos de Google Calendar
+let blockedDates = {}; // {'2026-03-15': true} día completo bloqueado
+let blockedSlots = {}; // {'2026-03-15': ['11:00','13:00']} slots bloqueados
+let takenSlots = {}; // slots ya reservados (de Supabase)
 
-function renderCal(){
-  const lbl=document.getElementById('cal-month-lbl');
-  const grid=document.getElementById('cal-grid');
-  if(!lbl||!grid) return;
-  const meses=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-  lbl.textContent=meses[calMonth]+' '+calYear;
-  const firstDay=new Date(calYear,calMonth,1).getDay();
-  const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
-  const today=new Date();
-  const days=['D','L','M','X','J','V','S'];
-  let html=days.map(d=>`<div class="cal-hdr">${d}</div>`).join('');
-  for(let i=0;i<firstDay;i++) html+=`<div class="cal-day"></div>`;
-  for(let d=1;d<=daysInMonth;d++){
-    const dateStr=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const isAvail=!!availability[dateStr];
-    const isToday=today.getDate()===d&&today.getMonth()===calMonth&&today.getFullYear()===calYear;
-    const isSel=selectedDate===dateStr;
-    html+=`<div class="cal-day${isAvail?' avail':''}${isToday?' today':''}${isSel?' sel':''}" ${isAvail?`onclick="selectDate('${dateStr}')"`:''}>${d}</div>`;
-  }
-  grid.innerHTML=html;
-  renderSlots();
+// Genera todos los slots del día (11:00 a 19:00, mínimo 10min entre sets = slots de 1h10)
+function generateDaySlots(){
+  const slots = [];
+  for(let h=11; h<=19; h++) slots.push(`${String(h).padStart(2,'0')}:00`);
+  return slots;
 }
 
-function calPrev(){ calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderCal(); }
-function calNext(){ calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderCal(); }
-
-function selectDate(date){
-  selectedDate=date; selectedSlot=null;
-  const inp=document.getElementById('ag-pref');
-  if(inp) inp.value=date.split('-').reverse().join('/');
-  renderCal();
+// Siguiente slot disponible considerando 10 min de buffer
+function nextSlotAfter(hora){
+  const [h,m] = hora.split(':').map(Number);
+  const totalMin = h*60 + m + 70; // 1h set + 10min buffer
+  const nh = Math.floor(totalMin/60);
+  const nm = totalMin%60;
+  return `${String(nh).padStart(2,'0')}:${String(nm).padStart(2,'0')}`;
 }
 
-function renderSlots(){
-  const c=document.getElementById('ag-slots');
+// Renderizar calendario público de 30 días
+async function renderCal30Public(){
+  const c = document.getElementById('cal30-public');
   if(!c) return;
-  if(!selectedDate||!availability[selectedDate]){
-    c.innerHTML=`<div style="font-size:11px;letter-spacing:.1em;color:var(--wd);line-height:2;padding:10px 0">Seleccioná una <strong>fecha disponible</strong> para ver los horarios.</div>`;
+
+  // Cargar reservas tomadas
+  try{
+    const {data} = await sb.from('reservas')
+      .select('fecha,horario,estado')
+      .neq('estado','Cancelada')
+      .gte('fecha', new Date().toISOString().split('T')[0]);
+    takenSlots = {};
+    if(data) data.forEach(r=>{
+      if(!takenSlots[r.fecha]) takenSlots[r.fecha]=[];
+      takenSlots[r.fecha].push(r.horario);
+    });
+  }catch(e){}
+
+  renderCal30(c, 'public');
+}
+
+function renderCal30(container, mode='public'){
+  const today = new Date();
+  const maxDate = new Date(); maxDate.setDate(today.getDate()+30);
+  const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const dows = ['D','L','M','X','J','V','S'];
+
+  // Determinar mes a mostrar
+  const displayDate = new Date(calYear, calMonth, 1);
+  const firstDay = displayDate.getDay();
+  const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
+
+  let html = `
+    <div class="cal30-header">
+      <div class="cal30-title">${meses[calMonth]} ${calYear}</div>
+      <div class="cal30-nav">
+        <button onclick="cal30Prev('${mode}')">←</button>
+        <button onclick="cal30Next('${mode}')">→</button>
+      </div>
+    </div>
+    <div class="cal30-grid">
+      ${dows.map(d=>`<div class="cal30-dow">${d}</div>`).join('')}
+  `;
+
+  for(let i=0;i<firstDay;i++) html+=`<div class="cal30-day empty"></div>`;
+
+  for(let d=1;d<=daysInMonth;d++){
+    const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const date = new Date(calYear, calMonth, d);
+    const isToday = date.toDateString()===today.toDateString();
+    const isPast = date < today && !isToday;
+    const isBeyond = date > maxDate;
+    const isBlocked = blockedDates[dateStr];
+    const hasAvail = availability[dateStr] && availability[dateStr].length > 0;
+    const isSelected = selectedDate === dateStr;
+    const hasGcal = gcalEvents.some(e=>{
+      const es = new Date(e.start.dateTime||e.start.date);
+      return es.toDateString()===date.toDateString();
+    });
+
+    let cls = 'cal30-day';
+    let dot = '';
+    let onclick = '';
+
+    if(isPast || isBeyond){
+      cls += ' past'; // gris — no disponible por fecha
+    } else if(isBlocked){
+      cls += ' blocked'; // rojo — bloqueado manualmente por el equipo
+    } else if(hasAvail){
+      cls += isSelected ? ' sel' : ' avail';
+      onclick = mode==='public'
+        ? `onclick="selectDate30('${dateStr}')"`
+        : `onclick="adminSelectDate('${dateStr}',event)"`;
+      if(hasGcal) dot = `<div class="cal30-dot green"></div>`;
+      else dot = `<div class="cal30-dot blue"></div>`;
+    } else if(hasGcal){
+      cls += ' gcal';
+      dot = `<div class="cal30-dot green"></div>`;
+    } else if(mode==='admin'){
+      // En admin los días sin habilitar son clickeables para activarlos
+      cls += ' inactive';
+      onclick = `onclick="adminSelectDate('${dateStr}',event)"`;
+    } else {
+      cls += ' past'; // público: sin habilitar = gris
+    }
+    if(isToday) cls += ' today';
+    if(mode==='admin' && multiSelected && multiSelected.has(dateStr)) cls += ' multi-sel';
+
+    html += `<div class="${cls}" ${onclick}>${d}${dot}</div>`;
+  }
+
+  html += `</div>`;
+  container.innerHTML = html;
+
+  // Si hay fecha seleccionada, mostrar slots
+  if(selectedDate && mode==='public') renderPublicSlots();
+}
+
+function cal30Prev(mode){
+  calMonth--; if(calMonth<0){calMonth=11;calYear--;}
+  if(mode==='public') renderCal30(document.getElementById('cal30-public'),'public');
+  else renderAdminCal30();
+}
+function cal30Next(mode){
+  calMonth++; if(calMonth>11){calMonth=0;calYear++;}
+  if(mode==='public') renderCal30(document.getElementById('cal30-public'),'public');
+  else renderAdminCal30();
+}
+
+function selectDate30(date){
+  selectedDate = date; selectedSlot = null;
+  const inp = document.getElementById('ag-pref');
+  if(inp) inp.value = formatFecha(date);
+  renderCal30(document.getElementById('cal30-public'),'public');
+  renderPublicSlots();
+}
+
+function renderPublicSlots(){
+  const c = document.getElementById('slots-public');
+  if(!c) return;
+  if(!selectedDate){
+    c.innerHTML='';return;
+  }
+
+  const availHours = availability[selectedDate] || [];
+  if(!availHours.length){
+    c.innerHTML=`<div style="font-size:10px;color:var(--wd);padding:10px 0">Sin horarios disponibles para esta fecha.</div>`;
     return;
   }
-  const slots=availability[selectedDate];
-  c.innerHTML=`<div style="font-size:9px;letter-spacing:.2em;color:var(--b);text-transform:uppercase;margin-bottom:10px">Horarios disponibles — ${selectedDate.split('-').reverse().join('/')}</div>`+
-    slots.map(s=>`<div class="slot${selectedSlot===s?' sel':''}" onclick="selectSlot('${s}')">
-      <div class="slot-time">${s}</div>
-      <div class="slot-lbl">Sesión disponible</div>
-    </div>`).join('');
+
+  const taken = takenSlots[selectedDate] || [];
+  const gcalTaken = gcalEvents
+    .filter(e=>{ const d=new Date(e.start.dateTime||e.start.date); return formatDateISO(d)===selectedDate; })
+    .map(e=>{ const d=new Date(e.start.dateTime); return `${String(d.getHours()).padStart(2,'0')}:00`; });
+
+  c.innerHTML = `
+    <div style="font-size:9px;letter-spacing:.2em;color:var(--b);text-transform:uppercase;margin-bottom:8px;margin-top:8px">${formatFecha(selectedDate)} — Elegí un horario</div>
+    <div class="slots-grid">
+      ${availHours.map(slot=>{
+        const isTaken = taken.includes(slot);
+        const isGcal = gcalTaken.includes(slot);
+        const isSel = selectedSlot === slot;
+        let cls = 'slot-btn';
+        let label = slot+'hs';
+        let onclick = '';
+        if(isTaken){ cls+=' taken'; label+=' · Ocupado'; }
+        else if(isGcal){ cls+=' gcal-taken'; label+=' · Reservado'; }
+        else if(isSel){ cls+=' sel'; onclick=`onclick="selectSlot30('${slot}')"` }
+        else { onclick=`onclick="selectSlot30('${slot}')"` }
+        return `<button class="${cls}" ${onclick}>${label}</button>`;
+      }).join('')}
+    </div>
+    <div style="font-size:8.5px;letter-spacing:.1em;color:rgba(255,255,255,.3);margin-top:10px">Entre sets hay 10 min de buffer. Llegá 10 min antes de tu horario.</div>
+  `;
 }
 
-function selectSlot(s){
-  selectedSlot=s;
-  const inp=document.getElementById('ag-pref');
-  if(inp&&selectedDate) inp.value=selectedDate.split('-').reverse().join('/')+' — '+s;
-  renderSlots();
+function selectSlot30(slot){
+  selectedSlot = slot;
+  const inp = document.getElementById('ag-pref');
+  if(inp&&selectedDate) inp.value = `${formatFecha(selectedDate)} — ${slot}hs`;
+  renderPublicSlots();
 }
+
+function formatDateISO(d){
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+// Init calendario público
+async function initCalendar(){
+  await loadDisponibilidad();
+  await renderCal30Public();
+  // Intentar cargar eventos de GCal si hay token
+  if(gcalToken){
+    gcalEvents = await gcalGetEvents();
+    renderCal30(document.getElementById('cal30-public'),'public');
+  }
+}
+
+// ═══════════════════════════════════════════════
+// CALENDARIO ADMIN — con bloqueos
+// ═══════════════════════════════════════════════
+let adminSelecting = false;
+let adminSelStart = null;
+
+function renderAdminCal30(){
+  const c = document.getElementById('cal30-admin');
+  if(!c) return;
+  renderCal30(c, 'admin');
+}
+
+// Conectar Google Calendar desde el panel de agenda
+function connectGcalAdmin(){
+  const btn = document.getElementById('gcal-connect-btn');
+  if(btn){btn.textContent='Conectando...';btn.disabled=true;}
+  gcalLogin(()=>{
+    syncGcal();
+    // Actualizar panel visual
+    const panel = document.getElementById('gcal-panel');
+    if(panel){
+      panel.style.background='rgba(0,201,103,.08)';
+      panel.style.borderColor='rgba(0,201,103,.25)';
+      panel.innerHTML=`
+        <div style="font-size:8.5px;letter-spacing:.2em;color:var(--green);text-transform:uppercase;margin-bottom:8px">✓ Google Calendar conectado</div>
+        <div style="font-size:10px;color:var(--wd);margin-bottom:8px">${gcalEvents.length} eventos próximos sincronizados</div>
+        <button onclick="syncGcal()" style="font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;padding:7px 14px;background:rgba(0,201,103,.15);border:1px solid rgba(0,201,103,.3);color:var(--green);cursor:pointer;font-family:'IBM Plex Mono',monospace;width:100%">↻ Sincronizar</button>
+      `;
+    }
+  });
+}
+
+// Selección múltiple de días
+let multiSelected = new Set();
+
+function toggleMultiDate(date){
+  if(multiSelected.has(date)){
+    multiSelected.delete(date);
+  } else {
+    multiSelected.add(date);
+  }
+  const bar = document.getElementById('multi-select-bar');
+  const count = document.getElementById('multi-count');
+  if(bar) bar.style.display = multiSelected.size > 0 ? 'block' : 'none';
+  if(count) count.textContent = multiSelected.size;
+  renderAdminCal30();
+}
+
+function clearMultiSelect(){
+  multiSelected.clear();
+  const bar = document.getElementById('multi-select-bar');
+  if(bar) bar.style.display = 'none';
+  renderAdminCal30();
+}
+
+async function enableMultiDates(){
+  const dates = [...multiSelected];
+  if(!dates.length) return;
+  const bar = document.getElementById('multi-select-bar');
+  if(bar) bar.innerHTML=`<div style="font-size:10px;color:var(--wd);padding:4px 0">Habilitando ${dates.length} días...</div>`;
+  const slots = generateDaySlots();
+  let ok = 0;
+  for(const date of dates){
+    try{
+      await adminSaveFecha(date, slots);
+      availability[date] = slots;
+      delete blockedDates[date];
+      ok++;
+    }catch(e){}
+  }
+  clearMultiSelect();
+  renderAdminCal30();
+}
+
+async function blockMultiDates(){
+  const dates = [...multiSelected];
+  if(!dates.length) return;
+  for(const date of dates){
+    blockedDates[date] = true;
+    try{ await sb.from('disponibilidad').update({activo:false}).eq('fecha',date); }catch(e){}
+  }
+  clearMultiSelect();
+  renderAdminCal30();
+}
+
+function adminSelectDate(date, event){
+  // Si shift está presionado → selección múltiple
+  if(event && event.shiftKey){
+    toggleMultiDate(date);
+    return;
+  }
+  if(availability[date] || blockedDates[date]){
+    showAdminSlotBlocker(date);
+  } else {
+    showAdminEnableModal(date);
+  }
+}
+
+// Modal para HABILITAR un día nuevo — con checkboxes de slots
+function showAdminEnableModal(date){
+  const allSlots = generateDaySlots();
+  document.getElementById('m-tit').textContent = `Habilitar ${formatFecha(date)}`;
+  document.getElementById('m-body').innerHTML = `
+    <div style="font-size:11px;color:var(--wd);line-height:1.9;margin-bottom:18px">
+      Seleccioná los horarios que querés habilitar. Solo estos slots serán visibles en la web.
+    </div>
+    <div style="font-size:9px;letter-spacing:.2em;color:var(--b);text-transform:uppercase;margin-bottom:12px">Horarios disponibles (11hs – 19hs)</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:20px" id="slot-checks">
+      ${allSlots.map(s=>`
+        <label style="display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid var(--wf);cursor:pointer;transition:all .18s;background:rgba(255,255,255,.03)" 
+               onmouseover="this.style.borderColor='rgba(27,0,230,.4)'" 
+               onmouseout="this.style.borderColor='var(--wf)'">
+          <input type="checkbox" value="${s}" checked style="accent-color:var(--b);width:14px;height:14px">
+          <span style="font-family:'Space Mono',monospace;font-size:13px;color:#fff">${s}hs</span>
+        </label>`).join('')}
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:16px">
+      <button onclick="selectAllSlots(true)" class="tdbtn">✓ Seleccionar todos</button>
+      <button onclick="selectAllSlots(false)" class="tdbtn">✕ Deseleccionar todos</button>
+    </div>
+    <div style="padding:14px;background:rgba(27,0,230,.08);border:1px solid rgba(27,0,230,.2);margin-bottom:16px">
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+        <input type="checkbox" id="confirm-enable" style="accent-color:var(--b);width:16px;height:16px">
+        <span style="font-size:11px;letter-spacing:.08em;color:#fff">Confirmo que quiero habilitar <strong>${formatFecha(date)}</strong> como fecha disponible para grabaciones</span>
+      </label>
+    </div>
+    <button onclick="confirmEnableDate('${date}')" 
+      style="width:100%;padding:14px;background:var(--b);color:#fff;border:none;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.28em;text-transform:uppercase;cursor:pointer;transition:background .2s"
+      onmouseover="this.style.background='var(--bd)'" onmouseout="this.style.background='var(--b)'">
+      → Confirmar y habilitar
+    </button>
+    <div id="enable-msg" style="font-size:10px;color:var(--wd);margin-top:10px;min-height:14px"></div>
+  `;
+  document.getElementById('modal').classList.add('on');
+}
+
+function selectAllSlots(checked){
+  document.querySelectorAll('#slot-checks input[type=checkbox]').forEach(cb=>cb.checked=checked);
+}
+
+async function confirmEnableDate(date){
+  const confirmCb = document.getElementById('confirm-enable');
+  const msg = document.getElementById('enable-msg');
+  if(!confirmCb?.checked){
+    if(msg){msg.textContent='⚠ Marcá el checkbox de confirmación primero.';msg.style.color='var(--red)';}
+    return;
+  }
+  const selected = [...document.querySelectorAll('#slot-checks input[type=checkbox]:checked')].map(cb=>cb.value);
+  if(!selected.length){
+    if(msg){msg.textContent='⚠ Seleccioná al menos un horario.';msg.style.color='var(--red)';}
+    return;
+  }
+  if(msg){msg.textContent='Guardando...';msg.style.color='var(--wd)';}
+  try{
+    await adminSaveFecha(date, selected);
+    availability[date] = selected;
+    delete blockedDates[date];
+    if(msg){msg.textContent='✓ Fecha habilitada.';msg.style.color='var(--green)';}
+    setTimeout(()=>{ closeModal(); renderAdminCal30(); }, 700);
+  }catch(e){
+    const detail = e?.message || e?.details || e?.hint || JSON.stringify(e) || 'error desconocido';
+    if(msg){msg.textContent=`⚠ Error: ${detail}`;msg.style.color='var(--red)';}
+    console.error('confirmEnableDate error:', e);
+  }
+}
+
+// Modal para GESTIONAR un día ya habilitado — con toggle interruptor
+function showAdminSlotBlocker(date){
+  const slots = availability[date]||generateDaySlots();
+  const blocked = blockedSlots[date]||[];
+  const isDayBlocked = !!blockedDates[date];
+  document.getElementById('m-tit').textContent = `Gestionar ${formatFecha(date)}`;
+  document.getElementById('m-body').innerHTML = `
+
+    <!-- Toggle principal del día -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px;background:rgba(255,255,255,.04);border:1px solid var(--wf);margin-bottom:20px">
+      <div>
+        <div style="font-size:11px;color:#fff;font-weight:600">Día ${isDayBlocked?'bloqueado':'habilitado'}</div>
+        <div style="font-size:10px;color:var(--wd);margin-top:2px">${isDayBlocked?'No visible en la web pública':'Visible para los artistas en la web'}</div>
+      </div>
+      <button id="day-toggle-btn" onclick="toggleDayActive('${date}')"
+        style="display:flex;align-items:center;gap:8px;padding:10px 18px;border:1px solid ${isDayBlocked?'rgba(255,59,59,.4)':'rgba(0,201,103,.4)'};background:${isDayBlocked?'rgba(255,59,59,.12)':'rgba(0,201,103,.12)'};color:${isDayBlocked?'var(--red)':'var(--green)'};cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;transition:all .2s">
+        <span style="width:32px;height:18px;background:${isDayBlocked?'rgba(255,59,59,.3)':'rgba(0,201,103,.5)'};border-radius:9px;position:relative;display:inline-block">
+          <span style="position:absolute;top:2px;${isDayBlocked?'left:2px':'right:2px'};width:14px;height:14px;background:#fff;border-radius:50%;transition:all .2s"></span>
+        </span>
+        ${isDayBlocked?'Activar':'Desactivar'}
+      </button>
+    </div>
+
+    <!-- Slots individuales -->
+    <div style="font-size:9px;letter-spacing:.2em;color:var(--b);text-transform:uppercase;margin-bottom:10px">Horarios — click para bloquear/activar</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:18px">
+      ${slots.map(s=>{
+        const isBlocked=blocked.includes(s);
+        return `<button onclick="toggleSlotBlock('${date}','${s}',this)" 
+          style="padding:10px 6px;font-size:11px;font-family:'IBM Plex Mono',monospace;
+          border:1px solid ${isBlocked?'rgba(255,59,59,.4)':'rgba(27,0,230,.3)'};
+          background:${isBlocked?'rgba(255,59,59,.1)':'rgba(27,0,230,.1)'};
+          color:${isBlocked?'var(--red)':'#fff'};cursor:pointer;transition:all .18s;
+          text-align:center">
+          ${s}hs<br><span style="font-size:8px;letter-spacing:.1em">${isBlocked?'🚫 bloq':'✓ libre'}</span>
+        </button>`;
+      }).join('')}
+    </div>
+
+    <!-- Acciones rápidas -->
+    <div style="display:flex;gap:6px;flex-wrap:wrap;padding-top:14px;border-top:1px solid var(--wf)">
+      <button onclick="unblockAllSlots('${date}')" class="tdbtn" style="color:var(--green);border-color:rgba(0,201,103,.3)">✓ Liberar todos</button>
+      <button onclick="blockAllSlots('${date}')" class="tdbtn" style="color:var(--red);border-color:rgba(255,59,59,.3)">🚫 Bloquear todos</button>
+      <button onclick="removeDate('${date}')" class="tdbtn" style="margin-left:auto">✕ Quitar fecha</button>
+    </div>
+    <div id="slot-msg" style="font-size:10px;color:var(--wd);margin-top:10px;min-height:14px"></div>
+  `;
+  document.getElementById('modal').classList.add('on');
+}
+
+async function toggleDayActive(date){
+  const msg = document.getElementById('slot-msg');
+  if(blockedDates[date]){
+    // Reactivar
+    delete blockedDates[date];
+    if(msg){msg.textContent='Activando...';msg.style.color='var(--wd)';}
+    try{
+      await sb.from('disponibilidad').update({activo:true}).eq('fecha',date);
+      if(msg){msg.textContent='✓ Día activado y visible en la web.';msg.style.color='var(--green)';}
+    }catch(e){}
+  } else {
+    // Desactivar
+    blockedDates[date] = true;
+    if(msg){msg.textContent='Desactivando...';msg.style.color='var(--wd)';}
+    try{
+      await sb.from('disponibilidad').update({activo:false}).eq('fecha',date);
+      if(msg){msg.textContent='✓ Día desactivado. Ya no aparece en la web.';msg.style.color='var(--red)';}
+    }catch(e){}
+  }
+  setTimeout(()=>{ closeModal(); renderAdminCal30(); }, 800);
+}
+
+function toggleSlotBlock(date, slot, btn){
+  if(!blockedSlots[date]) blockedSlots[date]=[];
+  const idx = blockedSlots[date].indexOf(slot);
+  if(idx>=0){
+    blockedSlots[date].splice(idx,1);
+    btn.style.background='rgba(27,0,230,.1)';btn.style.borderColor='rgba(27,0,230,.3)';
+    btn.style.color='#fff';
+    btn.innerHTML=`${slot}hs<br><span style="font-size:8px;letter-spacing:.1em">✓ libre</span>`;
+  } else {
+    blockedSlots[date].push(slot);
+    btn.style.background='rgba(255,59,59,.1)';btn.style.borderColor='rgba(255,59,59,.4)';
+    btn.style.color='var(--red)';
+    btn.innerHTML=`${slot}hs<br><span style="font-size:8px;letter-spacing:.1em">🚫 bloq</span>`;
+  }
+  // Guardar en Supabase los slots disponibles (los no bloqueados)
+  const availableNow = (availability[date]||[]).filter(s=>!blockedSlots[date].includes(s));
+  adminSaveFecha(date, availableNow);
+}
+
+function blockAllSlots(date){
+  blockedDates[date]=true;
+  delete availability[date];
+  const msg=document.getElementById('slot-msg');
+  if(msg){msg.textContent='Guardando...';msg.style.color='var(--wd)';}
+  sb.from('disponibilidad').update({activo:false}).eq('fecha',date).then(()=>{
+    if(msg){msg.textContent='✓ Día bloqueado.';msg.style.color='var(--red)';}
+    setTimeout(()=>{ closeModal(); renderAdminCal30(); }, 600);
+  });
+}
+
+function unblockAllSlots(date){
+  delete blockedDates[date];
+  blockedSlots[date]=[];
+  availability[date]=generateDaySlots();
+  adminSaveFecha(date, availability[date]);
+  closeModal();
+  renderAdminCal30();
+}
+
+function removeDate(date){
+  delete availability[date];
+  delete blockedDates[date];
+  delete blockedSlots[date];
+  sb.from('disponibilidad').delete().eq('fecha',date).then(()=>{});
+  closeModal();
+  renderAdminCal30();
+}
+
+async function adminSaveFecha(fecha, horarios){
+  try{
+    // Intentar update primero, si no existe hacer insert
+    const {data:existing} = await sb.from('disponibilidad').select('id').eq('fecha',fecha).single();
+    if(existing){
+      const {error} = await sb.from('disponibilidad').update({horarios,activo:true}).eq('fecha',fecha);
+      if(error) throw error;
+    } else {
+      const {error} = await sb.from('disponibilidad').insert([{fecha,horarios,activo:true}]);
+      if(error) throw error;
+    }
+  }catch(e){
+    console.error('adminSaveFecha error:', JSON.stringify(e));
+    throw e; // re-throw para que confirmEnableDate lo capture
+  }
+}
+
 
 async function submitAgenda(){
   const artist = (document.getElementById('ag-artist')||{}).value?.trim()||'';
@@ -1381,16 +2038,74 @@ async function submitAgenda(){
 
 function desbloqueo(esComunidad, precio){
   const overlay = document.createElement('div');
-  overlay.style.cssText = `position:fixed;inset:0;background:#0000FF;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;transition:opacity 0.3s;padding:40px;text-align:center`;
+  overlay.style.cssText = `position:fixed;inset:0;background:#0000FF;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;transition:opacity 0.4s;padding:32px;text-align:center;overflow-y:auto`;
   overlay.innerHTML = `
-    <div style="font-size:clamp(40px,8vw,90px);margin-bottom:20px">🌀</div>
-    <div style="font-family:'Space Mono',monospace;font-size:clamp(22px,4vw,48px);font-weight:700;color:#fff;letter-spacing:-.02em;margin-bottom:20px;line-height:1.1">AGENDADO.</div>
-    <div style="font-size:clamp(13px,1.5vw,18px);color:rgba(255,255,255,.85);letter-spacing:.08em;line-height:1.9;max-width:520px;margin-bottom:28px">
-      ${CFG.texto_confirmacion}<br>
-      <strong style="color:#fff">A continuación, te vamos a enviar los pasos a seguir a través de WhatsApp.</strong>
+    <div style="max-width:580px;width:100%">
+
+      <!-- Header -->
+      <div style="font-size:clamp(52px,10vw,100px);line-height:1;margin-bottom:16px">🌀</div>
+      <div style="font-family:'Space Mono',monospace;font-size:clamp(28px,5vw,56px);font-weight:700;color:#fff;letter-spacing:-.02em;margin-bottom:8px;line-height:1">AGENDADO.</div>
+      <div style="font-size:clamp(11px,1.4vw,14px);letter-spacing:.28em;color:rgba(255,255,255,.5);text-transform:uppercase;margin-bottom:32px">Tu sesión está en revisión</div>
+
+      <!-- Info box -->
+      <div style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);padding:24px;margin-bottom:16px;text-align:left">
+        <div style="font-size:9px;letter-spacing:.28em;color:rgba(255,255,255,.5);text-transform:uppercase;margin-bottom:14px">¿Qué pasa ahora?</div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <span style="font-size:18px;flex-shrink:0">📩</span>
+            <div style="font-size:clamp(11px,1.3vw,13px);color:rgba(255,255,255,.85);line-height:1.7">Revisamos tu solicitud y te confirmamos por email con todos los detalles de la sesión.</div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <span style="font-size:18px;flex-shrink:0">💰</span>
+            <div style="font-size:clamp(11px,1.3vw,13px);color:rgba(255,255,255,.85);line-height:1.7">Una vez confirmado, te enviamos el alias para abonar la seña de <strong style="color:#fff">$${CFG.senia.toLocaleString('es-AR')}</strong>. La seña no es reembolsable.</div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <span style="font-size:18px;flex-shrink:0">📍</span>
+            <div style="font-size:clamp(11px,1.3vw,13px);color:rgba(255,255,255,.85);line-height:1.7">La dirección del Archivo es confidencial — te la enviamos únicamente con la confirmación.</div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <span style="font-size:18px;flex-shrink:0">⏱</span>
+            <div style="font-size:clamp(11px,1.3vw,13px);color:rgba(255,255,255,.85);line-height:1.7">Llegá 10 minutos antes. El set no se repite, no se modifica y no se borra.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Precio -->
+      ${esComunidad
+        ? `<div style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);padding:14px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between">
+            <span style="font-size:11px;letter-spacing:.18em;color:#fff;text-transform:uppercase">🔵 Comunidad — 10% OFF</span>
+            <span style="font-family:'Space Mono',monospace;font-size:18px;font-weight:700;color:#fff">$${precio.toLocaleString('es-AR')}</span>
+          </div>`
+        : `<div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);padding:14px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between">
+            <span style="font-size:11px;letter-spacing:.18em;color:rgba(255,255,255,.7);text-transform:uppercase">Total de la sesión</span>
+            <span style="font-family:'Space Mono',monospace;font-size:18px;font-weight:700;color:#fff">$${precio.toLocaleString('es-AR')}</span>
+          </div>`
+      }
+
+      <!-- Reglas rápidas -->
+      <div style="background:rgba(0,0,0,.2);padding:16px 20px;margin-bottom:24px;text-align:left">
+        <div style="font-size:9px;letter-spacing:.28em;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:10px">Recordá siempre</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.65);line-height:2;letter-spacing:.04em">
+          🚫 No vestir negro ni colores oscuros<br>
+          🎧 Solo el DJ entra a la cabina<br>
+          🙌 Máximo 1 acompañante<br>
+          🧼 Lavate las manos antes de tocar los decks<br>
+          📵 Si estás adentro, estás presente
+        </div>
+      </div>
+
+      <!-- Botón -->
+      <button onclick="this.closest('div[style*=fixed]').remove();resetAgenda()"
+        style="font-size:10px;letter-spacing:.3em;text-transform:uppercase;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.4);color:#fff;padding:14px 36px;cursor:pointer;font-family:'IBM Plex Mono',monospace;transition:background .2s;width:100%"
+        onmouseover="this.style.background='rgba(255,255,255,.25)'"
+        onmouseout="this.style.background='rgba(255,255,255,.15)'">
+        ← Volver al Archivo
+      </button>
+
+      <div style="font-size:9px;letter-spacing:.2em;color:rgba(255,255,255,.3);margin-top:16px;text-transform:uppercase">
+        Archivo Secreto del Lab 👁️‍🗨️
+      </div>
     </div>
-    ${esComunidad ? `<div style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);padding:12px 24px;margin-bottom:20px;font-size:13px;letter-spacing:.12em;color:#fff;text-transform:uppercase">🔵 Comunidad — 10% OFF aplicado · $${precio.toLocaleString('es-AR')}</div>` : `<div style="font-size:13px;letter-spacing:.12em;color:rgba(255,255,255,.7);margin-bottom:20px">Seña: $${CFG.senia.toLocaleString('es-AR')} · Total: $${precio.toLocaleString('es-AR')}</div>`}
-    <button onclick="this.parentElement.remove();resetAgenda()" style="font-size:10px;letter-spacing:.3em;text-transform:uppercase;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.4);color:#fff;padding:12px 28px;cursor:pointer;font-family:'IBM Plex Mono',monospace;transition:background .2s" onmouseover="this.style.background='rgba(255,255,255,.25)'" onmouseout="this.style.background='rgba(255,255,255,.15)'">← Volver al archivo</button>
   `;
   document.body.appendChild(overlay);
   requestAnimationFrame(()=>{ overlay.style.opacity='1'; });
@@ -1403,7 +2118,7 @@ function resetAgenda(){
   selectedDate=null;selectedSlot=null;
   const st=document.getElementById('ag-status');
   if(st){st.textContent='';};
-  renderCal();
+  renderCal30Public();
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1696,14 +2411,40 @@ function renderPublic(){
 // ═══════════════════════════════════════════════════════
 // FICHA
 // ═══════════════════════════════════════════════════════
-function openFicha(id){
-  const dj=DJS.find(d=>d.i===id); if(!dj) return;
-  const soon=dj.isSoon||SOON.includes(dj.artist);
+async function openFicha(id){
+  // Buscar en array local primero, luego en Supabase
+  let dj = DJS.find(d=>d.i===id);
+  
+  // Si no está en el array local, buscar en Supabase
+  if(!dj){
+    try{
+      const {data} = await sb.from('djs').select('*').eq('id', id).single();
+      if(data){
+        dj = {
+          i: data.id,
+          artist: data.nombre_artistico,
+          alias: data.nombre_artistico,
+          genre: data.genero||'—',
+          exp: data.experiencia||'—',
+          bio: data.bio||'—',
+          links: data.links||'',
+          email: data.email||'',
+          type: data.total_sets>0 ? 'Registrado' : 'Lead',
+          session: 'Solo',
+          reg: data.created_at ? new Date(data.created_at).toLocaleDateString('es-AR') : '—',
+          isLead: data.total_sets===0
+        };
+      }
+    }catch(e){}
+  }
+  
+  if(!dj){ console.warn('DJ no encontrado:', id); return; }
+  
+  const soon = dj.isSoon||SOON.includes(dj.artist);
 
   document.getElementById('f-ref').textContent=`SET_${dj.i} / Archivo`;
   document.getElementById('back-btn').onclick=closeFicha;
 
-  // LEFT
   const photoHTML=photos[id]
     ?`<img src="${photos[id]}" alt="${dj.artist}">`
     :`<div class="pph"><svg width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>Subir foto</span></div>`;
@@ -1719,11 +2460,10 @@ function openFicha(id){
     <div class="fa-name">${dj.artist}</div>
     <div class="fa-alias">${dj.alias!==dj.artist?dj.alias:'aka — '+dj.artist}</div>
     <div class="fa-genre">${dj.genre||'Por confirmar'}</div>
-    <div class="fa-foot">${dj.type||''}${dj.session?' · '+dj.session:''}</div>
+    <div class="fa-foot">${dj.isLead?'🔵 Lead — pendiente de grabación':dj.type||''}${dj.session&&!dj.isLead?' · '+dj.session:''}</div>
     ${dj.redirect?`<div class="redir${soon?' soon-r':''}" onclick="openFicha('${dj.redirect.id}')">→ Ver también: ${dj.redirect.name}</div>`:''}
   `;
 
-  // YT THUMBNAIL
   const ytUrl=videos[id]||'';
   const ytThumb=ytUrl
     ?`<div class="yt-panel"><a class="yt-thumb" href="${ytUrl}" target="_blank">
@@ -1745,24 +2485,25 @@ function openFicha(id){
       <div class="fsl${soonLbl}">Datos</div>
       <div class="f2">
         <div><div class="fi-l">Trayectoria</div><div class="fi-v">${dj.exp||'—'}</div></div>
-        <div><div class="fi-l">Formato</div><div class="fi-v">${dj.type||'—'}</div></div>
+        <div><div class="fi-l">Formato</div><div class="fi-v">${dj.isLead?'Pendiente de grabación':dj.type||'—'}</div></div>
         <div><div class="fi-l">Modalidad</div><div class="fi-v">${dj.session||'—'}</div></div>
         <div><div class="fi-l">ID Archivo</div><div class="fi-v">SET_${dj.i}</div></div>
         <div><div class="fi-l">Registro</div><div class="fi-v">${dj.reg||'—'}</div></div>
+        ${dj.email?`<div><div class="fi-l">Email</div><div class="fi-v" style="font-size:10px">${dj.email}</div></div>`:''}
       </div>
     </div>
     ${dj.links?`<div class="fs">
       <div class="fsl${soonLbl}">Redes y plataformas</div>
       <div class="fsv mono">${dj.links}</div>
     </div>`:''}
-    <div class="fs">
+    ${!dj.isLead?`<div class="fs">
       <div class="fsl${soonLbl}">Set en YouTube</div>
       ${ytThumb}
       <div style="margin-top:14px">
         <input class="url-inp" id="yt_${id}" placeholder="https://youtube.com/..." value="${ytUrl}">
         <button class="url-save" onclick="saveYT('${id}')">Guardar enlace</button>
       </div>
-    </div>
+    </div>`:''}
     ${dj.multi?`<div class="fs">
       <div class="fsl${soonLbl}">Múltiples sets</div>
       <div class="fsv mono">${dj.multi.map(s=>`· ${s}`).join('<br>')}</div>
@@ -1773,7 +2514,6 @@ function openFicha(id){
   f.style.display='flex';
   requestAnimationFrame(()=>f.classList.add('show'));
 }
-
 function closeFicha(){
   const f=document.getElementById('ficha');
   f.classList.remove('show');
@@ -1843,7 +2583,6 @@ function adminTab(tab){
   else if(tab==='sets') renderAdminSets(cont);
   else if(tab==='artists') renderAdminArtists(cont);
   else if(tab==='jams') renderAdminJams(cont);
-  else if(tab==='agenda') renderAdminAgenda(cont);
   else if(tab==='email') renderAdminEmail(cont);
   else if(tab==='agenda-admin') renderAdminAgendaTab(cont);
 }
@@ -1913,7 +2652,7 @@ function renderAdminOverview(c){
       <div class="nj-label">Próxima Dj Jam</div>
       <div class="nj-title">ASDL012 — 08/03/2026</div>
       <div class="nj-artists">Ishit · Malaiikah · Arika · Celes Ronda · Magma · Majomushi · Adhila</div>
-      <a class="nj-btn" href="https://calendly.com/archivo-secreto-dellab/asdl-sessions-1?month=2026-03" target="_blank">→ Abrir Calendly</a>
+      <a class="nj-btn" onclick="navTo('agenda')" style="cursor:pointer">→ Agendar sesión</a>
     </div>
 
     <!-- PROGRESS VIDEOS -->
@@ -2070,19 +2809,207 @@ function addSet(){
   adminTab('sets');
 }
 
-function renderAdminArtists(c){
+async function renderAdminArtists(c, subtab='artistas'){
+  c.innerHTML=`<div style="font-size:10px;color:var(--wd);padding:10px">Cargando...</div>`;
+
+  let leads=[];
+  try{
+    const {data}=await sb.from('djs').select('*').eq('total_sets',0).order('nombre_artistico');
+    if(data) leads=data;
+  }catch(e){}
+
+  // Contar por tipo
+  const tipos = {
+    'DJ JAM':       DJS.filter(d=>d.type==='DJ JAM'),
+    'Common Liveset': DJS.filter(d=>d.type==='Common Liveset'),
+    'Custom Liveset': DJS.filter(d=>d.type==='Custom Liveset'||d.type==='Custom'),
+    'Archivo Público': DJS.filter(d=>d.type==='Archivo Público'||d.type==='Archivo Publico'),
+  };
+
+  const subtabs = [
+    {id:'artistas', label:`Artistas (${DJS.length})`},
+    {id:'sets',     label:`Sets (${DJS.length})`},
+    {id:'leads',    label:`Leads (${leads.length})`},
+  ];
+
+  const subnavHTML = subtabs.map(s=>`
+    <button onclick="renderAdminArtists(document.getElementById('a-cont'),'${s.id}')"
+      style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;padding:8px 16px;
+      border:none;border-bottom:2px solid ${subtab===s.id?'var(--b)':'transparent'};
+      background:transparent;color:${subtab===s.id?'#fff':'rgba(255,255,255,.35)'};
+      cursor:pointer;font-family:'IBM Plex Mono',monospace;transition:all .18s"
+      onmouseover="this.style.color='#fff'"
+      onmouseout="this.style.color='${subtab===s.id?'#fff':'rgba(255,255,255,.35)'}'">
+      ${s.label}
+    </button>`).join('');
+
+  let bodyHTML = '';
+
+  if(subtab === 'artistas'){
+    bodyHTML = `
+      <table class="atable">
+        <thead><tr><th>Id</th><th>Artista</th><th>Género</th><th>Exp</th><th>Sesión</th><th>Reg</th><th></th></tr></thead>
+        <tbody>${DJS.map(d=>`<tr>
+          <td>${d.i}</td>
+          <td class="td-a">${d.artist}</td>
+          <td style="font-size:10px;color:var(--wd);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.genre||'—'}</td>
+          <td>${d.exp||'—'}</td><td>${d.session||'—'}</td><td>${d.reg||'—'}</td>
+          <td><button class="tdbtn" onclick="fichaFrom='admin';openFicha('${d.i}')">Ver ficha</button></td>
+        </tr>`).join('')}</tbody>
+      </table>`;
+  }
+
+  else if(subtab === 'sets'){
+    // Ordenar por fecha de registro (reg) cronológicamente
+    const sorted = [...DJS].sort((a,b)=>{
+      const months={'Ene':0,'Feb':1,'Mar':2,'Abr':3,'May':4,'Jun':5,'Jul':6,'Ago':7,'Sep':8,'Oct':9,'Nov':10,'Dic':11};
+      const parse = r => { if(!r) return 0; const [m,y]=r.split(' '); return (parseInt(y)||0)*12+(months[m]||0); };
+      return parse(a.reg)-parse(b.reg);
+    });
+
+    const cats = [
+      {key:'DJ JAM',        label:'DJ JAM',          color:'var(--b)',    sets: sorted.filter(d=>d.type==='DJ JAM')},
+      {key:'Common Liveset',label:'Common Liveset',   color:'var(--green)',sets: sorted.filter(d=>d.type==='Common Liveset')},
+      {key:'Custom Liveset',label:'Custom Liveset',   color:'#f0a500',    sets: sorted.filter(d=>d.type==='Custom Liveset'||d.type==='Custom')},
+      {key:'Archivo Público',label:'Archivo Público', color:'rgba(255,255,255,.6)', sets: sorted.filter(d=>d.type==='Archivo Público'||d.type==='Archivo Publico')},
+      {key:'Otro',          label:'Sin categoría',   color:'var(--wd)',   sets: sorted.filter(d=>!['DJ JAM','Common Liveset','Custom Liveset','Custom','Archivo Público','Archivo Publico'].includes(d.type))},
+    ].filter(c=>c.sets.length>0);
+
+    bodyHTML = cats.map(cat=>`
+      <div style="margin-bottom:28px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--wf)">
+          <div style="width:3px;height:18px;background:${cat.color}"></div>
+          <div style="font-size:9px;letter-spacing:.28em;color:${cat.color};text-transform:uppercase">${cat.label}</div>
+          <div style="font-size:9px;color:var(--wd)">${cat.sets.length} sets</div>
+        </div>
+        <table class="atable">
+          <thead><tr><th>#</th><th>Artista</th><th>Género</th><th>Modalidad</th><th>Registro</th><th>Video</th><th></th></tr></thead>
+          <tbody>${cat.sets.map((d,i)=>`<tr>
+            <td style="color:var(--wd);font-size:10px">${i+1}</td>
+            <td class="td-a">${d.artist}</td>
+            <td style="font-size:10px;color:var(--wd);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.genre||'—'}</td>
+            <td>${d.session||'—'}</td>
+            <td style="font-family:'Space Mono',monospace;font-size:10px">${d.reg||'—'}</td>
+            <td style="color:${videos[d.i]?'var(--green)':'var(--wd)'};">${videos[d.i]?'✓':'—'}</td>
+            <td><button class="tdbtn" onclick="fichaFrom='admin';openFicha('${d.i}')">Ver ficha</button></td>
+          </tr>`).join('')}</tbody>
+        </table>
+      </div>`).join('');
+  }
+
+  else if(subtab === 'leads'){
+    bodyHTML = leads.length ? `
+      <table class="atable">
+        <thead><tr><th>Artista</th><th>Género</th><th>Exp</th><th>Email</th><th>Redes</th><th></th></tr></thead>
+        <tbody>${leads.map(d=>`<tr>
+          <td class="td-a">${d.nombre_artistico}</td>
+          <td style="font-size:10px;color:var(--wd);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.genero||'—'}</td>
+          <td style="font-size:10px">${d.experiencia||'—'}</td>
+          <td style="font-size:9px;color:var(--wd)">${d.email||'—'}</td>
+          <td style="font-size:9px;color:var(--wd);max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.links||'—'}</td>
+          <td><button class="tdbtn" onclick="openFicha('${d.id}')">Ver ficha</button></td>
+        </tr>`).join('')}</tbody>
+      </table>` : `<div style="font-size:11px;color:var(--wd);padding:12px 0">Sin leads aún. Importalos desde el botón de abajo.</div>`;
+  }
+
   c.innerHTML=`
-  <div style="font-size:10px;letter-spacing:.12em;color:var(--wd);margin-bottom:20px">Exportar → <button class="tdbtn" onclick="exportCSV()">CSV</button></div>
-  <table class="atable">
-    <thead><tr><th>Id</th><th>Artista</th><th>Alias</th><th>Exp</th><th>Sesión</th><th>Reg</th><th>Notas</th></tr></thead>
-    <tbody>${DJS.map(d=>`<tr>
-      <td>${d.i}</td><td class="td-a">${d.artist}</td><td style="font-size:10px;color:var(--wd)">${d.alias!==d.artist?d.alias:'—'}</td>
-      <td>${d.exp||'—'}</td><td>${d.session||'—'}</td><td>${d.reg||'—'}</td>
-      <td><button class="tdbtn" onclick="openNotes('${d.i}','${d.artist}')">Notas</button></td>
-    </tr>`).join('')}</tbody>
-  </table>`;
+    <!-- Subtabs -->
+    <div style="display:flex;gap:0;border-bottom:1px solid var(--wf);margin-bottom:20px">${subnavHTML}</div>
+
+    <!-- Importar (siempre visible) -->
+    ${subtab !== 'sets' ? `<div style="background:rgba(255,255,255,.03);border:1px solid var(--wf);padding:16px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+      <div>
+        <div style="font-size:9px;letter-spacing:.22em;color:var(--b);text-transform:uppercase;margin-bottom:3px">Importar desde Google Form</div>
+        <div style="font-size:10px;color:var(--wd)">Solo importa artistas nuevos — deduplicados por AKA.</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        ${gcalToken?`<span style="font-size:8px;letter-spacing:.18em;color:var(--green);text-transform:uppercase">✓ Google conectado</span>`:`<button onclick="gcalLogin(()=>renderAdminArtists(document.getElementById('a-cont'),'${subtab}'))" style="font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;padding:8px 16px;background:rgba(27,0,230,.2);border:1px solid rgba(27,0,230,.4);color:#fff;cursor:pointer;font-family:'IBM Plex Mono',monospace">→ Conectar Google</button>`}
+        <button class="afsave" onclick="importFormSheet()">↓ Importar Form</button>
+        <button class="tdbtn" onclick="exportCSV()">↓ CSV</button>
+      </div>
+    </div>
+    <div id="sheets-status" style="font-size:10px;color:var(--wd);margin-bottom:8px;min-height:14px"></div>
+    <div id="sheets-preview" style="margin-bottom:14px"></div>` : ''}
+
+    <!-- Contenido de la subtab -->
+    ${bodyHTML}
+  `;
 }
 
+async function importFormSheet(){
+  const st=document.getElementById('sheets-status');
+  const preview=document.getElementById('sheets-preview');
+  if(!gcalToken){
+    if(st){st.textContent='⚠ Primero conectá Google.';st.style.color='var(--red)';}
+    return;
+  }
+  if(st){st.textContent='Leyendo Google Sheet...';st.style.color='var(--wd)';}
+  const rows=await importFromSheets('1admYkp9bi1DSxM8MrOx6tySuFHs3lHgnEM5jIGxFqLQ','A:H');
+  if(!rows||rows.length<2){
+    if(st){st.textContent='⚠ No se pudo leer el Sheet.';st.style.color='var(--red)';}
+    return;
+  }
+  const headers=rows[0];
+  const data=rows.slice(1);
+  const iEmail=headers.findIndex(h=>h.toLowerCase().includes('correo')||h.toLowerCase().includes('email'));
+  const iAka  =headers.findIndex(h=>h.toLowerCase().includes('artístico')||h.toLowerCase().includes('aka'));
+  const iGenre=headers.findIndex(h=>h.toLowerCase().includes('género'));
+  const iExp  =headers.findIndex(h=>h.toLowerCase().includes('tiempo')||h.toLowerCase().includes('cuánto'));
+  const iBio  =headers.findIndex(h=>h.toLowerCase().includes('público')||h.toLowerCase().includes('supiera'));
+  const iLinks=headers.findIndex(h=>h.toLowerCase().includes('encontrarte')||h.toLowerCase().includes('instagram'));
+  const existingAkas=new Set(DJS.map(d=>d.artist.toLowerCase().trim()));
+  const nuevos=data.filter(r=>{
+    const aka=(r[iAka]||'').trim().toLowerCase();
+    return aka && !existingAkas.has(aka);
+  });
+  if(st){st.textContent=`✓ ${data.length} registros · ${data.length-nuevos.length} ya en el sistema · ${nuevos.length} nuevos`;st.style.color='var(--green)';}
+  if(!nuevos.length){
+    if(preview) preview.innerHTML=`<div style="font-size:11px;color:var(--wd);padding:10px 0">Todos los registros ya están en el sistema.</div>`;
+    return;
+  }
+  if(preview) preview.innerHTML=`
+    <div style="font-size:9px;letter-spacing:.2em;color:var(--b);text-transform:uppercase;margin-bottom:10px">Nuevos — ${nuevos.length}</div>
+    <div style="overflow-x:auto;margin-bottom:14px">
+      <table class="atable" style="font-size:9px">
+        <thead><tr><th>AKA</th><th>Género</th><th>Exp</th><th>Email</th></tr></thead>
+        <tbody>${nuevos.slice(0,8).map(r=>`<tr>
+          <td>${r[iAka]||'—'}</td><td>${r[iGenre]||'—'}</td>
+          <td>${r[iExp]||'—'}</td><td style="font-size:8px">${r[iEmail]||'—'}</td>
+        </tr>`).join('')}
+        ${nuevos.length>8?`<tr><td colspan="4" style="color:var(--wd);font-style:italic">... y ${nuevos.length-8} más</td></tr>`:''}
+        </tbody>
+      </table>
+    </div>
+    <button class="afsave" onclick="confirmSheetImport()" style="width:100%">↑ Confirmar — importar ${nuevos.length} leads</button>
+    <div id="import-result" style="font-size:10px;color:var(--wd);margin-top:8px;min-height:14px"></div>
+  `;
+  window._pendingImport=nuevos.map(r=>({
+    nombre_artistico:(r[iAka]||'').trim(),
+    email:(r[iEmail]||'').trim().toLowerCase(),
+    genero:(r[iGenre]||'').trim(),
+    experiencia:(r[iExp]||'').trim(),
+    bio:(r[iBio]||'').trim(),
+    links:(r[iLinks]||'').trim(),
+    es_comunidad:false,total_sets:0
+  })).filter(d=>d.nombre_artistico);
+}
+
+async function confirmSheetImport(){
+  const st=document.getElementById('import-result');
+  const data=window._pendingImport||[];
+  if(!data.length) return;
+  if(st){st.textContent='Guardando...';st.style.color='var(--wd)';}
+  let ok=0,fail=0;
+  for(let i=0;i<data.length;i+=50){
+    const batch=data.slice(i,i+50);
+    try{
+      const {error}=await sb.from('djs').upsert(batch,{onConflict:'nombre_artistico',ignoreDuplicates:true});
+      if(error) fail+=batch.length; else ok+=batch.length;
+    }catch(e){fail+=batch.length;}
+  }
+  if(st){st.textContent=`✓ ${ok} leads guardados${fail?` · ${fail} errores`:''}`;st.style.color=fail?'var(--red)':'var(--green)';}
+  setTimeout(()=>adminTab('artists'),1200);
+}
 function renderAdminJams(c){
   c.innerHTML=JAMS.map(j=>`
     <div style="margin-bottom:28px;padding-bottom:28px;border-bottom:1px solid var(--wf)">
@@ -2107,9 +3034,9 @@ function renderAdminAgenda(c){
       </div>
     </div>
     <div class="cal-box" style="max-width:500px">
-      <div class="cal-title" style="font-size:14px">Agendar sesiones</div>
-      <div class="cal-desc">Sistema de turnos integrado con Calendly. Los artistas pueden reservar desde el link público.</div>
-      <a class="cal-btn" href="https://calendly.com/archivo-secreto-dellab/asdl-sessions-1?month=2026-03" target="_blank">→ Abrir Calendly</a>
+      <div class="cal-title" style="font-size:14px">Sistema de reservas propio</div>
+      <div class="cal-desc">Los artistas reservan directamente desde <strong>"Graba tu Set"</strong> en la web. Las fechas disponibles las cargás desde la tab <strong>Agenda</strong> de este panel. Todo queda registrado en Supabase.</div>
+      <button class="cal-btn" onclick="adminTab('agenda-admin');document.querySelector('[data-at=agenda-admin]').click()">→ Gestionar fechas y reservas</button>
     </div>`;
 }
 
@@ -2138,9 +3065,19 @@ function exportCSV(){
   a.download='ASDL_artistas.csv';a.click();
 }
 
-function renderAdminEmail(c){
+async function renderAdminEmail(c){
   const djEmails=DJS.filter(d=>d.email).map(d=>d.email);
-  const totalContacts=djEmails.length;
+
+  // Cargar leads de Supabase
+  let leads=[];
+  try{
+    const {data}=await sb.from('djs').select('nombre_artistico,email').eq('total_sets',0).not('email','is',null);
+    if(data) leads=data.filter(d=>d.email);
+  }catch(e){}
+
+  const totalGrabados=djEmails.length;
+  const totalLeads=leads.length;
+  const totalContacts=totalGrabados+totalLeads;
 
   const templates=[
     {id:'newsletter',name:'Newsletter General',icon:'📢',desc:'Novedades del archivo, sets nuevos, hitos del lab'},
@@ -2178,16 +3115,48 @@ function renderAdminEmail(c){
           <input class="em-inp" id="brevo-name" placeholder="Archivo Secreto del Lab" value="${window._brevoSender||'Archivo Secreto del Lab'}">
         </div>
         <button class="afsave" onclick="saveBrevoConfig()" style="margin-top:6px">Guardar configuración</button>
-        <div id="brevo-status" style="font-size:9px;letter-spacing:.15em;color:var(--wd);margin-top:10px;min-height:16px"></div>
+        <div id="brevo-status" style="font-size:9px;letter-spacing:.15em;color:var(--wd);margin-top:10px;min-height:16px">${window._brevoKey?'✓ API Key cargada desde este browser.':''}</div>
       </div>
 
       <div class="em-section">
-        <div class="em-sec-title">Lista de contactos</div>
-        <div class="em-contacts-box">
-          <div class="em-cnum">${totalContacts}</div>
-          <div class="em-clbl">Djs registrados en el archivo</div>
-          <div style="font-size:9px;letter-spacing:.12em;color:var(--wd);margin-top:8px">Correos obtenidos del formulario de ingreso. Todos dieron su email voluntariamente al registrarse.</div>
+        <div class="em-sec-title">Listas de contactos</div>
+
+        <!-- Lista 1: Grabados -->
+        <div class="em-contacts-box" style="margin-bottom:8px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+            <div>
+              <div class="em-cnum" style="font-size:28px">${totalGrabados}</div>
+              <div class="em-clbl">🎛 Artistas grabados</div>
+            </div>
+            <button class="tdbtn" onclick="selectEmailList('grabados',this)" style="color:var(--b);border-color:rgba(27,0,230,.4)">Seleccionar</button>
+          </div>
+          <div style="font-size:9px;color:var(--wd)">Artistas que ya pasaron por el Archivo. Tienen set grabado.</div>
         </div>
+
+        <!-- Lista 2: Leads -->
+        <div class="em-contacts-box" style="background:rgba(255,255,255,.04);border-color:var(--wf)">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+            <div>
+              <div class="em-cnum" style="font-size:28px">${totalLeads}</div>
+              <div class="em-clbl">🔵 Leads / Pendientes</div>
+            </div>
+            <button class="tdbtn" onclick="selectEmailList('leads',this)">Seleccionar</button>
+          </div>
+          <div style="font-size:9px;color:var(--wd)">Registrados en el Form pero aún no grabaron. Importalos desde la tab Artistas.</div>
+        </div>
+
+        <!-- Botón ambas listas -->
+        <button class="tdbtn" style="width:100%;margin-top:8px;padding:10px" onclick="selectEmailList('all',this)">📋 Usar ambas listas (${totalContacts} contactos)</button>
+
+        <!-- Link del form -->
+        <div style="margin-top:16px;padding:12px;background:rgba(255,255,255,.03);border:1px solid var(--wf)">
+          <div style="font-size:9px;letter-spacing:.2em;color:var(--b);text-transform:uppercase;margin-bottom:8px">Link de registro</div>
+          <div style="font-size:10px;color:var(--wd);margin-bottom:8px">Incluí este link en tus emails para que nuevos artistas se registren.</div>
+          <button class="em-link-btn" onclick="insertLink('form')" style="width:100%">📝 Insertar link del Form</button>
+        </div>
+
+        <div id="list-selected" style="font-size:9px;letter-spacing:.16em;color:var(--green);margin-top:8px;min-height:14px"></div>
+
         <div style="margin-top:14px">
           <div class="em-lbl" style="margin-bottom:8px">Agregar contacto externo</div>
           <div style="display:flex;gap:8px">
@@ -2214,7 +3183,7 @@ function renderAdminEmail(c){
         </div>
         <div class="em-field">
           <div class="em-lbl">Cuerpo del mensaje</div>
-          <textarea class="em-ta" id="em-body" placeholder="Escribí el contenido del email. Podés incluir links a YouTube, WhatsApp y Calendly."></textarea>
+          <textarea class="em-ta" id="em-body" placeholder="Escribí el contenido del email. Podés incluir links a YouTube, WhatsApp o al formulario de registro."></textarea>
         </div>
         <div class="em-field">
           <div class="em-lbl">Links a incluir</div>
@@ -2222,7 +3191,7 @@ function renderAdminEmail(c){
             <button class="em-link-btn" onclick="insertLink('yt')">▶ YouTube</button>
             <button class="em-link-btn" onclick="insertLink('wa-sonido')">💬 WA Equipos</button>
             <button class="em-link-btn" onclick="insertLink('wa-cabina')">💬 WA Cabina</button>
-            <button class="em-link-btn" onclick="insertLink('cal')">📅 Calendly</button>
+            <button class="em-link-btn" onclick="insertLink('agenda')">📅 Agenda</button>
             <button class="em-link-btn" onclick="insertLink('ig')">📷 Instagram</button>
           </div>
         </div>
@@ -2275,15 +3244,32 @@ function renderAdminEmail(c){
 }
 
 // Email helpers
-window._brevoKey=''; window._brevoFrom=''; window._brevoSender='Archivo Secreto del Lab';
+// Cargar Brevo config desde localStorage al inicio
+(function(){
+  try{
+    window._brevoKey    = localStorage.getItem('asdl_brevo_key')    || '';
+    window._brevoFrom   = localStorage.getItem('asdl_brevo_from')   || '';
+    window._brevoSender = localStorage.getItem('asdl_brevo_sender') || 'Archivo Secreto del Lab';
+  }catch(e){
+    window._brevoKey=''; window._brevoFrom=''; window._brevoSender='Archivo Secreto del Lab';
+  }
+})();
 window._extraEmails=[];
 
 function saveBrevoConfig(){
-  window._brevoKey=(document.getElementById('brevo-key')||{}).value||'';
-  window._brevoFrom=(document.getElementById('brevo-from')||{}).value||'';
-  window._brevoSender=(document.getElementById('brevo-name')||{}).value||'Archivo Secreto del Lab';
+  window._brevoKey    = (document.getElementById('brevo-key')||{}).value||'';
+  window._brevoFrom   = (document.getElementById('brevo-from')||{}).value||'';
+  window._brevoSender = (document.getElementById('brevo-name')||{}).value||'Archivo Secreto del Lab';
+  try{
+    localStorage.setItem('asdl_brevo_key',    window._brevoKey);
+    localStorage.setItem('asdl_brevo_from',   window._brevoFrom);
+    localStorage.setItem('asdl_brevo_sender', window._brevoSender);
+  }catch(e){}
   const st=document.getElementById('brevo-status');
-  if(st){st.textContent='✓ Configuración guardada en sesión.';st.style.color='var(--green)';}
+  if(st){
+    st.textContent='✓ Configuración guardada — se cargará automáticamente en este browser.';
+    st.style.color='var(--green)';
+  }
 }
 
 function addExtraEmail(){
@@ -2309,9 +3295,9 @@ function selectTemplate(id,el){
   const templates={
     newsletter:{s:'Novedades del Archivo Secreto del Lab 📡',b:'¡Hola! Desde el Archivo Secreto del Lab queremos contarte las últimas novedades.\n\nSets nuevos, jornadas grabadas y artistas que se suman al catálogo.\n\nSeguí el archivo en YouTube para no perderte nada:\nhttps://www.youtube.com/@ArchivoSecretodelLab/videos\n\nY en Instagram:\nhttps://www.instagram.com/archivosecretodellab\n\n— El equipo del Lab'},
     promo:{s:'Oferta especial: Renta de cabina y equipos 🎙',b:'¡Hola! Tenemos una oferta especial en renta de equipos y cabina de grabación.\n\nNos adaptamos a tu proyecto — desde grabar en casa hasta producir un evento.\n\nConsultá disponibilidad y precios por WhatsApp:\nhttps://wa.link/xsg7l0 (equipos de sonido)\nhttps://wa.link/n7wg41 (cabina de grabación)\n\n— Archivo Secreto del Lab'},
-    jam:{s:'Nueva DJ JAM — ¡Los cupos están abiertos! 🎛',b:'¡Hola! La próxima DJ JAM ya tiene fecha.\n\nSi querés grabar tu set en el Lab, reservá tu turno ahora antes de que se llenen los cupos:\nhttps://calendly.com/archivo-secreto-dellab/asdl-sessions-1\n\nConsultas por WhatsApp:\nhttps://wa.link/n7wg41\n\n— El equipo del Lab'},
+    jam:{s:'Nueva DJ JAM — ¡Los cupos están abiertos! 🎛',b:'¡Hola! La próxima DJ JAM ya tiene fecha.\n\nSi querés grabar tu set en el Lab, agendá tu sesión directamente en la web antes de que se llenen los cupos:\nhttps://archivosecretodellab.com/#agenda\n\nConsultas por WhatsApp:\nhttps://wa.link/n7wg41\n\n— El equipo del Lab'},
     youtube:{s:'Nuevo set en el Archivo ▶',b:'¡Hola! Acabamos de publicar un nuevo set en el canal.\n\nPasate a escucharlo:\nhttps://www.youtube.com/@ArchivoSecretodelLab/videos\n\nY si querés ser parte del próximo, escribinos:\nhttps://wa.link/n7wg41\n\n— Archivo Secreto del Lab'},
-    whatsapp:{s:'¿Tenés alguna consulta? Escribinos por WhatsApp 💬',b:'¡Hola! Por cualquier consulta sobre el Lab, equipos o sesiones, escribinos directamente:\n\n🔊 Renta de equipos: https://wa.link/xsg7l0\n🎙 Cabina / consultas: https://wa.link/n7wg41\n📅 Agendar sesión: https://calendly.com/archivo-secreto-dellab/asdl-sessions-1\n\n— Archivo Secreto del Lab'},
+    whatsapp:{s:'¿Tenés alguna consulta? Escribinos por WhatsApp 💬',b:'¡Hola! Por cualquier consulta sobre el Lab, equipos o sesiones, escribinos directamente:\n\n🔊 Renta de equipos: https://wa.link/xsg7l0\n🎙 Cabina / consultas: https://wa.link/n7wg41\n📅 Agendar sesión: https://archivosecretodellab.com/#agenda\n\n— Archivo Secreto del Lab'},
   };
   if(templates[id]){
     if(subj)subj.value=templates[id].s;
@@ -2324,11 +3310,23 @@ function insertLink(type){
     yt:'https://www.youtube.com/@ArchivoSecretodelLab/videos',
     'wa-sonido':'https://wa.link/xsg7l0',
     'wa-cabina':'https://wa.link/n7wg41',
-    cal:'https://calendly.com/archivo-secreto-dellab/asdl-sessions-1?month=2026-03',
+    cal:'https://archivosecretodellab.com/#agenda',
     ig:'https://www.instagram.com/archivosecretodellab',
+    form:'https://forms.gle/zafJ3QzJuB1VUaQTA',
   };
   const ta=document.getElementById('em-body');
   if(ta&&links[type]){ta.value+='\n'+links[type];ta.focus();}
+}
+
+// Listas de email — selección de destinatarios
+let _selectedList = 'grabados';
+function selectEmailList(list, el){
+  _selectedList = list;
+  document.querySelectorAll('.em-section button.tdbtn').forEach(b=>b.style.background='');
+  if(el) el.style.background='rgba(27,0,230,.25)';
+  const lbl = document.getElementById('list-selected');
+  const nombres = {grabados:'🎛 Artistas grabados seleccionados',leads:'🔵 Leads seleccionados','all':'📋 Ambas listas seleccionadas'};
+  if(lbl){lbl.textContent=nombres[list]||''}
 }
 
 function previewEmail(){
@@ -2421,12 +3419,203 @@ function renderJamsInto(c){
       return `<div class="jc${soon?' soon':''}${hidden?' hidden-set':''}" style="cursor:${s.djId&&!hidden?'pointer':'default'}" ${s.djId&&!hidden?`onclick="fichaFrom='djsets';openFicha('${s.djId}')"`:''}><div class="jc-a">${s.artist}</div><div class="jc-d">${s.b2b?'B2B · ':''}${soon?'Próximamente':hidden?'Oculto':'Grabado'}</div>${s.note&&!hidden?`<div class="jc-note">${s.note}</div>`:''}</div>`;}).join('');
     return `<div class="jsec"><div class="jh"><div class="jtit" style="${isNext?'color:var(--el)':''}">${j.id}</div><div class="jdate">${j.date||''}${isNext?' · PRÓXIMA':j.hidden?' · Oculta':''}</div><div class="jcnt">${j.sets.length} sets</div></div><div class="jgrid">${cards}</div></div>`;}).join('');
 }
-function renderAdminAgendaTab(c){
-  const avDates=Object.keys(availability);
-  c.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:2px"><div style="background:rgba(255,255,255,.03);border:1px solid var(--wf);padding:24px"><div style="font-size:9px;letter-spacing:.28em;color:var(--b);text-transform:uppercase;margin-bottom:14px">Fechas disponibles</div><div style="display:flex;gap:8px;margin-bottom:10px"><input class="afi" id="av-date" type="date" style="width:150px"><input class="afi" id="av-slots" placeholder="18:00,20:00" style="flex:1"><button class="afsave" onclick="addAvailability()">+ Agregar</button></div><div>${avDates.length?avDates.map(d=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:rgba(27,0,230,.08);border:1px solid rgba(27,0,230,.2);font-size:10px;color:var(--wd);margin-bottom:2px"><span><strong style="color:#fff">${d}</strong> — ${availability[d].join(', ')}</span><button class="tdbtn" onclick="removeAvailability('${d}')">Quitar</button></div>`).join(''):`<div style="font-size:10px;color:var(--wd)">Sin fechas cargadas.</div>`}</div></div><div style="background:rgba(255,255,255,.03);border:1px solid var(--wf);padding:24px"><div style="font-size:9px;letter-spacing:.28em;color:var(--b);text-transform:uppercase;margin-bottom:14px">Solicitudes (${agendaRequests.length})</div>${agendaRequests.length?agendaRequests.map(r=>`<div style="padding:10px 0;border-bottom:1px solid var(--wf)"><div style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:#fff">${r.artist}</div><div style="font-size:10px;color:var(--wd);line-height:1.9">${r.email} · ${r.genre||'—'}</div>${r.msg?`<div style="font-size:10px;color:var(--wd);font-style:italic">"${r.msg}"</div>`:''}</div>`).join(''):`<div style="font-size:11px;color:var(--wd)">Sin solicitudes.</div>`}</div></div>`;
+async function renderAdminAgendaTab(c){
+  c.innerHTML=`<div style="font-size:10px;letter-spacing:.2em;color:var(--wd);padding:10px 0">Cargando...</div>`;
+
+  // Cargar fechas desde Supabase
+  let dbFechas=[];
+  try{
+    const {data}=await sb.from('disponibilidad').select('*').order('fecha');
+    if(data){
+      dbFechas=data;
+      availability={};
+      data.forEach(r=>{ availability[r.fecha]=r.horarios; });
+    }
+  }catch(e){}
+
+  // Cargar reservas
+  let dbReservas=[];
+  try{
+    const {data}=await sb.from('reservas').select('*').order('created_at',{ascending:false}).limit(30);
+    if(data) dbReservas=data;
+  }catch(e){}
+
+  // Cargar eventos GCal si hay token
+  if(gcalToken) gcalEvents = await gcalGetEvents();
+
+  c.innerHTML=`
+  <div style="display:grid;grid-template-columns:320px 1fr;gap:2px;min-height:600px">
+
+    <!-- PANEL IZQUIERDO: Calendario visual + controles -->
+    <div style="background:rgba(255,255,255,.03);border:1px solid var(--wf);padding:24px;display:flex;flex-direction:column;gap:16px;overflow-y:auto">
+
+      <!-- Google Calendar sync -->
+      <div id="gcal-panel" style="padding:12px;background:rgba(255,255,255,.04);border:1px solid var(--wf)">
+        <div style="font-size:8.5px;letter-spacing:.2em;color:var(--wd);text-transform:uppercase;margin-bottom:8px">Google Calendar</div>
+        <div style="font-size:10px;color:var(--wd);margin-bottom:10px">Conectá para ver eventos en tiempo real.</div>
+        <button id="gcal-connect-btn"
+          style="font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;padding:9px 16px;background:rgba(27,0,230,.2);border:1px solid rgba(27,0,230,.4);color:#fff;cursor:pointer;font-family:'IBM Plex Mono',monospace;width:100%;transition:background .2s"
+          onmouseover="this.style.background='rgba(27,0,230,.35)'"
+          onmouseout="this.style.background='rgba(27,0,230,.2)'"
+          onclick="connectGcalAdmin()">
+          → Conectar Google Calendar
+        </button>
+      </div>
+
+      <!-- Instrucciones -->
+      <div style="font-size:9px;letter-spacing:.16em;color:rgba(255,255,255,.35);line-height:1.9;text-transform:uppercase">
+        <div style="color:var(--b);margin-bottom:6px">Cómo usar el calendario</div>
+        · Click en día gris → habilitar<br>
+        · Click en día azul → gestionar slots<br>
+        · Shift + click → selección múltiple<br>
+        · Verde = evento en Google Calendar
+      </div>
+
+      <!-- Selección múltiple -->
+      <div id="multi-select-bar" style="display:none;padding:10px 14px;background:rgba(27,0,230,.15);border:1px solid rgba(27,0,230,.3)">
+        <div style="font-size:9px;letter-spacing:.18em;color:var(--b);text-transform:uppercase;margin-bottom:8px">
+          <span id="multi-count">0</span> días seleccionados
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button onclick="enableMultiDates()" class="tdbtn" style="color:var(--green);border-color:rgba(0,201,103,.3);flex:1">✓ Habilitar todos</button>
+          <button onclick="blockMultiDates()" class="tdbtn" style="color:var(--red);border-color:rgba(255,59,59,.3);flex:1">🚫 Bloquear todos</button>
+          <button onclick="clearMultiSelect()" class="tdbtn" style="flex:1">✕ Cancelar</button>
+        </div>
+      </div>
+
+      <!-- Calendario visual -->
+      <div class="admin-cal30" id="cal30-admin"></div>
+
+      <!-- Agregar fecha rápida -->
+      <div style="border-top:1px solid var(--wf);padding-top:14px">
+        <div style="font-size:9px;letter-spacing:.22em;color:var(--b);text-transform:uppercase;margin-bottom:10px">Agregar fecha específica</div>
+        <div style="display:flex;gap:6px;margin-bottom:6px">
+          <input class="afi" id="av-date" type="date" style="flex:1">
+          <button class="afsave" onclick="adminAddFecha()">+</button>
+        </div>
+        <input class="afi" id="av-slots" placeholder="11:00,13:00,15:00,17:00" style="width:100%;margin-bottom:4px">
+        <div style="font-size:8px;color:rgba(255,255,255,.25);letter-spacing:.1em">Dejá vacío para habilitar todos los slots (11-19hs)</div>
+        <div id="av-msg" style="font-size:10px;letter-spacing:.1em;margin-top:8px;min-height:14px"></div>
+      </div>
+    </div>
+
+    <!-- PANEL DERECHO: Reservas -->
+    <div style="background:rgba(255,255,255,.03);border:1px solid var(--wf);padding:24px;overflow-y:auto">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+        <div style="font-size:9px;letter-spacing:.28em;color:var(--b);text-transform:uppercase">Reservas — ${dbReservas.length}</div>
+        <div style="display:flex;gap:6px">
+          <button onclick="filterReservas('Pendiente',this)" class="tdbtn on-filter">Pendientes</button>
+          <button onclick="filterReservas('Confirmada',this)" class="tdbtn">Confirmadas</button>
+          <button onclick="filterReservas('all',this)" class="tdbtn">Todas</button>
+        </div>
+      </div>
+      <div id="reservas-list">
+        ${renderReservasList(dbReservas)}
+      </div>
+    </div>
+  </div>`;
+
+  // Render calendario admin
+  setTimeout(()=>renderAdminCal30(), 50);
 }
-function addAvailability(){const d=(document.getElementById('av-date')||{}).value,s=(document.getElementById('av-slots')||{}).value;if(!d||!s)return;availability[d]=s.split(',').map(x=>x.trim()).filter(Boolean);adminTab('agenda-admin');}
-function removeAvailability(d){delete availability[d];adminTab('agenda-admin');}
+
+function renderReservasList(reservas, filtro='all'){
+  const list = filtro==='all' ? reservas : reservas.filter(r=>r.estado===filtro);
+  if(!list.length) return `<div style="font-size:12px;color:var(--wd);padding:20px 0">Sin reservas${filtro!=='all'?' en este estado':''}.</div>`;
+  return list.map(r=>`
+    <div id="res-${r.id}" style="padding:14px 0;border-bottom:1px solid var(--wf)">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap">
+        <div style="font-family:'Space Mono',monospace;font-size:15px;font-weight:700;color:#fff">${r.nombre_artistico}</div>
+        ${r.es_comunidad?`<span style="font-size:7px;letter-spacing:.14em;background:rgba(27,0,230,.25);color:var(--b);padding:3px 8px;text-transform:uppercase">🔵 Comunidad</span>`:''}
+        <span style="font-size:7px;letter-spacing:.14em;padding:3px 8px;text-transform:uppercase;background:${r.estado==='Confirmada'?'rgba(0,201,103,.15)':r.estado==='Cancelada'?'rgba(255,59,59,.1)':'rgba(255,255,255,.06)'};color:${r.estado==='Confirmada'?'var(--green)':r.estado==='Cancelada'?'var(--red)':'var(--wd)'}">${r.estado}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;font-size:10px;letter-spacing:.07em;color:var(--wd);margin-bottom:10px">
+        <div>📅 ${formatFecha(r.fecha)} ${r.horario}hs</div>
+        <div>🎛 ${r.tipo||'Solo'} · ${r.genero||'—'}</div>
+        <div>💰 $${(r.precio_base||0).toLocaleString('es-AR')}${r.descuento?' (-10%)':''}</div>
+        <div>✉️ ${r.email}</div>
+        <div>📱 ${r.whatsapp||'—'}</div>
+        <div>📝 ${r.ya_registrado?'Registrado':'Sin registro'}</div>
+      </div>
+      ${r.mensaje?`<div style="font-size:10px;color:rgba(255,255,255,.35);font-style:italic;margin-bottom:8px">"${r.mensaje}"</div>`:''}
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        ${r.estado!=='Confirmada'?`<button class="tdbtn" onclick="confirmarReserva('${r.id}')" style="color:var(--green);border-color:rgba(0,201,103,.3)">✓ Confirmar</button>`:''}
+        ${r.estado!=='Cancelada'?`<button class="tdbtn" onclick="cancelarReserva('${r.id}')" style="color:var(--red);border-color:rgba(255,59,59,.3)">✕ Cancelar</button>`:''}
+        ${gcalToken&&r.estado==='Confirmada'?`<button class="tdbtn" onclick="crearEventoGcal('${r.id}')">📅 Crear en GCal</button>`:''}
+      </div>
+    </div>`).join('');
+}
+
+function filterReservas(estado, el){
+  document.querySelectorAll('.on-filter').forEach(b=>b.classList.remove('on-filter'));
+  if(el) el.classList.add('on-filter');
+  // Re-render con filtro (simplificado, recarga tab)
+  adminTab('agenda-admin');
+}
+
+async function syncGcal(){
+  gcalEvents = await gcalGetEvents();
+  renderAdminCal30();
+}
+
+async function crearEventoGcal(reservaId){
+  try{
+    const {data}=await sb.from('reservas').select('*').eq('id',reservaId).single();
+    if(!data) return;
+    const evento = await gcalCreateEvent(data);
+    if(evento){
+      alert(`✓ Evento creado en Google Calendar: ${evento.htmlLink}`);
+    }
+  }catch(e){}
+}
+
+
+function formatFecha(f){
+  if(!f) return '—';
+  const [y,m,d]=f.split('-');
+  const meses=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  return `${d} ${meses[parseInt(m)-1]} ${y}`;
+}
+
+async function adminAddFecha(){
+  const d=(document.getElementById('av-date')||{}).value;
+  const s=(document.getElementById('av-slots')||{}).value;
+  const msg=document.getElementById('av-msg');
+  if(!d||!s){if(msg){msg.textContent='⚠ Completá fecha y horarios.';msg.style.color='var(--red)';}return;}
+  const horarios=s.split(',').map(x=>x.trim()).filter(Boolean);
+  if(msg){msg.textContent='Guardando...';msg.style.color='var(--wd)';}
+  try{
+    await sb.from('disponibilidad').upsert([{fecha:d,horarios,activo:true}],{onConflict:'fecha'});
+    // Actualizar objeto local
+    availability[d]=horarios;
+    if(msg){msg.textContent='✓ Fecha agregada.';msg.style.color='var(--green)';}
+    setTimeout(()=>adminTab('agenda-admin'),800);
+  }catch(e){
+    if(msg){msg.textContent='⚠ Error al guardar.';msg.style.color='var(--red)';}
+  }
+}
+
+async function adminRemoveFecha(id){
+  try{
+    await sb.from('disponibilidad').delete().eq('id',id);
+    // Recargar disponibilidad local
+    await loadDisponibilidad();
+    adminTab('agenda-admin');
+  }catch(e){}
+}
+
+async function confirmarReserva(id){
+  try{
+    await sb.from('reservas').update({estado:'Confirmada'}).eq('id',id);
+    adminTab('agenda-admin');
+  }catch(e){}
+}
+async function cancelarReserva(id){
+  try{
+    await sb.from('reservas').update({estado:'Cancelada'}).eq('id',id);
+    adminTab('agenda-admin');
+  }catch(e){}
+}
 
 // Check comunidad con debounce
 let _ccTimer=null;
@@ -2458,6 +3647,15 @@ setTimeout(()=>{
   const pb=document.getElementById('precio-b2b');
   if(ps) ps.textContent=Number(CFG.precio_solo).toLocaleString('es-AR');
   if(pb) pb.textContent=Number(CFG.precio_b2b).toLocaleString('es-AR');
+  // Init Google Calendar API — reintentar hasta que gapi esté disponible
+  const initGcalWhenReady = (tries=0) => {
+    if(typeof gapi !== 'undefined'){
+      initGoogleCalendar();
+    } else if(tries < 20){
+      setTimeout(()=>initGcalWhenReady(tries+1), 500);
+    }
+  };
+  initGcalWhenReady();
 })();
 
 renderDjs();
