@@ -96,10 +96,9 @@ background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0
 .nt.on{color:var(--w);border-bottom-color:var(--b)}
 
 /* CONTENT */
-#content{overflow:hidden;height:100%}
+#content{overflow-y:auto;height:100%}
 .pg{display:none;min-height:100%}
 .pg.on{display:block}
-#pg-archivo.on{display:block;overflow-y:auto;height:100%}
 
 /* LANDING */
 #pg-home{position:relative;overflow:hidden;height:100%}
@@ -318,6 +317,7 @@ input[type=file]{display:none}
 .slot-time{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:#fff;min-width:56px}
 .slot-lbl{font-size:9px;letter-spacing:.12em;color:var(--wd);text-transform:uppercase}
 /* PÁGINA ARCHIVO — INTRO */
+#pg-archivo{overflow-y:auto;scroll-snap-type:y mandatory}
 .arc-screen{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;scroll-snap-align:start;position:relative}
 .arc-gif-wrap{width:100%;max-width:900px;margin:0 auto;position:relative}
 .arc-gif-wrap img{width:100%;display:block;object-fit:cover}
@@ -540,17 +540,29 @@ input[type=file]{display:none}
     <!-- ARCHIVO — INTRO PAGE -->
     <div id="pg-archivo" class="pg">
 
-      <!-- HERO: video fullscreen -->
-      <div style="position:relative;width:100%;height:100vh;overflow:hidden;background:#000">
-        <video id="vid-hero" muted loop playsinline
-          style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover">
-          <source src="https://raw.githubusercontent.com/archivosecretodellab-bot/archivosecretodellab/main/GIF_PARTICIPANTES%20(1)%20(4)%20(1).mp4" type="video/mp4">
-        </video>
-        <div style="position:absolute;inset:0;background:rgba(0,0,0,.4)"></div>
-        <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:0 40px 56px;text-align:center;z-index:2">
-          <div class="arc-badge" style="margin-bottom:10px">Buenos Aires, Argentina · Desde 2025</div>
-          <div style="font-family:'Space Mono',monospace;font-size:clamp(20px,3vw,38px);font-weight:700;color:#fff;line-height:1.1;margin-bottom:10px">Registro audiovisual independiente<br>de la escena DJ</div>
-          <div style="font-size:10px;letter-spacing:.22em;color:rgba(255,255,255,.5);text-transform:uppercase;margin-bottom:36px">123 artistas · 13 DJ Jams · 118 sets y sumando</div>
+      <!-- PANTALLA 1: GIF fullscreen -->
+      <div class="arc-screen" style="scroll-snap-align:start;padding:0">
+        <div class="arc-gif-wrap" style="width:100%;max-width:100%;height:100vh;overflow:hidden;position:relative">
+          <!-- Video principal — subir GIF_PARTICIPANTES.mp4 a la raíz del repo en GitHub -->
+          <video autoplay loop muted playsinline
+               style="width:100%;height:100%;object-fit:cover;display:block"
+               onerror="this.style.display='none';document.getElementById('gif-fallback').style.display='flex'">
+            <source src="https://archivosecretodellab.com/GIF_PARTICIPANTES.mp4" type="video/mp4">
+          </video>
+          <!-- Fallback si el GIF no cargó todavía -->
+          <div id="gif-fallback" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;background:#080808">
+            <div style="text-align:center">
+              <div style="font-size:60px;margin-bottom:16px">🌀</div>
+              <div style="font-family:'Space Mono',monospace;font-size:clamp(18px,3vw,32px);font-weight:700;color:#fff;margin-bottom:8px">ARCHIVO<br>SECRETO<br>DEL LAB</div>
+            </div>
+          </div>
+          <!-- Overlay con título -->
+          <div class="arc-gif-overlay">
+            <div class="arc-badge">Buenos Aires · Desde 2025</div>
+            <div class="arc-title">Registro audiovisual<br>de la escena electrónica</div>
+            <div class="arc-sub">123 artistas · 13 DJ Jams · Producción independiente</div>
+          </div>
+          <!-- Hint de scroll -->
           <div class="arc-scroll-hint" onclick="document.getElementById('arc-manifesto-section').scrollIntoView({behavior:'smooth'})">
             <span>El proyecto</span>
             <svg width="16" height="16" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
@@ -558,28 +570,17 @@ input[type=file]{display:none}
         </div>
       </div>
 
-      <!-- PANTALLA 2: Manifiesto (placeholder - kept below) -->
-      <div id="_hero_end"></div>
-
-      <!-- PANTALLA 2: Manifiesto -->
-      <div id="arc-manifesto-section" style="background:#080808;padding:80px 40px;display:flex;justify-content:center">
+      <!-- PANTALLA 2: Manifiesto + stats -->
+      <div class="arc-screen" id="arc-manifesto-section" style="background:#080808">
         <div class="arc-manifesto">
           <div class="arc-m-kicker">¿Qué es el Archivo?</div>
           <div class="arc-m-headline">Democratizar el DJ set.<br>Hacerlo accesible para todos.</div>
           <div class="arc-m-body">
-            El Archivo Secreto del Lab nace de la visión de tres amigos con una necesidad compartida: crear algo que dejara una huella real en la cultura electrónica de Buenos Aires. A la escena le faltaba un espacio que no fuera una vidriera de poses, sino un refugio para artistas de todas las tallas. Así nació este proyecto, con el propósito de <strong>democratizar el registro audiovisual</strong> y, sobre todo, de devolverle al DJ el placer de ser escuchado.
+            El Archivo Secreto del Lab nació con una idea simple: <strong>cualquier artista merece tener un registro audiovisual de calidad de su música.</strong> Sin importar el género que toque, el tiempo que lleve mezclando, ni el circuito por el que pase.
             <br><br>
-            Nuestra misión técnica es clara: lxs artistas de cualquier género merecen un registro profesional de su obra. Sin importar si llevan diez años en la escena; sin importar si tocan en clubes masivos o en el living de su casa. En el Archivo, cada set es un intercambio equivalente, donde el equipo disfruta detrás de cámaras de cada grabación al máximo y el artista se lleva: <strong>video de alta fidelidad, audio impecable y material fotográfico profesional</strong>, para que el talento local tenga las herramientas para mostrarse al mundo con la calidad que ameritan.
+            Cada set que entra al Archivo queda grabado en video y audio profesional, en un espacio íntimo y cuidado, diseñado para que el artista se exprese sin filtros. <strong>No hay producción inflada ni estética impostada</strong> — hay música real, bailada en tiempo real, por personas reales.
             <br><br>
-            El Archivo busca sanar algo que a veces se pierde en el circuito: la conexión real. Hemos visto a DJs consolidados, acostumbrados a la presión de la pista, redescubrir aquí lo que se siente que alguien disfrute genuinamente de cada una de sus mezclas. En este espacio íntimo y cuidado, lxs artistas se expresan sin filtros ni producciones infladas. <strong>No hay caretas, ni poses. Somos lo que somos.</strong>
-            <br><br>
-            Sabemos que la escena local a menudo está partida por géneros o nichos que no se hablan entre sí. El Archivo funciona como un punto de encuentro donde esos muros se caen. Unimos a artistas que quizás nunca se hubieran conocido por tocar estilos distintos, fomentando la camaradería y el respeto mutuo. <strong>Techno, House, Drum & Bass, Hip Hop, Salsa, Dembow y Funk: en nuestra biblioteca todos tienen un lugar.</strong>
-            <br><br>
-            En el Archivo no solo grabamos sets; forjamos conexiones. Porque entendemos que la música es, ante todo, una construcción colectiva.
-          </div>
-
-          <div style="border-left:3px solid var(--b);padding:16px 24px;margin-bottom:32px;background:rgba(27,0,230,.06)">
-            <div style="font-family:'Space Mono',monospace;font-size:clamp(13px,1.8vw,16px);color:#fff;font-weight:700;line-height:1.5">Quien entra al Archivo, lo entiende.<br>No cualquiera entra.</div>
+            En el Archivo, todos los sets se bailan y se disfrutan. Techno, house, drum and bass, hip hop, experimental — el único requisito es que sea honesto. La escena electrónica porteña tiene talento de sobra. Acá le damos el canal que se merece.
           </div>
 
           <!-- Stats -->
@@ -605,8 +606,8 @@ input[type=file]{display:none}
                onmouseover="this.style.borderColor='rgba(27,0,230,.4)'" onmouseout="this.style.borderColor='var(--wf)'">
               <svg width="22" height="22" fill="none" stroke="rgba(240,236,226,.6)" stroke-width="1.5" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="rgba(240,236,226,.6)" stroke="none"/></svg>
               <div>
-                <div style="font-family:'Space Mono',monospace;font-size:16px;font-weight:700;color:#fff" id="ig-followers">—</div>
-                <div style="font-size:9px;letter-spacing:.2em;color:var(--wd);text-transform:uppercase;margin-top:2px">Seguidores en Instagram</div>
+                <div style="font-family:'Space Mono',monospace;font-size:16px;font-weight:700;color:#fff">@archivosecretodellab</div>
+                <div style="font-size:9px;letter-spacing:.2em;color:var(--wd);text-transform:uppercase;margin-top:2px">Instagram · Ver perfil →</div>
               </div>
             </a>
             <a href="https://www.youtube.com/@ArchivoSecretodelLab/videos" target="_blank"
@@ -614,13 +615,16 @@ input[type=file]{display:none}
                onmouseover="this.style.borderColor='rgba(27,0,230,.4)'" onmouseout="this.style.borderColor='var(--wf)'">
               <svg width="22" height="22" fill="none" stroke="rgba(240,236,226,.6)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M22.54 6.42a2.78 2.78 0 00-1.95-1.97C18.88 4 12 4 12 4s-6.88 0-8.59.45A2.78 2.78 0 001.46 6.42 29 29 0 001 12a29 29 0 00.46 5.58A2.78 2.78 0 003.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.45a2.78 2.78 0 001.95-1.97A29 29 0 0023 12a29 29 0 00-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="rgba(240,236,226,.5)" stroke="none"/></svg>
               <div>
-                <div style="font-family:'Space Mono',monospace;font-size:16px;font-weight:700;color:#fff" id="yt-videos">—</div>
-                <div style="font-size:9px;letter-spacing:.2em;color:var(--wd);text-transform:uppercase;margin-top:2px">Videos en YouTube</div>
+                <div style="font-family:'Space Mono',monospace;font-size:16px;font-weight:700;color:#fff">YouTube</div>
+                <div style="font-size:9px;letter-spacing:.2em;color:var(--wd);text-transform:uppercase;margin-top:2px">Ver todos los sets →</div>
               </div>
             </a>
           </div>
 
-          <div style="border-top:1px solid var(--wf);padding-top:28px;display:flex;justify-content:center">
+          <div style="border-top:1px solid var(--wf);padding-top:28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
+            <div style="font-size:11px;color:rgba(240,236,226,.45);letter-spacing:.08em;line-height:1.8;max-width:340px">
+              Producción independiente · Buenos Aires · Sin sellos ni sponsors · Solo música.
+            </div>
             <button class="arc-enter-btn" onclick="navTo('djsets',document.querySelector('[data-pg=djsets]'))">
               → Ver el archivo completo
             </button>
@@ -1533,13 +1537,10 @@ const PUBLIC_IDS = ['072','078','018','035','015','WP']; // Konkor, (b)Eva, Nine
 // NAVIGATION
 // ═══════════════════════════════════════════════════════
 function navTo(pg, el){
-  document.querySelectorAll('.pg').forEach(p=>{p.classList.remove('on');p.style.display='none';});
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.nt').forEach(n=>n.classList.remove('on'));
   const target = document.getElementById('pg-'+pg);
-  if(target){
-    target.style.display = pg==='archivo' ? 'flex' : 'block';
-    target.classList.add('on');
-  }
+  if(target) target.classList.add('on');
   if(el) el.classList.add('on');
   if(pg==='djsets'){
     renderDjs();
@@ -1549,20 +1550,8 @@ function navTo(pg, el){
     else subnavTo('djs', document.querySelector('.snt'));
   }
   if(pg==='agenda') initCalendar();
-  if(pg==='archivo'){
-    const v = document.getElementById('vid-hero');
-    if(v){ v.muted=true; v.play().catch(()=>{}); }
-    loadSocialStats();
-  }
   document.getElementById('content').scrollTop = 0;
 }
-async function loadSocialStats(){
-  const igEl = document.getElementById('ig-followers');
-  const ytEl = document.getElementById('yt-videos');
-  if(igEl) igEl.textContent = '1.2K seguidores';
-  if(ytEl) ytEl.textContent = '119 videos · 289 suscriptores';
-}
-
 function goHome(){
   navTo('home', document.querySelector('[data-pg=home]'));
 }
