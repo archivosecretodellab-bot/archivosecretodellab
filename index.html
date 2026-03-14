@@ -139,11 +139,11 @@ background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0
   margin:-20px -22px -18px;
 }
 .fc-glass-layer{background:transparent}
-.fc-n{font-size:8.5px;letter-spacing:.3em;color:rgba(240,236,226,.36);margin-bottom:10px;text-transform:uppercase}
-.fc-a{font-family:'Space Mono',monospace;font-size:21px;font-weight:700;line-height:1.05;color:var(--w);margin-bottom:9px}
-.fc-g{font-size:8.5px;letter-spacing:.13em;color:rgba(240,236,226,.46);text-transform:uppercase;line-height:1.9;margin-bottom:11px}
+.fc-n{font-size:9.5px;letter-spacing:.3em;color:rgba(240,236,226,.36);margin-bottom:10px;text-transform:uppercase}
+.fc-a{font-family:'Space Mono',monospace;font-size:26px;font-weight:700;line-height:1.05;color:var(--w);margin-bottom:9px}
+.fc-g{font-size:10px;letter-spacing:.13em;color:rgba(240,236,226,.46);text-transform:uppercase;line-height:1.9;margin-bottom:11px}
 .fc-hr{height:1px;background:rgba(240,236,226,.12);margin-bottom:10px}
-.fc-t{font-size:8.5px;letter-spacing:.2em;color:rgba(240,236,226,.26);text-transform:uppercase}
+.fc-t{font-size:10px;letter-spacing:.2em;color:rgba(240,236,226,.26);text-transform:uppercase}
 .fc-soon-glass .fc-n{color:rgba(100,120,255,.55)}
 .fc-soon-glass .fc-a{color:rgba(200,210,255,.85)}
 .fc-soon-glass .fc-g{color:rgba(100,120,255,.5)}
@@ -778,6 +778,8 @@ input[type=file]{display:none}
 }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
 </head>
 <body>
 
@@ -1394,6 +1396,8 @@ input[type=file]{display:none}
 // GOOGLE CALENDAR CONFIG
 // ═══════════════════════════════════════════════
 const GCAL_CLIENT_ID = '823780854866-4c207ghjqr6h9dgmj73fakei2uijs03i.apps.googleusercontent.com';
+const ASDL_SHEET_ID = '1Hlqxx29qXOldpr-CvyXfrTNqq6CsH0DY6K6kekLnnP4';
+const IMG_BASE = 'https://raw.githubusercontent.com/archivosecretodellab-bot/archivosecretodellab/main';
 const GCAL_CALENDAR_ID = 'archivo.secreto.dellab@gmail.com';
 const GCAL_SCOPES = 'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/spreadsheets.readonly';
 let gcalToken = null;
@@ -2737,7 +2741,7 @@ function spawnCard(){
   // Buscar imagen del artista en SM para glassmorphism
   var smMatch = SM.filter(function(s){ return s.artista.toUpperCase()===dj.artist.toUpperCase(); })[0];
   var coverSlug = smMatch ? smSlug(smMatch.artista) : smSlug(dj.artist);
-  var coverUrl = 'img/artistas/' + coverSlug + '/1.jpg';
+  var coverUrl = 'https://raw.githubusercontent.com/archivosecretodellab-bot/archivosecretodellab/main/img/artistas/' + coverSlug + '/1.jpg';
   // Intentar localStorage también
   var storedCover = null;
   if(smMatch){ try{ storedCover=localStorage.getItem('thumb_'+smMatch.id); }catch(e){} }
@@ -3122,9 +3126,7 @@ window.openFicha = async function openFicha(id){
   document.getElementById('f-ref').textContent=`SET_${dj.i} / Archivo`;
   document.getElementById('back-btn').onclick=closeFicha;
 
-  const photoHTML=photos[id]
-    ?`<img src="${photos[id]}" alt="${dj.artist}">`
-    :`<div class="pph"><svg width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>Subir foto</span></div>`;
+  const photoHTML = buildPhotoHTML(id, dj);
 
   const soonClass=soon?' soon-l':'';
   document.getElementById('f-left').className='fleft'+soonClass;
@@ -3142,11 +3144,23 @@ window.openFicha = async function openFicha(id){
   `;
 
   const ytUrl=videos[id]||'';
+  const _coverUrl = IMG_BASE + 'https://raw.githubusercontent.com/archivosecretodellab-bot/archivosecretodellab/main/img/covers/' + dj.artist + '.jpg';
   const ytThumb=ytUrl
-    ?`<div class="yt-panel"><a class="yt-thumb" href="${ytUrl}" target="_blank">
-        <div class="yt-thumb-img"><svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3" fill="rgba(27,0,230,0.6)" stroke="none"/></svg></div>
-        <div class="yt-thumb-lbl">Ver set en YouTube →</div>
-      </a></div>`
+    ?`<div class="yt-panel">
+        <a class="yt-thumb" href="${ytUrl}" target="_blank" rel="noopener"
+           style="display:block;position:relative;aspect-ratio:16/9;overflow:hidden;text-decoration:none;cursor:pointer">
+          <img src="${_coverUrl}" alt="${dj.artist}"
+               style="width:100%;height:100%;object-fit:cover;object-position:center"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div style="display:none;position:absolute;inset:0;background:#1b00e6;align-items:center;justify-content:center;flex-direction:column;gap:10px">
+            <div style="font-family:monospace;font-size:16px;font-weight:700;color:#fff;text-align:center;padding:0 16px">${dj.artist}</div>
+          </div>
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35)">
+            <svg width="44" height="44" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="12" fill="rgba(27,0,230,.75)"/><polygon points="9 7 19 12 9 17 9 7" fill="#fff"/></svg>
+          </div>
+          <div style="position:absolute;bottom:0;left:0;right:0;padding:10px 14px;background:linear-gradient(transparent,rgba(0,0,0,.7));font-size:9px;letter-spacing:.2em;color:#fff;text-transform:uppercase;font-family:monospace">Ver set en YouTube →</div>
+        </a>
+      </div>`
     :`<div class="yt-panel"><div class="yt-thumb">
         <div class="yt-thumb-img"><svg width="36" height="36" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24"><path d="M22.54 6.42a2.78 2.78 0 00-1.95-1.97C18.88 4 12 4 12 4s-6.88 0-8.59.45A2.78 2.78 0 001.46 6.42 29 29 0 001 12a29 29 0 00.46 5.58 2.78 2.78 0 001.95 1.97C5.12 20 12 20 12 20s6.88 0 8.59-.45a2.78 2.78 0 001.95-1.97A29 29 0 0023 12a29 29 0 00-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="rgba(240,236,226,0.3)" stroke="none"/></svg></div>
         <div class="yt-thumb-lbl" style="color:rgba(240,236,226,0.3)">Set no vinculado aún</div>
@@ -3296,37 +3310,106 @@ function saveYT(id){
   openFicha(id);
 }
 
-function handlePhoto(id,inp){
-  const f=inp.files[0]; if(!f) return;
-  const r=new FileReader();
-  r.onload=function(e){
-    var dataUrl=e.target.result;
-    // Canvas 4:5 crop optimizado — 800x1000
-    var img=new Image();
-    img.onload=function(){
-      var tW=800,tH=1000;
-      var sc=Math.max(tW/img.width,tH/img.height);
-      var sX=(img.width-tW/sc)/2, sY=Math.max(0,(img.height-tH/sc)*0.25);
-      var cv=document.createElement('canvas');
-      cv.width=tW; cv.height=tH;
-      cv.getContext('2d').drawImage(img,sX,sY,tW/sc,tH/sc,0,0,tW,tH);
-      var optimized=cv.toDataURL('image/jpeg',0.88);
-      photos[id]=optimized;
-      // Persistir en localStorage
-      try{
-        localStorage.setItem('perfil_'+id, optimized);
-        // También actualizar thumb si es una card del grid
-        localStorage.setItem('thumb_'+id, optimized);
-      }catch(err){ console.warn('Foto demasiado grande para localStorage'); }
-      openFicha(id);
-      // Refrescar grids si están visibles
-      if(typeof renderDjs==='function') renderDjs();
-      if(typeof renderCommon==='function') renderCommon();
-      if(typeof renderCustom==='function') renderCustom();
-    };
-    img.src=dataUrl;
+function handlePhoto(id, inp){
+  var f = inp.files[0]; if(!f) return;
+  var reader = new FileReader();
+  reader.onload = function(e){
+    openCropperModal(id, e.target.result);
   };
-  r.readAsDataURL(f);
+  reader.readAsDataURL(f);
+}
+
+function openCropperModal(id, dataUrl){
+  // Remover modal anterior si existe
+  var old = document.getElementById('cropper-modal');
+  if(old) old.remove();
+
+  var modal = document.createElement('div');
+  modal.id = 'cropper-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:1200;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;box-sizing:border-box';
+
+  var label = document.createElement('div');
+  label.style.cssText = 'font-family:monospace;font-size:9px;letter-spacing:.28em;color:var(--wd);text-transform:uppercase';
+  label.textContent = 'Recortar foto de perfil — 1:1';
+
+  var imgWrap = document.createElement('div');
+  imgWrap.style.cssText = 'width:min(400px,90vw);height:min(400px,90vw);background:#111';
+
+  var img = document.createElement('img');
+  img.src = dataUrl;
+  img.style.cssText = 'max-width:100%;display:block';
+  imgWrap.appendChild(img);
+
+  var btns = document.createElement('div');
+  btns.style.cssText = 'display:flex;gap:12px';
+
+  var btnOk = document.createElement('button');
+  btnOk.textContent = '✓ Aplicar recorte';
+  btnOk.style.cssText = 'padding:10px 24px;background:#1b00e6;border:none;color:#fff;font-family:monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;cursor:pointer';
+
+  var btnCancel = document.createElement('button');
+  btnCancel.textContent = '✕ Cancelar';
+  btnCancel.style.cssText = 'padding:10px 18px;background:transparent;border:1px solid #333;color:rgba(255,255,255,.5);font-family:monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;cursor:pointer';
+
+  btns.appendChild(btnOk);
+  btns.appendChild(btnCancel);
+  modal.appendChild(label);
+  modal.appendChild(imgWrap);
+  modal.appendChild(btns);
+  document.body.appendChild(modal);
+
+  // Init Cropper.js si disponible, sino crop 1:1 manual con canvas
+  var cropper = null;
+  if(typeof Cropper !== 'undefined'){
+    cropper = new Cropper(img, {
+      aspectRatio: 1,
+      viewMode: 1,
+      autoCropArea: 0.9,
+      guides: false,
+      center: true,
+      highlight: false,
+      cropBoxMovable: true,
+      cropBoxResizable: true,
+    });
+  }
+
+  btnCancel.onclick = function(){ modal.remove(); };
+
+  btnOk.onclick = function(){
+    var finalData;
+    if(cropper){
+      finalData = cropper.getCroppedCanvas({ width:800, height:800 }).toDataURL('image/jpeg', 0.90);
+    } else {
+      // Canvas fallback — crop cuadrado centrado
+      var cv = document.createElement('canvas');
+      cv.width = 800; cv.height = 800;
+      var ctx = cv.getContext('2d');
+      var tmpImg = new Image();
+      tmpImg.onload = function(){
+        var side = Math.min(tmpImg.width, tmpImg.height);
+        var sx = (tmpImg.width - side) / 2, sy = (tmpImg.height - side) / 2;
+        ctx.drawImage(tmpImg, sx, sy, side, side, 0, 0, 800, 800);
+        applyPhotoResult(id, cv.toDataURL('image/jpeg', 0.90));
+        modal.remove();
+      };
+      tmpImg.src = dataUrl;
+      return;
+    }
+    applyPhotoResult(id, finalData);
+    modal.remove();
+  };
+}
+
+function applyPhotoResult(id, dataUrl){
+  photos[id] = dataUrl;
+  try{
+    localStorage.setItem('perfil_'+id, dataUrl);
+    localStorage.setItem('thumb_'+id, dataUrl);
+  }catch(err){ console.warn('Foto demasiado grande para localStorage'); }
+  openFicha(id);
+  if(typeof renderDjs==='function') renderDjs();
+  if(typeof renderCommon==='function') renderCommon();
+  if(typeof renderCustom==='function') renderCustom();
 }
 
 // ═══════════════════════════════════════════════════════
@@ -3757,61 +3840,94 @@ async function renderAdminArtists(c, subtab='artistas'){
 }
 
 async function importFormSheet(){
-  const st=document.getElementById('sheets-status');
-  const preview=document.getElementById('sheets-preview');
-  if(!gcalToken){
-    if(st){st.textContent='⚠ Primero conectá Google.';st.style.color='var(--red)';}
+  if(!gcalToken){ alert('Primero conectá Google Calendar / Sheets.'); return; }
+  var sheetId = typeof ASDL_SHEET_ID !== 'undefined' ? ASDL_SHEET_ID : '1Hlqxx29qXOldpr-CvyXfrTNqq6CsH0DY6K6kekLnnP4';
+  var st = document.getElementById('sheets-status');
+  if(st){ st.textContent = 'Importando desde Google Sheets...'; st.style.color = 'var(--wd)'; }
+
+  var rows = await importFromSheets(sheetId, 'A:Z');
+  if(!rows || !rows.length){
+    if(st){ st.textContent = 'Error al importar. Verificá la conexión.'; st.style.color = '#f55'; }
     return;
   }
-  if(st){st.textContent='Leyendo Google Sheet...';st.style.color='var(--wd)';}
-  const rows=await importFromSheets('1admYkp9bi1DSxM8MrOx6tySuFHs3lHgnEM5jIGxFqLQ','A:H');
-  if(!rows||rows.length<2){
-    if(st){st.textContent='⚠ No se pudo leer el Sheet.';st.style.color='var(--red)';}
-    return;
-  }
-  const headers=rows[0];
-  const data=rows.slice(1);
-  const iEmail=headers.findIndex(h=>h.toLowerCase().includes('correo')||h.toLowerCase().includes('email'));
-  const iAka  =headers.findIndex(h=>h.toLowerCase().includes('artístico')||h.toLowerCase().includes('aka'));
-  const iGenre=headers.findIndex(h=>h.toLowerCase().includes('género'));
-  const iExp  =headers.findIndex(h=>h.toLowerCase().includes('tiempo')||h.toLowerCase().includes('cuánto'));
-  const iBio  =headers.findIndex(h=>h.toLowerCase().includes('público')||h.toLowerCase().includes('supiera'));
-  const iLinks=headers.findIndex(h=>h.toLowerCase().includes('encontrarte')||h.toLowerCase().includes('instagram'));
-  const existingAkas=new Set(DJS.map(d=>d.artist.toLowerCase().trim()));
-  const nuevos=data.filter(r=>{
-    const aka=(r[iAka]||'').trim().toLowerCase();
-    return aka && !existingAkas.has(aka);
+
+  // Detectar headers en fila 1
+  var headers = rows[0].map(function(h){ return (h||'').toLowerCase().trim(); });
+  var colNombre  = headers.findIndex(function(h){ return /nombre|artista|artist|aka/i.test(h); });
+  var colEmail   = headers.findIndex(function(h){ return /email|mail/i.test(h); });
+  var colGenero  = headers.findIndex(function(h){ return /genero|genre|estilo/i.test(h); });
+  var colExp     = headers.findIndex(function(h){ return /exp|trayect|years/i.test(h); });
+  var colYT      = headers.findIndex(function(h){ return /youtube|link|url|yt/i.test(h); });
+  var colFecha   = headers.findIndex(function(h){ return /fecha|date|estreno/i.test(h); });
+  var colEstado  = headers.findIndex(function(h){ return /estado|status/i.test(h); });
+  var colSets    = headers.findIndex(function(h){ return /sets|grabados|cantidad/i.test(h); });
+
+  var get = function(row, col){ return col >= 0 && col < row.length ? (row[col]||'').trim() : ''; };
+
+  var imported = 0, updated = 0, errors = 0;
+  var dataRows = rows.slice(1);
+
+  dataRows.forEach(function(row){
+    if(!row.length || !get(row, colNombre)) return;
+    var nombre = get(row, colNombre);
+    // Buscar en DJS por nombre
+    var dj = DJS.find(function(d){ return d.artist.toLowerCase() === nombre.toLowerCase() || d.alias.toLowerCase() === nombre.toLowerCase(); });
+    var smEntry = SM.find(function(s){ return s.artista && s.artista.toLowerCase() === nombre.toLowerCase(); });
+
+    if(dj){
+      // Actualizar campos
+      if(colEmail  >= 0 && get(row,colEmail))  dj.email  = get(row,colEmail);
+      if(colGenero >= 0 && get(row,colGenero)) dj.genre  = get(row,colGenero);
+      if(colExp    >= 0 && get(row,colExp))    dj.exp    = get(row,colExp);
+      if(colYT     >= 0 && get(row,colYT)){
+        dj._ytFromSheet = get(row,colYT);
+        // Asignar al videos{} por id
+        videos[dj.i] = get(row,colYT);
+      }
+      if(colFecha  >= 0 && get(row,colFecha))  dj.releaseDate = get(row,colFecha);
+      if(colEstado >= 0 && get(row,colEstado)){
+        var est = get(row,colEstado).toLowerCase();
+        if(est.includes('pronto') || est.includes('soon')){
+          dj.isSoon = true; if(!SOON.includes(dj.artist)) SOON.push(dj.artist);
+        } else {
+          dj.isSoon = false; var si=SOON.indexOf(dj.artist); if(si>-1) SOON.splice(si,1);
+        }
+        if(est.includes('public')) dj.published = true;
+      }
+      updated++;
+    } else {
+      // Es un artista nuevo no en DJS — agregarlo como lead
+      if(nombre){
+        var newLead = {
+          i: 'lead_' + Date.now() + '_' + imported,
+          artist: nombre, alias: nombre,
+          genre: get(row,colGenero), exp: get(row,colExp),
+          email: get(row,colEmail), links: '',
+          bio: '', frase: '', type: 'DJ JAM', session: 'Solo',
+          isLead: true, isSoon: false,
+          _ytFromSheet: get(row,colYT),
+          releaseDate: get(row,colFecha)
+        };
+        DJS.push(newLead);
+        imported++;
+      }
+    }
+    if(smEntry && colYT >= 0 && get(row,colYT)){
+      smEntry.url_yt = get(row,colYT);
+    }
   });
-  if(st){st.textContent=`✓ ${data.length} registros · ${data.length-nuevos.length} ya en el sistema · ${nuevos.length} nuevos`;st.style.color='var(--green)';}
-  if(!nuevos.length){
-    if(preview) preview.innerHTML=`<div style="font-size:11px;color:var(--wd);padding:10px 0">Todos los registros ya están en el sistema.</div>`;
-    return;
-  }
-  if(preview) preview.innerHTML=`
-    <div style="font-size:9px;letter-spacing:.2em;color:var(--b);text-transform:uppercase;margin-bottom:10px">Nuevos — ${nuevos.length}</div>
-    <div style="overflow-x:auto;margin-bottom:14px">
-      <table class="atable" style="font-size:9px">
-        <thead><tr><th>AKA</th><th>Género</th><th>Exp</th><th>Email</th></tr></thead>
-        <tbody>${nuevos.slice(0,8).map(r=>`<tr>
-          <td>${r[iAka]||'—'}</td><td>${r[iGenre]||'—'}</td>
-          <td>${r[iExp]||'—'}</td><td style="font-size:8px">${r[iEmail]||'—'}</td>
-        </tr>`).join('')}
-        ${nuevos.length>8?`<tr><td colspan="4" style="color:var(--wd);font-style:italic">... y ${nuevos.length-8} más</td></tr>`:''}
-        </tbody>
-      </table>
-    </div>
-    <button class="afsave" onclick="confirmSheetImport()" style="width:100%">↑ Confirmar — importar ${nuevos.length} leads</button>
-    <div id="import-result" style="font-size:10px;color:var(--wd);margin-top:8px;min-height:14px"></div>
-  `;
-  window._pendingImport=nuevos.map(r=>({
-    nombre_artistico:(r[iAka]||'').trim(),
-    email:(r[iEmail]||'').trim().toLowerCase(),
-    genero:(r[iGenre]||'').trim(),
-    experiencia:(r[iExp]||'').trim(),
-    bio:(r[iBio]||'').trim(),
-    links:(r[iLinks]||'').trim(),
-    es_comunidad:false,total_sets:0
-  })).filter(d=>d.nombre_artistico);
+
+  // Refrescar todo
+  if(typeof renderDjs==='function') renderDjs();
+  if(typeof renderCommon==='function') renderCommon();
+
+  var msg = updated + ' artistas actualizados, ' + imported + ' nuevos leads importados';
+  if(st){ st.textContent = '✓ ' + msg; st.style.color='var(--green)'; }
+  setTimeout(function(){ if(st) st.textContent=''; }, 5000);
+
+  // Preview
+  var prev = document.getElementById('sheets-preview');
+  if(prev) prev.innerHTML = '<div style="font-size:9px;color:var(--wd);margin-top:8px">Última importación: ' + new Date().toLocaleString('es-AR') + ' · ' + msg + '</div>';
 }
 
 async function confirmSheetImport(){
@@ -4490,23 +4606,33 @@ function setGaleriaLocal(arr){
   try{ localStorage.setItem('asdl_galeria_contacto', JSON.stringify(arr)); }catch(e){}
 }
 async function loadFotosContacto(){
-  // Prioridad: localStorage (imágenes subidas directo)
-  var local = getGaleriaLocal();
-  if(local.length){ fotosContacto = local; renderCarousel(); return; }
-  // Fallback: Supabase (URLs externas si las hubiera)
-  try{
-    var r = await fetch(SUPA_URL+'/rest/v1/config?key=eq.fotos_contacto&select=value&limit=1',{
-      headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
-    });
-    var json = await r.json();
-    if(Array.isArray(json) && json.length && json[0].value){
-      var raw = json[0].value;
-      var parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
-      if(Array.isArray(parsed) && parsed.length)
-        fotosContacto = parsed.filter(function(u){ return typeof u==='string' && u.trim(); });
+  // Primero: intentar img/contacto/1..10.jpg (GitHub)
+  var githubFotos = [];
+  for(var i=1;i<=10;i++) githubFotos.push(IMG_BASE+'https://raw.githubusercontent.com/archivosecretodellab-bot/archivosecretodellab/main/img/contacto/'+i+'.jpg');
+  var localFotos = getGaleriaLocal();
+  // Fusionar: local (subidas desde admin) + GitHub paths
+  var merged = localFotos.length ? localFotos : githubFotos;
+  if(merged.length){
+    fotosContacto = merged;
+    renderCarousel();
+    return;
+  }
+  // Fallback Supabase
+  fetch(SUPA_URL+'/rest/v1/config?key=eq.fotos_contacto&select=value&limit=1',{
+    headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
+  }).then(function(r){ return r.json(); }).then(function(json){
+    if(json&&json[0]&&json[0].value){
+      try{
+        var arr=JSON.parse(json[0].value);
+        if(Array.isArray(arr)&&arr.length){ fotosContacto=arr; renderCarousel(); return; }
+      }catch(e){}
     }
-  }catch(e){ console.warn('loadFotosContacto:', e); }
-  renderCarousel();
+    fotosContacto = githubFotos;
+    renderCarousel();
+  }).catch(function(){
+    fotosContacto = githubFotos;
+    renderCarousel();
+  });
 }
 
 function renderCarousel(){
@@ -4945,7 +5071,7 @@ function smSlug(artista){
 // Si la imagen no existe (404) la ignora silenciosamente
 function smLoadPhotos(artista, cb){
   var slug = smSlug(artista);
-  var base = 'img/artistas/' + slug + '/';
+  var base = 'https://raw.githubusercontent.com/archivosecretodellab-bot/archivosecretodellab/main/img/artistas/' + slug + '/';
   var total = 5;   // 1 portada + 4 destacadas
   var loaded = [];
   var pending = total;
@@ -4973,7 +5099,7 @@ function smLoadPhotos(artista, cb){
 function smBuildCard(s, delay){
   var _displayName = smGetName(s.id, s.artista);
   var slug     = smSlug(s.artista);
-  var cover    = 'img/artistas/' + slug + '/1.jpg';
+  var cover    = IMG_BASE + 'https://raw.githubusercontent.com/archivosecretodellab-bot/archivosecretodellab/main/img/perfiles/' + (s.artista || dj.artist) + '.jpg';
   var isPend   = s.estado === 'Pendiente';
   var sibs     = smSiblings(s.artista);
   var hasMulti = sibs.length > 1;
@@ -6363,6 +6489,22 @@ async function saveFichaAdmin(id){
     });
   }catch(e){}
 })();
+
+
+// ── FOTO DE PERFIL EN FICHA ──────────────────────────────────────
+function buildPhotoHTML(id, dj){
+  var imgStyle = 'width:100%;height:100%;object-fit:cover;object-position:center top';
+  if(photos[id]){
+    return '<img src="' + photos[id] + '" alt="' + dj.artist + '" style="' + imgStyle + '">';
+  }
+  var stored = null;
+  try{ stored = localStorage.getItem('perfil_'+id) || localStorage.getItem('thumb_'+id); }catch(e){}
+  if(stored){
+    return '<img src="' + stored + '" alt="' + dj.artist + '" style="' + imgStyle + '">';
+  }
+  var perfilUrl = IMG_BASE + 'https://raw.githubusercontent.com/archivosecretodellab-bot/archivosecretodellab/main/img/perfiles/' + dj.artist + '.jpg';
+  return '<img src="' + perfilUrl + '" alt="' + dj.artist + '" style="' + imgStyle + '" onerror="this.style.display=&quot;none&quot;">';
+}
 
 </script>
 </body>
