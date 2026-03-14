@@ -1669,6 +1669,115 @@ function getTOTAL(){
 }
 var TOTAL = getTOTAL();
 const photos = {}, videos = {}, notes = {};
+
+// ── VIDEOS — Links de YouTube del Sheet (hardcoded) ────────────
+// Se actualiza automáticamente con syncFromSheet() al cargar
+videos['001'] = 'https://youtu.be/amHC_EL3dxk?si=l3mNYDQUo5yaSRjN';
+videos['002'] = 'https://youtu.be/Kd1CHTz21K0?si=YG8nCrDWGfMG-v6U';
+videos['003'] = 'https://youtu.be/Hj7419eBZYk?si=vFS2aYHWbyNx_ZpH';
+videos['004'] = 'https://youtu.be/TmzRfhPTfDU?si=CGBHGasvMAtz5jI-';
+videos['005'] = 'https://youtu.be/0GPiF1QrzEE?si=dAlwmLbN_9WGrCvW';
+videos['006'] = 'https://youtu.be/wjxN_cIicp0?si=n9T9V9nu9IIgNuBM';
+videos['008'] = 'https://youtu.be/9XeYbexbo4o?si=xqwm8hzDZUNsSC0Z';
+videos['009'] = 'https://youtu.be/FYGjAnVQ0I0?si=WVBDvdJ8SLxsFxda';
+videos['010'] = 'https://youtu.be/6Mp7gg2fTQ4?si=RaIJ_P_NvKgMhhwR';
+videos['011'] = 'https://youtu.be/o6PWxDGLhug?si=c82dUSrEaHC5dLty';
+videos['012'] = 'https://youtu.be/eQx4jGP7IlU?si=EvtBECmYuLLlln2u';
+videos['013'] = 'https://youtu.be/VbAtNWEbNjU?si=Ws1HdGZ11_pN1cit';
+videos['014'] = 'https://youtu.be/qzKK6uhU2BI?si=ZMB2zL8ii7C-VbAq';
+videos['015'] = 'https://youtu.be/LRcjEwCLDsw?si=uzopVjx7kG_H0fYQ';
+videos['016'] = 'https://youtu.be/T8latyq3ryI?si=En6Z447yZQ49ahTO';
+videos['017'] = 'https://youtu.be/nCiUWXAZ8oE?si=4TjS2h-JkiR04n9z';
+videos['018'] = 'https://youtu.be/MHX4zm8Ya0o?si=WgTfXz9d5BTlt8Ib';
+videos['019'] = 'https://youtu.be/IkylzHtjsL8?si=sU2NXZN00bVYQWNd';
+videos['020'] = 'https://youtu.be/Zat8kKCkbHI?si=3Dor9dkgYy1fV1ez';
+videos['021'] = 'https://youtu.be/CNovleuLoLg?si=btiUk7dXmT0IWP8O';
+videos['022'] = 'https://youtu.be/Kd3l8zdgNC8?si=XP_xXIrg1Bbn7d4_';
+videos['023'] = 'https://youtu.be/3pWkvhGIfDs?si=xHyIJw8TytU22Af4';
+videos['024'] = 'https://youtu.be/hAt2afikVTQ?si=NQTvGk0BPWjdBgYz';
+videos['025'] = 'https://youtu.be/c5usk-vecKY?si=lFFDYAfJBrudLQGV';
+videos['026'] = 'https://youtu.be/m-yit5mfxGo?si=zF2_a3LTAs_fS2xN';
+videos['027'] = 'https://youtu.be/RDsz0-lDsIs?si=hKz-0_9ywfOtmwmF';
+videos['028'] = 'https://youtu.be/YNxq9HievZg?si=vAhu6d4G_Hz2FTP0';
+videos['029'] = 'https://youtu.be/AinnhNKkQdM?si=eQ-HU0biEDf9ZnTu';
+videos['030'] = 'https://youtu.be/5CmUX6fIoHw?si=mPymVI5KW86dmRCo';
+videos['031'] = 'https://youtu.be/NphR4PXOwNo?si=hfrPl5h88HuAeZkI';
+videos['032'] = 'https://youtu.be/g8qqjHLjubs?si=X8Yk6VavTasRpPc1';
+videos['033'] = 'https://youtu.be/zrky2wNwL-M?si=FJsdt-rEFNM7ManY';
+videos['034'] = 'https://youtu.be/tmXbEUOxiJM?si=pCovr9y16Cg5URDi';
+videos['035'] = 'https://youtu.be/2jalthHWYQI?si=mGi5JOj8aW-WZ7J1';
+videos['036'] = 'https://youtu.be/dIrPKLki-ds?si=2jZtve0OoU8nvwtb';
+videos['037'] = 'https://youtu.be/NphR4PXOwNo?si=hfrPl5h88HuAeZkI';
+videos['038'] = 'https://youtu.be/3T0xFM0xREw?si=ercbmjMalvKMto_j';
+videos['039'] = 'https://youtu.be/-9DagC7FU0c?si=oc7Nhs8Vt2p93fOa';
+videos['040'] = 'https://youtu.be/MiAbEuF7LAo?si=AYnaA0NyQXsQTItq';
+videos['042'] = 'https://youtu.be/UUGeDg1WQ4Q?si=Gc13vBp6EWpNEV7Q';
+videos['043'] = 'https://youtu.be/SAusbm59WRA?si=KadTffR2fezfCMiG';
+videos['044'] = 'https://youtu.be/sVIqJOVP0XY?si=tgMh1E6gxenb8lM1';
+videos['045'] = 'https://youtu.be/dHnX-XHXTu8?si=4NxGpF_cvULjkL-m';
+videos['046'] = 'https://youtu.be/xlrrAdTdw-A?si=SFsdzXvQ2DaR5NJj';
+videos['046b'] = 'https://youtu.be/3UTr-T0EQrs?si=WU7qu9l7Ct3RtWN3';
+videos['047'] = 'https://youtu.be/4WAULAZpshI?si=PXNsFmVwakQRm5Gp';
+videos['048'] = 'https://youtu.be/c4wcUQcHn3Y?si=rwrYeRVe_jmzUheT';
+videos['050'] = 'https://youtu.be/mcRfoft49Aw?si=nd8J4itDi790A7v-';
+videos['051'] = 'https://youtu.be/BX94k1nl8Xk?si=SYRU4H-V4R9z4-9m';
+videos['052'] = 'https://youtu.be/b7N6Yr7TcdM?si=q-nxasTYZW7J-isB';
+videos['053'] = 'https://youtu.be/ZFs4_aZ3H2Y?si=MI-K_wGkamxJh0ja';
+videos['054'] = 'https://youtu.be/YZWSX5wKHnE?si=EAiSgUgt5eJm8EqC';
+videos['055'] = 'https://youtu.be/uF6crKtkrP0?si=xBKpIPmg2XVq0zYm';
+videos['056'] = 'https://youtu.be/u3ODrpE07VM?si=IiAQbdPI4ZY8nl3j';
+videos['057'] = 'https://youtu.be/Z3OA-tlMucY?si=gUmCpec-hSci8Fut';
+videos['058'] = 'https://youtu.be/Twk_xx62kew?si=4mTQ9o2ALF1P7Yef';
+videos['059'] = 'https://youtu.be/R2fS5JuUfkA?si=OwhI7IrjDUaX-RqN';
+videos['060'] = 'https://youtu.be/cqE_XUg80Xw?si=UuWUwevTmJS6VaaP';
+videos['061'] = 'https://youtu.be/AS8yh2SXvvc?si=s1BFffV3PlA3rB2A';
+videos['062'] = 'https://youtu.be/XEvMhIPb06g?si=aYK3cIC7Nus3aJxC';
+videos['063'] = 'https://youtu.be/bXLfLB0o4wM?si=DGlvS2_k_yCFK8bF';
+videos['064'] = 'https://youtu.be/XEvMhIPb06g?si=aYK3cIC7Nus3aJxC';
+videos['065'] = 'https://youtu.be/_IM30Dtxjxw?si=OKlwPGT5j-ctVKBe';
+videos['066'] = 'https://youtu.be/nnDjHfEJTwY?si=kuMdp7DaxW_5fWpw';
+videos['067'] = 'https://youtu.be/bVeXbobt5i4?si=Yz3n_crNagraAghz';
+videos['068'] = 'https://youtu.be/qA20H0R36TM?si=daHfw4xlXJX5GW4a';
+videos['069'] = 'https://youtu.be/DArn8genlss?si=njr6MB_gdjsZ8rj6';
+videos['070'] = 'https://youtu.be/GanZkHLHr3c?si=POWw_ZRPlpGF4sQZ';
+videos['071'] = 'https://youtu.be/1R3RYLSKpmA?si=zEjGsnHbVHPNAMvL';
+videos['072'] = 'https://youtu.be/7QYelJJqMp8?si=YAN0yJLmTYoim-8s';
+videos['073'] = 'https://youtu.be/0ZmseKca1oM?si=806lqA-QjQjoiHse';
+videos['074'] = 'https://youtu.be/TL6hsjNLLzA?si=pBWcgbvAKAhyPTkm';
+videos['076'] = 'https://youtu.be/D5EK5eMkY0w?si=ikgWEBr1gFo6kMpc';
+videos['077'] = 'https://youtu.be/YNxq9HievZg?si=vAhu6d4G_Hz2FTP0';
+videos['078'] = 'https://youtu.be/xroDKIy8f9E?si=69Ten-Gg7Vkrwywy';
+videos['079'] = 'https://youtu.be/6bX_-GUfFMY?si=B2QNbU2lL7QbJIOB';
+videos['080'] = 'https://youtu.be/c9xTwj62pko?si=HtiOtGaVEPXZn8Ty';
+videos['081'] = 'https://youtu.be/gvYX7c7eZzc?si=-0FobQ5neboobRUR';
+videos['082'] = 'https://youtu.be/0ZW7Sy7pVEE?si=QFxPIIaZjCLqU5a4';
+videos['083'] = 'https://youtu.be/WNNMxcXiaCM?si=w3Tc8O9fZS-CFYIV';
+videos['084'] = 'https://youtu.be/Erb6eTSoQac?si=OfBT280L5oLSTxTo';
+videos['085'] = 'https://youtu.be/xIqedCfjxiI?si=AANKn0CQnNrm3Rib';
+videos['086'] = 'https://youtu.be/KmT4yXgTThA?si=niQgMSbLV7bqr8W5';
+videos['087'] = 'https://youtu.be/xBVHA_qUoc0?si=eIQMFHxUsAgV_pK3';
+videos['089'] = 'https://youtu.be/zbRinppQYes?si=3o51PTCu8y5YW5PN';
+videos['090'] = 'https://youtu.be/gOo9hdyG7DI?si=2bKYQaftToZTubWV';
+videos['091'] = 'https://youtu.be/cIiBLyZkgqE?si=rsM8egUCSUHFYbse';
+videos['093'] = 'https://youtu.be/kEaytbopbms?si=MXfO53TGa07bmeS5';
+videos['095'] = 'https://youtu.be/O5-CibjeAzQ?si=Vkr4MRRjprWjXQ2k';
+videos['096'] = 'https://youtu.be/1yn6l4g23a4?si=jT9CrDe72CeJrQmh';
+videos['097'] = 'https://youtu.be/y5N3htB_cBU?si=yZZbblTcX3XtEYh9';
+videos['099'] = 'https://youtu.be/IkylzHtjsL8?si=sU2NXZN00bVYQWNd';
+videos['108'] = 'https://youtu.be/lSY_RwEB58A?si=SmJS5aAcr463Qiu4';
+videos['109'] = 'https://www.youtube.com/watch?v=wwFg5KlPwtc';
+videos['110'] = 'https://www.youtube.com/watch?v=vescOLJykNw';
+videos['111'] = 'https://youtu.be/rpF99KjXUmo?si=ariJiz1pIZfLQHRg';
+videos['112'] = 'https://youtu.be/iWJ5FZFoRVY?si=8nGC5pNFlyFCn-TS';
+videos['113'] = 'https://youtu.be/s0kcMKShy5g?si=a516URYrg55JDzti';
+videos['114'] = 'https://youtu.be/xh34q293ykc?si=SCXtEvmlvNv_lHCV';
+videos['115'] = 'https://youtu.be/ynAYj7CDqdM?si=5wLG8CHe-0iJRQ8g';
+videos['116'] = 'https://youtu.be/YZck9d_I86g?si=wOEzwy8rQW8yrjfn';
+videos['117'] = 'https://youtu.be/rBZ92hMsyiU?si=KTEpqz681G2LsmdU';
+videos['118'] = 'https://youtu.be/uuYSNe0PoL0?si=zUj8xE--YOdVP9xT';
+videos['120'] = 'https://youtu.be/Of19IWVQjVI?si=LgG8B8EAoXaivFYa';
+videos['121'] = 'https://youtu.be/ChQ2XnJZYOk?si=6EiQOxToIKBY16HX';
+videos['122'] = 'https://youtu.be/y5N3htB_cBU?si=yZZbblTcX3XtEYh9';
 let fichaFrom = 'djs';
 
 function tc(s){return s.replace(/\b\w/g,c=>c.toUpperCase())}
@@ -2746,7 +2855,7 @@ function spawnCard(){
   // Buscar imagen del artista en SM para glassmorphism
   var smMatch = SM.filter(function(s){ return s.artista.toUpperCase()===dj.artist.toUpperCase(); })[0];
   var coverSlug = smMatch ? smSlug(smMatch.artista) : smSlug(dj.artist);
-  var coverUrl = 'https://raw.githubusercontent.com/archivosecretodellab-bot/archivosecretodellab/main/img/artistas/' + coverSlug + '/1.jpg';
+  var coverUrl = smMatch ? (IMG_BASE + '/img/perfiles/' + smMatch.artista + '.jpg') : (IMG_BASE + '/img/perfiles/' + dj.artist + '.jpg');
   // Intentar localStorage también
   var storedCover = null;
   if(smMatch){ try{ storedCover=localStorage.getItem('thumb_'+smMatch.id); }catch(e){} }
@@ -3163,7 +3272,7 @@ window.openFicha = async function openFicha(id){
   `;
 
   const ytUrl=videos[id]||'';
-  const _coverUrl = IMG_BASE + 'https://raw.githubusercontent.com/archivosecretodellab-bot/archivosecretodellab/main/img/covers/' + dj.artist + '.jpg';
+  const _coverUrl = IMG_BASE + '/img/covers/' + dj.artist + '.jpg';
   const ytThumb=ytUrl
     ?`<div class="yt-panel">
         <a class="yt-thumb" href="${ytUrl}" target="_blank" rel="noopener"
@@ -4626,7 +4735,7 @@ function setGaleriaLocal(arr){
 async function loadFotosContacto(){
   // Primero: intentar img/contacto/1..10.jpg (GitHub)
   var githubFotos = [];
-  for(var i=1;i<=10;i++) githubFotos.push(IMG_BASE+'https://raw.githubusercontent.com/archivosecretodellab-bot/archivosecretodellab/main/img/contacto/'+i+'.jpg');
+  for(var i=1;i<=10;i++) githubFotos.push(IMG_BASE+'/img/contacto/'+i+'.jpg');
   var localFotos = getGaleriaLocal();
   // Fusionar: local (subidas desde admin) + GitHub paths
   var merged = localFotos.length ? localFotos : githubFotos;
@@ -5085,39 +5194,21 @@ function smSlug(artista){
 }
 
 // ─── CARGA DE FOTOS LOCALES ──────────────────────────────────────────────────
-// Busca /img/artistas/[slug]/1.jpg … 5.jpg
-// Si la imagen no existe (404) la ignora silenciosamente
+// Busca img/perfiles/[nombre].jpg en GitHub (nombre exacto del Sheet)
 function smLoadPhotos(artista, cb){
-  var slug = smSlug(artista);
-  var base = 'https://raw.githubusercontent.com/archivosecretodellab-bot/archivosecretodellab/main/img/artistas/' + slug + '/';
-  var total = 5;   // 1 portada + 4 destacadas
-  var loaded = [];
-  var pending = total;
-
-  for(var i = 1; i <= total; i++){
-    (function(n){
-      var img = new Image();
-      var url = base + n + '.jpg';
-      img.onload  = function(){ loaded.push({n:n, url:url}); check(); };
-      img.onerror = function(){ check(); };
-      img.src = url;
-    })(i);
-  }
-
-  function check(){
-    pending--;
-    if(pending === 0){
-      loaded.sort(function(a,b){ return a.n - b.n; });
-      cb(loaded.map(function(x){ return x.url; }));
-    }
-  }
+  // Carga img/perfiles/[nombre exacto].jpg desde GitHub
+  var url = IMG_BASE + '/img/perfiles/' + artista + '.jpg';
+  var img = new Image();
+  img.onload  = function(){ if(cb) cb([{n:1, url:url}]); };
+  img.onerror = function(){ if(cb) cb([]); };
+  img.src = url;
 }
 
 // ─── CARD DEL SET ───────────────────────────────────────────────────────────
 function smBuildCard(s, delay){
   var _displayName = smGetName(s.id, s.artista);
   var slug     = smSlug(s.artista);
-  var cover    = IMG_BASE + 'https://raw.githubusercontent.com/archivosecretodellab-bot/archivosecretodellab/main/img/perfiles/' + (s.artista || dj.artist) + '.jpg';
+  var cover    = IMG_BASE + '/img/perfiles/' + s.artista + '.jpg';
   var isPend   = s.estado === 'Pendiente';
   var sibs     = smSiblings(s.artista);
   var hasMulti = sibs.length > 1;
@@ -6616,6 +6707,142 @@ function preloadPhotos(ids, cb){
     });
   });
 }
+
+
+// ── GOOGLE SHEET AUTO-SYNC (sin OAuth, lectura pública) ─────────
+const SHEET_SYNC_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRnjCXFeJaQl_t5KRbgtfhZFwWN7Mt-mIMhk_ZlmNduW2HOVzk_f8RTk--q6Yi8PN7kQe_ESwdb86Bu/pub?output=csv';
+
+async function syncFromSheet(){
+  // Intentar fetch directo primero (funciona si el sitio está en HTTPS
+  // y Google no bloquea). Si falla por CORS, usar proxy público.
+  var urls = [
+    SHEET_SYNC_URL,
+    'https://api.allorigins.win/raw?url=' + encodeURIComponent(SHEET_SYNC_URL),
+    'https://corsproxy.io/?' + encodeURIComponent(SHEET_SYNC_URL)
+  ];
+
+  var text = null;
+  for(var ui = 0; ui < urls.length; ui++){
+    try{
+      var resp = await fetch(urls[ui], { cache: 'no-store' });
+      if(resp.ok){
+        text = await resp.text();
+        if(text && text.includes(',')) break; // parece CSV válido
+        text = null;
+      }
+    }catch(e){ /* intentar siguiente */ }
+  }
+
+  if(!text){
+    console.warn('[ASDL] Sheet sync: no se pudo obtener el CSV');
+    return;
+  }
+
+  // Parsear CSV
+  var lines = text.trim().split(/\r?\n/);
+  if(lines.length < 2) return;
+  var sep = lines[0].includes(';') ? ';' : ',';
+
+  var headers = lines[0].split(sep).map(function(h){
+    return h.replace(/^["'\s]+|["'\s]+$/g,'').toLowerCase();
+  });
+
+  var col = {
+    nombre: headers.findIndex(function(h){ return /nombre|artista|artist|aka|name/i.test(h); }),
+    yt:     headers.findIndex(function(h){ return /youtube|link.*you|you.*link|link.*yt|yt.*link|url/i.test(h); }),
+    fecha:  headers.findIndex(function(h){ return /fecha|date|estreno/i.test(h); }),
+    estado: headers.findIndex(function(h){ return /estado|status/i.test(h); }),
+    genero: headers.findIndex(function(h){ return /genero|genre|estilo/i.test(h); }),
+  };
+
+  // Fallback: si no detectó YT, usar columna 1 (segunda columna)
+  if(col.yt < 0) col.yt = 1;
+  if(col.nombre < 0) col.nombre = 0;
+
+  var updated = 0;
+  for(var i = 1; i < lines.length; i++){
+    if(!lines[i].trim()) continue;
+    var parts = splitCSVRow(lines[i], sep);
+    var get = function(colIdx){
+      if(colIdx < 0 || colIdx >= parts.length) return '';
+      return (parts[colIdx]||'').replace(/^["'\s]+|["'\s]+$/g,'').trim();
+    };
+
+    var nombre = get(col.nombre);
+    if(!nombre) continue;
+
+    var ytLink = get(col.yt);
+    var fecha  = get(col.fecha);
+    var estado = get(col.estado);
+    var genero = get(col.genero);
+
+    // Buscar DJ — strict match primero, luego case-insensitive
+    var dj = DJS.find(function(d){ return d.artist === nombre || d.alias === nombre; })
+           || DJS.find(function(d){ return d.artist.toLowerCase() === nombre.toLowerCase(); });
+
+    if(dj){
+      if(ytLink && ytLink.match(/https?:\/\//)){
+        videos[dj.i] = ytLink;
+        updated++;
+      }
+      if(fecha)  dj.releaseDate = fecha;
+      if(genero && genero.length > 1) dj.genre = genero;
+      if(estado){
+        var est = estado.toLowerCase();
+        if(est.includes('pronto') || est.includes('soon')){
+          dj.isSoon = true;
+          if(!SOON.includes(dj.artist)) SOON.push(dj.artist);
+        } else if(est.includes('grab') || est.includes('ready') || est.includes('public')){
+          dj.isSoon = false;
+          var si = SOON.indexOf(dj.artist);
+          if(si > -1) SOON.splice(si, 1);
+          if(est.includes('public')) dj.published = true;
+        }
+      }
+    }
+
+    // Actualizar SM array (link YT)
+    if(ytLink && ytLink.match(/https?:\/\//)){
+      SM.forEach(function(s){
+        if(s.artista && s.artista.toLowerCase() === nombre.toLowerCase()){
+          s.url_yt = ytLink;
+        }
+      });
+    }
+  }
+
+  // Refrescar UI
+  if(typeof renderDjs==='function')    renderDjs();
+  if(typeof renderCommon==='function') renderCommon();
+  if(typeof renderCustom==='function') renderCustom();
+
+  console.log('[ASDL] Sheet sync OK — ' + (lines.length-1) + ' filas, ' + updated + ' YT links');
+}
+
+// Ejecutar sync al cargar (si el Sheet es público)
+window.addEventListener('load', function(){
+  setTimeout(syncFromSheet, 1500); // dar tiempo a que DJS/SM se inicialicen
+});
+
+
+// ── GLOBAL SCOPE ────────────────────────────────────────────────
+if(typeof navTo!=='undefined') window.navTo=navTo;
+if(typeof openFicha!=='undefined') window.openFicha=openFicha;
+if(typeof closeFicha!=='undefined') window.closeFicha=closeFicha;
+if(typeof openAdmin!=='undefined') window.openAdmin=openAdmin;
+if(typeof closeAdmin!=='undefined') window.closeAdmin=closeAdmin;
+if(typeof adminTab!=='undefined') window.adminTab=adminTab;
+if(typeof renderDjs!=='undefined') window.renderDjs=renderDjs;
+if(typeof renderCommon!=='undefined') window.renderCommon=renderCommon;
+if(typeof renderCustom!=='undefined') window.renderCustom=renderCustom;
+if(typeof syncFromSheet!=='undefined') window.syncFromSheet=syncFromSheet;
+if(typeof jamSave!=='undefined') window.jamSave=jamSave;
+if(typeof jamIndexNew!=='undefined') window.jamIndexNew=jamIndexNew;
+if(typeof saveFichaAdmin!=='undefined') window.saveFichaAdmin=saveFichaAdmin;
+if(typeof applyCounterOverride!=='undefined') window.applyCounterOverride=applyCounterOverride;
+if(typeof clearCounterOverride!=='undefined') window.clearCounterOverride=clearCounterOverride;
+if(typeof importLeadsCSV!=='undefined') window.importLeadsCSV=importLeadsCSV;
+if(typeof importFormSheet!=='undefined') window.importFormSheet=importFormSheet;
 
 </script>
 </body>
