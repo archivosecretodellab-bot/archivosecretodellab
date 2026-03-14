@@ -2716,18 +2716,23 @@ let cardQueue = [], cardActive = new Set();
 function initCards(){
   cardQueue = [...DJS].filter(d=>!d.isSoon || SOON.includes(d.artist))
     .map(d=>({...d}));
-  // shuffle
   for(let i=cardQueue.length-1;i>0;i--){
     const j=Math.floor(Math.random()*(i+1));
     [cardQueue[i],cardQueue[j]]=[cardQueue[j],cardQueue[i]];
   }
+  // Spawnar la primera card y luego controlar con MAX_CARDS_ON_SCREEN
   spawnCard();
-  setInterval(()=>{if(cardQueue.length>0)spawnCard();else{
-    // reset queue when all shown
-    cardQueue=[...DJS].filter(d=>!d.isSoon||SOON.includes(d.artist)).map(d=>({...d}));
-    for(let i=cardQueue.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[cardQueue[i],cardQueue[j]]=[cardQueue[j],cardQueue[i]];}
-    cardActive.clear();
-  }},2800);
+  setInterval(()=>{
+    var onScreen = document.querySelectorAll('#cl .fc').length;
+    if(onScreen >= 3) return; // máx 3 cards simultáneas
+    if(cardQueue.length > 0){
+      spawnCard();
+    } else {
+      cardQueue=[...DJS].filter(d=>!d.isSoon||SOON.includes(d.artist)).map(d=>({...d}));
+      for(let i=cardQueue.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[cardQueue[i],cardQueue[j]]=[cardQueue[j],cardQueue[i]];}
+      cardActive.clear();
+    }
+  }, 4500); // más espacio entre cada card
 }
 
 function spawnCard(){
@@ -2749,17 +2754,31 @@ function spawnCard(){
   el.className = 'fc fc-glass';
   if(soon) el.classList.add('fc-soon-glass');
 
-  // Aplicar foto si existe en localStorage (thumb_ o perfil_)
-  var _hpfoto = null;
-  if(smMatch){
-    try{ _hpfoto = localStorage.getItem('perfil_'+smMatch.id) || localStorage.getItem('thumb_'+smMatch.id); }catch(e){}
-  }
-  if(!_hpfoto && dj.fotoPerfil){ _hpfoto = dj.fotoPerfil; }
-  if(_hpfoto && !soon){
-    el.style.backgroundImage = 'url('+_hpfoto+')';
-    el.style.backgroundSize = 'cover';
-    el.style.backgroundPosition = 'center top';
-    el.classList.add('fc-has-photo');
+  // Aplicar foto — primero cache en memoria, luego GitHub
+  var _hpfoto = _photoCache[dj.i] || photos[dj.i] || null;
+  if(!_hpfoto && smMatch) _hpfoto = _photoCache[smMatch.id] || photos[smMatch.id] || null;
+  if(!_hpfoto && dj.fotoPerfil) _hpfoto = dj.fotoPerfil;
+  // Foto de perfil desde GitHub como fallback final
+  var _githubFoto = IMG_BASE + '/img/perfiles/' + dj.artist + '.jpg';
+  if(!soon){
+    if(_hpfoto){
+      el.style.backgroundImage = 'url('+_hpfoto+')';
+    } else {
+      // Intentar cargar desde GitHub silenciosamente
+      var testImg = new Image();
+      testImg.onload = function(){
+        el.style.backgroundImage = 'url('+_githubFoto+')';
+        el.style.backgroundSize = 'cover';
+        el.style.backgroundPosition = 'center top';
+        el.classList.add('fc-has-photo');
+      };
+      testImg.src = _githubFoto;
+    }
+    if(_hpfoto){
+      el.style.backgroundSize = 'cover';
+      el.style.backgroundPosition = 'center top';
+      el.classList.add('fc-has-photo');
+    }
   }
 
   el.innerHTML = `
@@ -3402,10 +3421,9 @@ function openCropperModal(id, dataUrl){
 
 function applyPhotoResult(id, dataUrl){
   photos[id] = dataUrl;
-  try{
-    localStorage.setItem('perfil_'+id, dataUrl);
-    localStorage.setItem('thumb_'+id, dataUrl);
-  }catch(err){ console.warn('Foto demasiado grande para localStorage'); }
+  _photoCache[id] = dataUrl;
+  // Guardar en IndexedDB (sin límite de 5MB)
+  savePhoto(id, dataUrl);
   openFicha(id);
   if(typeof renderDjs==='function') renderDjs();
   if(typeof renderCommon==='function') renderCommon();
@@ -5684,6 +5702,13 @@ document.addEventListener('DOMContentLoaded', function(){
   renderCommon();
   renderCustom();
   renderPublic();
+  // Cargar todas las fotos desde IndexedDB al cache en memoria
+  var allIds = DJS.map(function(d){ return d.i; });
+  preloadPhotos(allIds, function(){
+    // Refrescar grids con fotos ya cargadas
+    renderDjs();
+    renderCommon();
+  });
 });
 
 // ── EDITOR DE FICHAS ADMIN ──────────────────────────────────────
@@ -6494,16 +6519,102 @@ async function saveFichaAdmin(id){
 // ── FOTO DE PERFIL EN FICHA ──────────────────────────────────────
 function buildPhotoHTML(id, dj){
   var imgStyle = 'width:100%;height:100%;object-fit:cover;object-position:center top';
-  if(photos[id]){
-    return '<img src="' + photos[id] + '" alt="' + dj.artist + '" style="' + imgStyle + '">';
+  // 1. Memoria (recién subida o ya cargada)
+  var cached = _photoCache[id] || photos[id] || null;
+  if(cached){
+    return '<img src="' + cached + '" alt="' + dj.artist + '" style="' + imgStyle + '">';
   }
+  // 2. localStorage fallback (fotos pequeñas que sí entraron)
   var stored = null;
   try{ stored = localStorage.getItem('perfil_'+id) || localStorage.getItem('thumb_'+id); }catch(e){}
   if(stored){
+    photos[id] = stored; _photoCache[id] = stored;
     return '<img src="' + stored + '" alt="' + dj.artist + '" style="' + imgStyle + '">';
   }
-  var perfilUrl = IMG_BASE + 'https://raw.githubusercontent.com/archivosecretodellab-bot/archivosecretodellab/main/img/perfiles/' + dj.artist + '.jpg';
+  // 3. GitHub raw
+  var perfilUrl = IMG_BASE + '/img/perfiles/' + dj.artist + '.jpg';
   return '<img src="' + perfilUrl + '" alt="' + dj.artist + '" style="' + imgStyle + '" onerror="this.style.display=&quot;none&quot;">';
+}
+
+
+// ── PHOTO STORAGE — IndexedDB (sin límite) + fallback localStorage ──
+var _idb = null;
+
+function idbOpen(){
+  if(_idb) return Promise.resolve(_idb);
+  return new Promise(function(resolve, reject){
+    var req = indexedDB.open('asdl_photos', 1);
+    req.onupgradeneeded = function(e){
+      e.target.result.createObjectStore('photos');
+    };
+    req.onsuccess = function(e){
+      _idb = e.target.result;
+      resolve(_idb);
+    };
+    req.onerror = function(){ reject(req.error); };
+  });
+}
+
+function idbSet(key, value){
+  return idbOpen().then(function(db){
+    return new Promise(function(resolve, reject){
+      var tx = db.transaction('photos', 'readwrite');
+      tx.objectStore('photos').put(value, key);
+      tx.oncomplete = function(){ resolve(); };
+      tx.onerror = function(){ reject(tx.error); };
+    });
+  }).catch(function(err){
+    // fallback localStorage
+    try{ localStorage.setItem(key, value); }catch(e){}
+  });
+}
+
+function idbGet(key){
+  return idbOpen().then(function(db){
+    return new Promise(function(resolve, reject){
+      var tx = db.transaction('photos', 'readonly');
+      var req2 = tx.objectStore('photos').get(key);
+      req2.onsuccess = function(){ resolve(req2.result || null); };
+      req2.onerror = function(){ resolve(null); };
+    });
+  }).catch(function(){
+    // fallback localStorage
+    try{ return Promise.resolve(localStorage.getItem(key)); }catch(e){ return Promise.resolve(null); }
+  });
+}
+
+// Guardar foto (async — no bloquea UI)
+function savePhoto(id, dataUrl){
+  var key = 'perfil_' + id;
+  idbSet(key, dataUrl).then(function(){
+    // También intentar localStorage como fallback (puede fallar si está lleno)
+    try{ localStorage.setItem('thumb_'+id, dataUrl); }catch(e){}
+  });
+}
+
+// Obtener foto (devuelve Promise<string|null>)
+function getPhoto(id){
+  return idbGet('perfil_'+id).then(function(val){
+    if(val) return val;
+    // Fallback localStorage
+    try{ return localStorage.getItem('perfil_'+id) || localStorage.getItem('thumb_'+id) || null; }
+    catch(e){ return null; }
+  });
+}
+
+// Precargar todas las fotos al inicio (para cards del home)
+var _photoCache = {}; // en memoria una vez cargadas
+
+function preloadPhotos(ids, cb){
+  var pending = ids.length;
+  if(!pending){ if(cb) cb(); return; }
+  ids.forEach(function(id){
+    getPhoto(id).then(function(val){
+      if(val){ photos[id] = val; _photoCache[id] = val; }
+      pending--;
+      if(pending === 0 && cb) cb();
+    });
+  });
 }
 
 </script>
