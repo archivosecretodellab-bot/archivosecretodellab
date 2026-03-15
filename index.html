@@ -178,7 +178,17 @@ background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0
 }
 @media(max-width:700px){
   .pgrid{padding:12px 8px 40px;grid-template-columns:1fr}
-  .gc-set{width:100%}
+  .gc-set-img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center top;
+  display:block;
+  z-index:0;
+}
+.gc-set{width:100%}
 }
 
 /* GRID CARD */
@@ -5383,21 +5393,21 @@ function smBuildCard(s, delay){
   var sibs     = smSiblings(s.artista);
   var hasMulti = sibs.length > 1;
 
-  var artNombre = s.artista; // MAYUSCULAS — igual que archivos en GitHub
-  // Calcular set_num cronológico real: orden por fecha entre todos los sets del artista
+  var artNombre = s.artista;
+  // Calcular orden cronológico real
   var allSets = SM.filter(function(x){
     return x.artista.split(' B2B ')[0].toUpperCase() === artNombre.split(' B2B ')[0].toUpperCase()
       && x.estado !== 'Oculto';
   }).sort(function(a,b){ return a.fecha < b.fecha ? -1 : a.fecha > b.fecha ? 1 : 0; });
   var chronoNum = allSets.findIndex(function(x){ return x.id === s.id; }) + 1;
   if(chronoNum < 1) chronoNum = s.set_num || 1;
-  // Usar filename exacto del mapa de covers
+
   var coverFilename = getCoverFilename(artNombre, chronoNum);
-  var coverUrl  = imgURL('img/covers', coverFilename);
-  var perfilUrl = imgURL('img/perfiles', artNombre);
-  var storedCover = null;
+  var coverUrl      = imgURL('img/covers', coverFilename);
+  var storedCover   = null;
   try{ storedCover = localStorage.getItem('cover_' + s.id); }catch(e){}
 
+  // Card container
   var card = document.createElement('div');
   card.className = 'gc-set no-cover';
   card.style.animationDelay = delay + 's';
@@ -5407,53 +5417,53 @@ function smBuildCard(s, delay){
     openFicha(this.dataset.smid);
   });
 
-  function applyBg(url){
-    // Comillas dentro de url() para manejar paréntesis en nombres de archivo
-    card.style.backgroundImage = 'url("' + url + '")';
-    card.style.backgroundSize = 'cover';
-    card.style.backgroundPosition = 'center top';
-    card.classList.remove('no-cover');
-    card.classList.add('has-cover');
+  // ── Imagen como <img> (no background-image) — funciona con CORS ──
+  var imgEl = document.createElement('img');
+  imgEl.className = 'gc-set-img';
+  imgEl.alt = artNombre;
+  imgEl.setAttribute('loading', 'lazy');
+  imgEl.setAttribute('decoding', 'async');
+
+  function showImg(url){
+    imgEl.src = url;
+    imgEl.onload = function(){
+      card.classList.remove('no-cover');
+      card.classList.add('has-cover');
+    };
+    imgEl.onerror = function(){
+      // Fallback B2B: probar primer artista
+      var firstArtist = artNombre.includes(' B2B ')
+        ? artNombre.split(' B2B ')[0].trim() : null;
+      if(firstArtist && imgEl.dataset.triedFallback !== '1'){
+        imgEl.dataset.triedFallback = '1';
+        var fallbackFn = getCoverFilename(firstArtist, 1);
+        imgEl.src = imgURL('img/covers', fallbackFn);
+      } else {
+        imgEl.style.display = 'none';
+        console.warn('[ASDL] Cover no encontrada: ' + imgEl.src);
+      }
+    };
   }
 
-  // Solo usar img/covers/ — si no existe, queda azul eléctrico (no mezclar con perfiles)
   if(storedCover){
-    applyBg(storedCover);
+    showImg(storedCover);
   } else {
     var obs = new IntersectionObserver(function(entries){
       if(!entries[0].isIntersecting) return;
       obs.disconnect();
-      // Intentar coverUrl exacto primero
-      // Para B2B: "RISCO B2B MATI PINO.jpg"
-      // Si no existe, intentar solo el primer artista del B2B
-      var firstArtist = artNombre.includes(' B2B ')
-        ? artNombre.split(' B2B ')[0].trim()
-        : null;
-      // Intentar en orden: NOMBRE.jpg → NOMBRE 1.jpg → primer artista B2B
-      function tryCovers(urls){
-        if(!urls.length) return; // azul eléctrico
-        var url = urls[0];
-        var rest = urls.slice(1);
-        var img = new Image();
-        img.onload = function(){ applyBg(url); };
-        img.onerror = function(){ tryCovers(rest); };
-        img.src = url;
-      }
-      var candidates = [coverUrl];
-      // Fallback B2B: primer artista del B2B
-      if(firstArtist){
-        var firstFilename = getCoverFilename(firstArtist, 1);
-        candidates.push(imgURL('img/covers', firstFilename));
-      }
-      tryCovers(candidates);
+      showImg(coverUrl);
     }, {rootMargin:'300px'});
     obs.observe(card);
   }
 
+  card.appendChild(imgEl);
+
+  // Overlay
   var overlay = document.createElement('div');
   overlay.className = 'gc-set-overlay';
   card.appendChild(overlay);
 
+  // Body
   var eH = isPend
     ? '<div class="gc-set-estado pend">Pr\xF3ximamente</div>'
     : '<div class="gc-set-estado pub">Publicado</div>';
