@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADfUlEQVR4nO2WPW9cRRSGnzP3YxdH2SQyDh+xBCJgUZBEEZQUUFGkpk3FT4DadotogAYoImoo3CAahISokYJMEmxAiXAky47t2MYf6707My/FvWuvdzdg2SslRY40ujvnXs085z1zziw8tSfLvklAaTWSAcM9bkJANszV0vIx6WA6Ppd8d83FV65BuxbVbhhpCibDZPZM9O7XLx4E+xFu5bASBy+5on7fbcH0wO+raGRgesFmZzNduiS2gATorCWMOt4W/mlq5o11Prx/orC7LD08TbYjm15sh4qAg3A2otNoo27vzZy3t74i+l0l6S4UGF5QAAEX8pYY2VPSMgttibxZcGtxg4/+PgKAHFjlMweJs0okwxB7pHr5zVSvfQkBQgexW/VyrgAQASO1i22n81cecn2+Wns/HT0A5QJl7h2RbQ/RY5EoZOTNSCsAsdyycyDFfjZLGDuAsojqeZaeaeAt9lZSL4CMGsFWlrxmr7fT+02nLIMosyyCkxQSMydpt6sa/P4vM6dun6+eZsn2s/nnE6uF3d2Xpqz3Q7EHR53CFj4zOzM64t/9BDZz4RLARLsOuFKlo1VjTkccmXEqe96u3ljS2x90Dv4hAMNMBKIt30zj5UlH44JoYSSVyPUjbdpnAgjRcdaCnbna7e1NQRZZI9jD9VT1cbEuEQRhCM1HEaKBn6scDgi9AHlkZyXickf+osr8OY4o9/+bGdacr86ndSgOXkNNVvyVaWzMcdZBjMPb3CEKsM3fy/lP9AEIctj502lsHGqABrTV45gAS8SmYliuesE7sQ8AokVrzTk1Jg43lxMDyMhMtrca+PleF1WvAr4QGwtQfx3aMDz9BTmifW+NG1udEuwDgLAm21015RdFMeD9cc2ikQCtSv7ynunaoKQRzSURU0gvVABDvfujFb/1+roi/LQmNu86jZxznM4ghiGWnxN7EHfulPNv9w/YPsAoL+XeFu8Y58bLjjfMCnAu2kYMPPij9N3uB4jMubabmbd4amLoypMh/PIqXy+Wrql+gHWaO1v++1+cpa+KtgciKBx/xGrgIfNQLMAPO90VAAd3gcG0h/dzcFccp1NhnKwIOir6xNGgTfNm5Ujour87ACrJpry3xUmhy6I1Aq5W0soenZb/OipRRiIRCzT3cembesSf2cdkA8JSUvmH2YsBYnfun9oTY/8CJraxO6wpAgUAAAAASUVORK5CYII=">
+<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/archivosecretodellab-bot/archivosecretodellab/main/favicon.png">
 <title>Archivo Secreto del Lab — Grabación de DJ Sets en Buenos Aires</title>
 <meta name="description" content="Registro audiovisual independiente. Grabación de DJ sets en Buenos Aires, alquiler de cabina DJ profesional. +118 sets grabados. Escena electrónica porteña.">
 <meta name="keywords" content="grabar dj set Buenos Aires, grabación dj set Argentina, cabina dj alquiler Buenos Aires, donde grabar dj set Buenos Aires, registro audiovisual dj, archivo secreto del lab, dj sets electrónica Buenos Aires">
@@ -1555,6 +1555,15 @@ function getCoverFilename(artista, chronoNum){
   // fallback genérico
   return chronoNum > 1 ? artista + ' ' + chronoNum : artista;
 }
+
+// Construir URL de imagen con espacios correctamente codificados
+function imgURL(folder, filename){
+  // Codificar cada parte del nombre por separado (no la ruta entera)
+  var encoded = filename.split('/').map(function(part){
+    return encodeURIComponent(part);
+  }).join('/');
+  return IMG_BASE + '/' + folder + '/' + encoded + '.jpg';
+}
 const IMG_BASE = 'https://raw.githubusercontent.com/archivosecretodellab-bot/archivosecretodellab/main';
 const GCAL_CALENDAR_ID = 'archivo.secreto.dellab@gmail.com';
 const GCAL_SCOPES = 'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/spreadsheets.readonly';
@@ -3026,7 +3035,7 @@ function spawnCard(){
   if(!_hpfoto && smMatch) _hpfoto = _photoCache[smMatch.id] || photos[smMatch.id] || null;
   if(!_hpfoto && dj.fotoPerfil) _hpfoto = dj.fotoPerfil;
   // Foto de perfil desde GitHub como fallback final
-  var _githubFoto = IMG_BASE + '/img/perfiles/' + dj.artist + '.jpg';
+  var _githubFoto = imgURL('img/perfiles', dj.artist);
   if(!soon){
     if(_hpfoto){
       el.style.backgroundImage = 'url('+_hpfoto+')';
@@ -5379,8 +5388,8 @@ function smBuildCard(s, delay){
   if(chronoNum < 1) chronoNum = s.set_num || 1;
   // Usar filename exacto del mapa de covers
   var coverFilename = getCoverFilename(artNombre, chronoNum);
-  var coverUrl  = IMG_BASE + '/img/covers/' + coverFilename + '.jpg';
-  var perfilUrl = IMG_BASE + '/img/perfiles/' + artNombre + '.jpg';
+  var coverUrl  = imgURL('img/covers', coverFilename);
+  var perfilUrl = imgURL('img/perfiles', artNombre);
   var storedCover = null;
   try{ storedCover = localStorage.getItem('cover_' + s.id); }catch(e){}
 
@@ -5428,7 +5437,7 @@ function smBuildCard(s, delay){
       // Fallback B2B: primer artista del B2B
       if(firstArtist){
         var firstFilename = getCoverFilename(firstArtist, 1);
-        candidates.push(IMG_BASE + '/img/covers/' + firstFilename + '.jpg');
+        candidates.push(imgURL('img/covers', firstFilename));
       }
       tryCovers(candidates);
     }, {rootMargin:'300px'});
@@ -6800,7 +6809,7 @@ function buildPhotoHTML(id, dj){
     return '<img src="' + stored + '" alt="' + dj.artist + '" style="' + imgStyle + '">';
   }
   // 3. GitHub raw
-  var perfilUrl = IMG_BASE + '/img/perfiles/' + dj.artist + '.jpg';
+  var perfilUrl = imgURL('img/perfiles', dj.artist);
   return '<img src="' + perfilUrl + '" alt="' + dj.artist + '" style="' + imgStyle + '" onerror="this.style.display=&quot;none&quot;">';
 }
 
