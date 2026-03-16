@@ -184,7 +184,7 @@ background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0
   width:100%;
   height:100%;
   object-fit:cover;
-  object-position:center center;
+  object-position:center 25%;
   display:block;
   z-index:0;
 }
@@ -1251,10 +1251,10 @@ input[type=file]{display:none}
               <div class="clink-sub">Novedades, convocatorias y detrás de cámara</div>
             </div>
           </a>
-          <a class="clink" href="/cdn-cgi/l/email-protection#5424263b302137373d3b3a143526373c3d223b2731372631203b3031383835367a373b39" target="_blank">
+          <a href="/cdn-cgi/l/email-protection#cbbbb9a4afbea8a8a2a4a58baab9a8a3a2bda4b8aea8b9aebfa4afaea7a7aaa9e5a8a4a6" class="clink" style="">
             <svg class="clink-icon" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>
             <div>
-              <div class="clink-main"><span class="__cf_email__" data-cfemail="48383a272c3d2b2b21272608293a2b20213e273b2d2b3a2d3c272c2d2424292a662b2725">[email&#160;protected]</span></div>
+              <div class="clink-main"><span class="__cf_email__" data-cfemail="d0a0a2bfb4a5b3b3b9bfbe90b1a2b3b8b9a6bfa3b5b3a2b5a4bfb4b5bcbcb1b2feb3bfbd">[email&#160;protected]</span></div>
               <div class="clink-sub">Consultas, booking y producción</div>
             </div>
           </a>
@@ -1398,8 +1398,75 @@ input[type=file]{display:none}
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="https://apis.google.com/js/api.js"></script>
-<script src="https://accounts.google.com/gsi/client"></script>
+<script src="https://accounts.google.com/gsi/client">
+</script>
 <script>
+
+// ── NAVEGACIÓN ───────────────────────────────────────────────────
+function navTo(pg, el){
+  // Ocultar todas las páginas
+  document.querySelectorAll('.pg').forEach(function(p){ p.classList.remove('on'); });
+
+  // Desactivar todos los nav items
+  document.querySelectorAll('.nt').forEach(function(n){ n.classList.remove('on'); });
+
+  // Mostrar la página destino
+  var target = document.getElementById('pg-' + pg);
+  if(target) target.classList.add('on');
+
+  // Activar nav item — el puede ser el elemento clickeado o null
+  if(el && el.classList){
+    el.classList.add('on');
+  } else {
+    // Buscar por data-pg
+    var navItem = document.querySelector('.nt[data-pg="' + pg + '"]');
+    if(navItem) navItem.classList.add('on');
+  }
+
+  // Acciones específicas por página
+  if(pg === 'home'){
+    if(typeof initCards === 'function' && !window._cardsInited){
+      window._cardsInited = true;
+      initCards();
+    }
+    if(typeof runCounter === 'function') runCounter();
+  }
+  if(pg === 'djsets' || pg === 'archivo'){
+    if(typeof renderDjs === 'function') renderDjs();
+  }
+  if(pg === 'contacto'){
+    if(typeof loadFotosContacto === 'function' && !window._galeriaLoaded){
+      window._galeriaLoaded = true;
+      loadFotosContacto();
+    }
+  }
+  if(pg === 'agenda'){
+    if(typeof renderCal30Public === 'function') renderCal30Public();
+  }
+
+  // Scroll al top
+  window.scrollTo(0, 0);
+}
+
+// Sub-navegación (tabs dentro de DJ Sets)
+function navSub(sub, el){
+  document.querySelectorAll('.snt').forEach(function(s){ s.classList.remove('on'); });
+  if(el && el.classList) el.classList.add('on');
+  var cont = document.getElementById('rc-cont');
+  if(!cont) return;
+  if(sub === 'djs')    { renderDjs();       return; }
+  if(sub === 'jams')   { renderJamsInto(cont); return; }
+  if(sub === 'common') { renderCommon();    return; }
+  if(sub === 'custom') { renderCustom();    return; }
+  if(sub === 'public') { renderPublic();    return; }
+}
+
+window.navTo  = navTo;
+window.navSub = navSub;
+
+window.navTo  = navTo;
+window.navSub = navSub;
+
 // ═══════════════════════════════════════════════
 // GOOGLE CALENDAR CONFIG
 // ═══════════════════════════════════════════════
@@ -1575,6 +1642,148 @@ function imgURL(folder, filename){
 function imgOnError(el, url){
   console.warn('[ASDL] Cover no encontrada: ' + url);
   el.style.display = 'none';
+}
+
+// ── PERFILES MAP — nombres exactos en img/perfiles/ ────────────
+var PERFILES_MAP = {
+  '(B)EVA': '(B)EVA',
+  'ABBICA': 'ABBICA',
+  'ADHILA': 'ADHILA',
+  'AGUS COSTA': 'AGUS COSTA',
+  'AGUS COSTA B2B AGUS DOMENE': 'AGUS COSTA',
+  'AGUS DOMENE': 'AGUS DOMENE',
+  'AGUS OLIVO': 'AGUS OLIVO',
+  'AGUS SAFI': 'SAFI',
+  'AIXA YAEL': 'AIXA YAEL',
+  'ALEX HEDIGER': 'ALEX HEDIGER',
+  'ANTONELLA BELEN': 'ANTONELLA BELEN',
+  'ARTHUR CHEFFER': 'ARTHUR CHEFFER',
+  'ATUA': 'ATUA',
+  'BAU OLIVARES': 'BAU OLIVARES',
+  'BLACKMAIN': 'BLACKMAIN',
+  'BORONIK': 'BORONIK',
+  'BORONIK B2B SAX': 'BORONIK',
+  'BOTTI': 'BOTTI',
+  'BRIKET': 'BRIKET',
+  'BVLLY': 'BVLLY',
+  'CARMELO': 'CARMELO',
+  'CATACLISMO': 'CATACLISMO',
+  'D1NO DUBZ': 'D1NO DUBZ',
+  'DI-MOSS': 'DIMOSS',
+  'DIMOSS': 'DIMOSS',
+  'DJ BRIVN': 'DJ BRIVN',
+  'EL HEREJE': 'EL HEREJE',
+  'EVGENI TROSHKOV': 'EVGENI TROSHKOV',
+  'EZRA': 'EZRA',
+  'FALSO': 'FALSO',
+  'FARRS': 'FARRS',
+  'FELIPE FERREYRA': 'FELIPE FERREYRA',
+  'FELIPE TABORDA': 'TABORDA',
+  'GABELL': 'GABELL',
+  'GERMANY': 'GERMANY',
+  'GRECIA': 'GRECIA',
+  'HACHI': 'HACHI',
+  'IVAN CORDA': 'IVAN CORDA',
+  'IVÁN CORDA': 'IVAN CORDA',
+  'JEILI': 'JEILI',
+  'JEILI B2B TUCUMALO': 'JEILI',
+  'JONY PEDER': 'JONY PEDER',
+  'JORRON': 'JORRON',
+  'JORRÓN': 'JORRON',
+  'JU4MPI': 'JU4MPI',
+  'JULI HARLEY': 'JULI HARLEY',
+  'KAIF': 'KAIF',
+  'KOMI': 'KOMI',
+  'KONKOR': 'KONKOR',
+  'KONKØR': 'KONKOR',
+  'KOVEN': 'KOVEN',
+  'KPUCCINA': 'KPUCCINA',
+  'LEF': 'LEF',
+  'LENNY OWEN': 'LENNY OWEN',
+  'LENNY ØWEN': 'LENNY OWEN',
+  'LEON ELLUS': 'LEON ELLUS',
+  'LETARGIKO': 'LETARGIKO',
+  'LOMAKIN': 'LOMAKIN',
+  'LUCIO KA': 'LUCIO KÁ',
+  'LUCIO KÁ': 'LUCIO KÁ',
+  'LUGHA': 'LUGHA',
+  'LUXRAY': 'LUXRAY',
+  'LYANNA': 'LYANNA',
+  'MAKSE': 'MAKSE',
+  'MARA KOLEVITCH': 'MARA KOLEVITCH',
+  'MARCOS ALVAREZ': 'MARCOS ALVAREZ',
+  'MARK STRAITS': 'MARK STRAITS',
+  'MARSHALL': 'MARSHALL',
+  'MARTIN G': 'MARTIN G',
+  'MARTÍN G': 'MARTIN G',
+  'MATI SLAST': 'MATI SLAST',
+  'MORTEL': 'MORTEL',
+  'MVTANT KITTY': 'MVTANT KITTY',
+  'N!NΞ': 'NINE',
+  'N1NK09': 'NINK09',
+  'NADERIX': 'NADERIX',
+  'NEEKHO': 'NEEKHO',
+  'NEIKITA': 'NEIKITA',
+  'NESKAU': 'NESKAU',
+  'NEÊKHØ': 'NEEKHO',
+  'NIELO': 'NIELO',
+  'NINE': 'NINE',
+  'NINK09': 'NINK09',
+  'NMIN': 'NMIN',
+  'NUJIRE': 'NUJIRE',
+  'NUJIRE B2B D1NO DUBZ': 'NUJIRE',
+  'OLU': 'OLU',
+  'P4IVA B2B DELIYUS': 'P4IVA B2B DELIYUS',
+  'PACHO': 'PACHO',
+  'PAIVA B2B DELIYUS': 'P4IVA B2B DELIYUS',
+  'PERTY': 'PERTY',
+  'RAWDON': 'RAWDON',
+  'REBEKAOS': 'REBEKAOS',
+  'RIBZ': 'RIBZ',
+  'RISCO B2B MATI PINO': 'RISCO B2B MATI PINO',
+  'ROBER AYALA': 'ROBER AYALA',
+  'ROXIE': 'ROXIE',
+  'RUKU': 'RUKU',
+  'SAFI': 'SAFI',
+  'SAITI': 'SAITI',
+  'SANTI DELFINO': 'SANTI DELFINO',
+  'SANTI PAEZ': 'SANTI PAEZ',
+  'SANTOS': 'SANTOS',
+  'SATURE': 'SATURE',
+  'SAX': 'SAX',
+  'SIKO': 'SIKO',
+  'SIO': 'SIO',
+  'SIO B2B PERTY': 'SIO',
+  'SOULDER': 'SOULDER',
+  'SOUND SIX': 'TUSIMONIUM',
+  'SOUNDSIX': 'TUSIMONIUM',
+  'SUVMASTER': 'SUVMASTER',
+  'TABORDA': 'TABORDA',
+  'TEKNILLS': 'TEKNILLS',
+  'TEKNILS': 'TEKNILLS',
+  'THIAGO LAUTARO': 'THIAGO LAUTARO',
+  'TINXH': 'TINXH',
+  'TROMIX': 'TROMIX',
+  'TRØMIX': 'TROMIX',
+  'TUCUMALO': 'TUCUMALO',
+  'TUSIMONIUM': 'TUSIMONIUM',
+  'UMRESH': 'UMRESH',
+  'UNDERDUST': 'UNDERDUST',
+  'VICTORIA POLETTI': 'VICTORIA POLETTI',
+  'VIKTOR NAHVEL': 'VIKTOR NAHVEL',
+  'VORTEX': 'VORTEX',
+  'WAXX': 'WAXX',
+  'WEARSPRADA': 'WEARSPRADA',
+  'ZLATA': 'ZLATA',
+};
+
+function getPerfilFilename(artista){
+  var key = artista.toUpperCase();
+  if(PERFILES_MAP[key]) return PERFILES_MAP[key];
+  // buscar sin B2B
+  var base = artista.split(' B2B ')[0].trim().toUpperCase();
+  if(PERFILES_MAP[base]) return PERFILES_MAP[base];
+  return artista; // fallback
 }
 const IMG_BASE = 'https://raw.githubusercontent.com/archivosecretodellab-bot/archivosecretodellab/main';
 const GCAL_CALENDAR_ID = 'archivo.secreto.dellab@gmail.com';
@@ -4915,33 +5124,18 @@ function setGaleriaLocal(arr){
   try{ localStorage.setItem('asdl_galeria_contacto', JSON.stringify(arr)); }catch(e){}
 }
 async function loadFotosContacto(){
-  // Primero: intentar img/contacto/1..10.jpg (GitHub)
-  var githubFotos = [];
-  for(var i=1;i<=10;i++) githubFotos.push(IMG_BASE+'/img/contacto/'+i+'.jpg');
   var localFotos = getGaleriaLocal();
-  // Fusionar: local (subidas desde admin) + GitHub paths
-  var merged = localFotos.length ? localFotos : githubFotos;
-  if(merged.length){
-    fotosContacto = merged;
+  if(localFotos.length){
+    fotosContacto = localFotos;
     renderCarousel();
     return;
   }
-  // Fallback Supabase
-  fetch(SUPA_URL+'/rest/v1/config?key=eq.fotos_contacto&select=value&limit=1',{
-    headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
-  }).then(function(r){ return r.json(); }).then(function(json){
-    if(json&&json[0]&&json[0].value){
-      try{
-        var arr=JSON.parse(json[0].value);
-        if(Array.isArray(arr)&&arr.length){ fotosContacto=arr; renderCarousel(); return; }
-      }catch(e){}
-    }
-    fotosContacto = githubFotos;
-    renderCarousel();
-  }).catch(function(){
-    fotosContacto = githubFotos;
-    renderCarousel();
+  // Generar array dinámico 1.jpg → 120.jpg
+  var githubFotos = Array.from({length: 120}, function(_, i){
+    return IMG_BASE + '/img/contacto/' + (i + 1) + '.jpg';
   });
+  fotosContacto = githubFotos;
+  renderCarousel();
 }
 
 function renderCarousel(){
@@ -4955,21 +5149,25 @@ function renderCarousel(){
     track.style.animation = 'none';
     return;
   }
+  track.innerHTML = '';
+  // Duplicar para scroll infinito continuo
   var set = valid.concat(valid);
-  var markup = [];
-  for(var i=0;i<set.length;i++){
+  set.forEach(function(url, i){
     var el = document.createElement('img');
-    el.id = 'cimg-'+i;
     el.className = 'caru-img';
-    el.src = set[i];
+    el.alt = 'Archivo Secreto del Lab';
     el.loading = 'lazy';
     el.decoding = 'async';
-    el.alt = 'Archivo Secreto del Lab';
+    el.style.objectFit = 'cover';
+    el.style.objectPosition = 'center center';
     el.onerror = function(){ this.style.display='none'; };
+    el.src = url;
     track.appendChild(el);
-  }
-  var dur = Math.min(90, Math.max(20, valid.length * 5));
-  track.style.animation = 'caruScroll '+dur+'s linear infinite';
+  });
+  // Velocidad: ~4s por imagen, mínimo 30s, máximo 120s
+  var dur = Math.min(120, Math.max(30, valid.length * 4));
+  track.style.animationDuration = dur + 's';
+  track.style.animationPlayState = 'running';
 }
 
 // Disparar carga cuando la página de contacto se activa
@@ -4997,7 +5195,7 @@ async function renderAdminGaleria(c){
           // Thumbnail 4:5 en el panel admin
           var tw=88, th=Math.round(88*5/4); // 88x110px manteniendo 4:5
           return '<div style="position:relative;width:'+tw+'px;margin-bottom:4px">'
-            + '<img src="'+url+'" style="width:'+tw+'px;height:'+th+'px;object-fit:cover;object-position:center top;border:1px solid #222;display:block;background:#0a0a0a">'
+            + '<img src="'+url+'" style="width:'+tw+'px;height:'+th+'px;object-fit:cover;object-position:center center;border:1px solid #222;display:block;background:#0a0a0a">'
             + '<button onclick="gRemove('+i+')" style="position:absolute;top:3px;right:3px;width:18px;height:18px;background:rgba(0,0,0,.8);border:1px solid #555;color:#fff;font-size:9px;cursor:pointer;line-height:1;padding:0">✕</button>'
             + '<div style="font-size:7px;letter-spacing:.1em;color:var(--wd);padding:2px 1px;text-align:center">'+(i+1)+'</div>'
             + '</div>';
@@ -6811,7 +7009,7 @@ async function saveFichaAdmin(id){
 
 // ── FOTO DE PERFIL EN FICHA ──────────────────────────────────────
 function buildPhotoHTML(id, dj){
-  var imgStyle = 'width:100%;height:100%;object-fit:cover;object-position:center top';
+  var imgStyle = 'width:100%;height:100%;object-fit:cover;object-position:center center';
   // 1. Memoria (recién subida o ya cargada)
   var cached = _photoCache[id] || photos[id] || null;
   if(cached){
@@ -6825,7 +7023,8 @@ function buildPhotoHTML(id, dj){
     return '<img src="' + stored + '" alt="' + dj.artist + '" style="' + imgStyle + '">';
   }
   // 3. GitHub raw
-  var perfilUrl = imgURL('img/perfiles', dj.artist);
+  var perfilFilename = getPerfilFilename(dj.artist);
+  var perfilUrl = imgURL('img/perfiles', perfilFilename);
   return '<img src="' + perfilUrl + '" alt="' + dj.artist + '" style="' + imgStyle + '" onerror="this.style.display=&quot;none&quot;">';
 }
 
