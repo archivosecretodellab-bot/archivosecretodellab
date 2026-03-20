@@ -10,6 +10,8 @@
 <link rel="dns-prefetch" href="https://mpitudvbhvymedzkxwvp.supabase.co">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/archivosecretodellab-bot/archivosecretodellab/main/favicon.png">
+<link rel="apple-touch-icon" href="https://raw.githubusercontent.com/archivosecretodellab-bot/archivosecretodellab/main/favicon.png">
+<link rel="shortcut icon" href="https://raw.githubusercontent.com/archivosecretodellab-bot/archivosecretodellab/main/favicon.png">
 <title>Archivo Secreto del Lab | Grabar DJ Set Buenos Aires · Registro Audiovisual Electrónica</title>
 <meta name="description" content="Grabá tu DJ set en Buenos Aires con producción audiovisual profesional. +127 sets publicados. Archivo de la escena electrónica porteña. Booking online, entrega rápida.">
 <meta name="keywords" content="grabar dj set Buenos Aires, grabación dj set Argentina, cabina dj Buenos Aires, registro audiovisual DJ, escena electrónica Buenos Aires, archivo DJ sets, dj jam Buenos Aires, grabar set techno, grabar set house Buenos Aires, underground electrónico Buenos Aires, cabina grabación electrónica, dj set profesional Buenos Aires, archivo secreto del lab, common liveset, dj jam, música electrónica porteña, grabar set electronic music Argentina">
@@ -6021,11 +6023,14 @@ function smBuildCard(s, delay){
   var hasMulti = sibs.length > 1;
 
   var artNombre = s.artista;
-  // Calcular orden cronológico real
-  var allSets = SM.filter(function(x){
+  // Calcular orden cronológico real — matchear nombre exacto primero, fallback a split B2B
+  var _allSetsExact = SM.filter(function(x){
+    return x.artista.toUpperCase() === artNombre.toUpperCase() && x.estado !== 'Oculto';
+  });
+  var allSets = (_allSetsExact.length > 0 ? _allSetsExact : SM.filter(function(x){
     return x.artista.split(' B2B ')[0].toUpperCase() === artNombre.split(' B2B ')[0].toUpperCase()
       && x.estado !== 'Oculto';
-  }).sort(function(a,b){ return a.fecha < b.fecha ? -1 : a.fecha > b.fecha ? 1 : 0; });
+  })).sort(function(a,b){ return a.fecha < b.fecha ? -1 : a.fecha > b.fecha ? 1 : 0; });
   var chronoNum = allSets.findIndex(function(x){ return x.id === s.id; }) + 1;
   if(chronoNum < 1) chronoNum = s.set_num || 1;
 
