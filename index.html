@@ -7651,17 +7651,9 @@ async function syncFromSheet(){
   if(typeof renderCommon==='function') renderCommon();
   if(typeof renderCustom==='function') renderCustom();
 
-  // ── Actualizar contadores desde el Sheet ──────────────────────
-  // Solo si no hay un override manual activo en el panel admin
-  if(_counterOverride === null){
-    var setsPublicados = SM.filter(function(s){ return s.estado === 'Publicado'; }).length;
-    TOTAL = setsPublicados;
-    var ctrEl = document.getElementById('ctr');
-    if(ctrEl) ctrEl.textContent = String(TOTAL).padStart(3, '0');
-    // Actualizar todos los contadores
-    if(typeof updateAllCounters === 'function') updateAllCounters();
-  }
-  // Actualizar el valor "auto" en el panel admin si está visible
+  // ── Actualizar contadores desde la fuente de verdad (Supabase) ──
+  // syncFromSheet NO toca TOTAL — eso lo maneja loadTotalFromSupabase()
+  // Solo actualiza el panel admin si está visible
   var autoVal = document.getElementById('counter-auto-val');
   if(autoVal) autoVal.textContent = SM.filter(function(s){ return s.estado === 'Publicado'; }).length;
 
