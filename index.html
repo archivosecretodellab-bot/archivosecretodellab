@@ -1701,12 +1701,9 @@ input[type=file]{display:none}
   </div>
   <div class="anav">
     <div class="ant on" onclick="adminTab('overview')" data-at="overview">Resumen</div>
-    <div class="ant" onclick="adminTab('sets')" data-at="sets">Sets</div>
     <div class="ant" onclick="adminTab('artists')" data-at="artists">Artistas</div>
     <div class="ant" onclick="adminTab('jams')" data-at="jams">Dj Jams</div>
     <div class="ant" onclick="adminTab('agenda-admin')" data-at="agenda-admin">Agenda</div>
-    <div class="ant" onclick="adminTab('email')" data-at="email">Email Marketing</div>
-    <div class="ant" onclick="adminTab('galeria')" data-at="galeria">Galería Contacto</div>
   </div>
   <div class="acont" id="a-cont"></div>
 </div>
@@ -1758,6 +1755,7 @@ var COVER_MAP = {
   'BAU OLIVARES|1': 'BAU OLIVARES',
   'BIAN DE BLANCO|1': 'BIAN DE BLANCO',
   'BLACKMAIN|1': 'BLACKMAIN',
+  'SPACEGIRLS|1': 'SPACEGIRLS',
   'BORONIK B2B SAX|1': 'BORONIK B2B SAX',
   'BORONIK|1': 'BORONIK',
   'BORONIK|2': 'BORONIK',
@@ -2332,7 +2330,7 @@ async function notificarEquipo(r){
 // ═══════════════════════════════════════════════════════
 // DATA
 // ═══════════════════════════════════════════════════════
-const SOON = ['Ishit','Magma','Celes Ronda','Majomushi','Arika','Mvtant Kitty','Koven'];
+const SOON = ['Magma','Celes Ronda','Majomushi','Mvtant Kitty','Koven'];
 // Contador: override manual tiene prioridad, sino calcula de SM
 var _counterOverride = null;
 try{
@@ -2356,7 +2354,7 @@ function getTOTAL(){
     return c;
   }
   try{ var cached = parseInt(localStorage.getItem('asdl_last_count')); if(cached > 0) return cached; }catch(e){}
-  return 132;
+  return 133;
 }
 
 // Carga el conteo real desde Supabase y actualiza todos los contadores
@@ -2663,10 +2661,9 @@ const DJS = [
 
  {i:'130',artist:'Celes Ronda',alias:'Celes Ronda',genre:'Techno · Hard Techno · Bounce',exp:'3–5 años',bio:'Empezó a los 18 como productora de eventos en la escena tech house. Con el tiempo construyó su identidad artística dentro del techno y el hard techno. Tiene su proyecto de eventos: Kur<3mi.',type:'DJ JAM',session:'Solo',links:'YouTube · SoundCloud',reg:'Feb 2026',isSoon:true},
  {i:'132',artist:'Magma',alias:'Magma',genre:'House · Open Format',exp:'Más de 5 años',bio:'Dinámico, groovero e hipnótico. Tiene un EP con support de Yulia Niko. Una carrera sólida con criterio propio.',type:'DJ JAM',session:'Solo',links:'@_djmagma_ (IG) · SoundCloud',reg:'Feb 2026',isSoon:true},
- {i:'129',artist:'Ishit',alias:'Ishit',genre:'Techno · Drum & Bass',exp:'Menos de 1 año',bio:'Pesada y enérgica. Llena de arte que siempre estuvo aprendiendo y nutriendo. Graba en B2B en la próxima jornada.',type:'DJ JAM',session:'B2B',links:'ISHIT (SoundCloud) · @ishiikawaa_ (IG)',reg:'Mar 2026',isSoon:true},
+ {i:'129',artist:'Spacegirls',alias:'Spacegirls',genre:'Techno · Drum & Bass',exp:'Menos de 1 año',bio:'Dúo conformado por Ishit y Arika. Abrieron la Primera Female DJ JAM (ASDL013). Dos mundos que se fusionan: potencia y sensibilidad en una sola cabina.',type:'DJ JAM',session:'B2B',links:'@ishiikawaa_ (IG) · @arika2.0 (IG)',reg:'Mar 2026',b2b:true},
  {i:'131',artist:'Majomushi',alias:'Majomushi',genre:'Por confirmar',exp:'',bio:'Próximamente en el archivo. Graba en la DJ JAM del 08/03/2026.',type:'DJ JAM',session:'',links:'https://www.instagram.com/majomushi.com.ar/',reg:'Mar 2026',isSoon:true},
 
- {i:'129',artist:'Arika',alias:'Arika',genre:'Por confirmar',exp:'',bio:'Próximamente en el archivo. Graba en la DJ JAM del 08/03/2026.',type:'DJ JAM',session:'',links:'https://www.instagram.com/arika2.0/',reg:'Mar 2026',isSoon:true},
  // Artistas del sheet no incluidos previamente
 
  {i:'080',artist:'Ju4mpi',alias:'Ju4mpi',genre:'House · Techno',exp:'',bio:'Common Liveset grabado entre ASDL010 y ASDL011.',type:'Common Liveset',session:'Solo',links:'https://www.instagram.com/soyju4mpi/',reg:'Oct 2025'},
@@ -2817,14 +2814,13 @@ const JAMS = [
   {artist:'Nacho No Tiene Estética',b2b:false,djId:'075'},
  ]},
  {id:'ASDL013',date:'08/03/2026',sets:[
-  {artist:'Ishikawaka B2B Arika',b2b:true,soon:true},
-
-
-  {artist:'Celes Ronda',b2b:false,soon:true,djId:'101'},
-  {artist:'Majomushi',b2b:false,soon:true,djId:'104'},
-  {artist:'Djmagma',b2b:false,soon:true,djId:'102'},
-  {artist:'Adhila',b2b:false,soon:true,djId:'020',note:'2/2 sets'},
- ],upcoming:true},
+  {artist:'Agus Olivo',b2b:false,djId:'035',note:'2/2 sets'},
+  {artist:'Spacegirls',b2b:false,djId:'129'},
+  {artist:'Celes Ronda',b2b:false,djId:'130'},
+  {artist:'Majomushi',b2b:false,djId:'131'},
+  {artist:'Magma',b2b:false,djId:'132'},
+  {artist:'Adhila',b2b:false,djId:'048',note:'2/2 sets'},
+ ]},
 ];
 
 // ORDEN EXACTO según sheet cronológico
@@ -4505,12 +4501,9 @@ function adminTab(tab){
   document.querySelector(`[data-at=${tab}]`)?.classList.add('on');
   const cont=document.getElementById('a-cont');
   if(tab==='overview') renderAdminOverview(cont);
-  else if(tab==='sets') renderAdminSets(cont);
-  else if(tab==='artists') renderAdminArtists(cont);
+  else if(tab==='artists') renderAdminArtistsMerged(cont);
   else if(tab==='jams') renderAdminJams(cont);
-  else if(tab==='email') renderAdminEmail(cont);
   else if(tab==='agenda-admin') renderAdminAgendaTab(cont);
-  else if(tab==='galeria') renderAdminGaleria(cont);
 }
 
 function renderAdminOverview(c){
@@ -4577,7 +4570,7 @@ function renderAdminOverview(c){
     <div class="dash-next-jam">
       <div class="nj-label">Próxima Dj Jam</div>
       <div class="nj-title">ASDL012 — 08/03/2026</div>
-      <div class="nj-artists">Ishit · Arika · Celes Ronda · Magma · Majomushi · Adhila</div>
+      <div class="nj-artists">Spacegirls · Celes Ronda · Magma · Majomushi · Adhila</div>
       <a class="nj-btn" onclick="navTo('agenda')" style="cursor:pointer">→ Agendar sesión</a>
     </div>
 
@@ -4732,247 +4725,179 @@ function addSet(){
   TOTAL.count=DJS.length;
   document.getElementById('hdr-count').textContent=DJS.length+' Sets';
   toggleAddForm();
-  adminTab('sets');
+  adminTab('artists');
 }
 
-async function renderAdminArtists(c, subtab='artistas'){
-  c.innerHTML=`<div style="font-size:10px;color:var(--wd);padding:10px">Cargando...</div>`;
+function renderAdminArtistsMerged(c){
+  if(!c) return;
 
-  let leads=[];
-  try{
-    const {data}=await sb.from('djs').select('*').eq('total_sets',0).order('nombre_artistico');
-    if(data){
-      const djAkas=new Set(DJS.map(d=>d.artist.toLowerCase().trim()));
-      leads=data.filter(d=>!djAkas.has((d.nombre_artistico||'').toLowerCase().trim()));
-    }
-  }catch(e){}
+  // Agrupar SM por artista — B2B se asigna a cada artista individual
+  var groups = {};
+  SM.forEach(function(s){
+    var artists = s.artista.indexOf(' B2B ') !== -1
+      ? s.artista.split(' B2B ').map(function(n){ return n.trim(); })
+      : [s.artista];
+    artists.forEach(function(name){
+      if(!groups[name]) groups[name] = [];
+      groups[name].push(s);
+    });
+  });
+  var artistList = Object.keys(groups).map(function(name){
+    var sets = groups[name].slice().sort(function(a,b){ return new Date(b.fecha)-new Date(a.fecha); });
+    return {name:name, sets:sets, lastDate:sets[0].fecha};
+  }).sort(function(a,b){ return new Date(b.lastDate)-new Date(a.lastDate); });
 
-  // Contar por tipo
-  const tipos = {
-    'DJ JAM':       DJS.filter(d=>d.type==='DJ JAM'),
-    'Common Liveset': DJS.filter(d=>d.type==='Common Liveset'),
-    'Custom Liveset': DJS.filter(d=>d.type==='Custom Liveset'||d.type==='Custom'),
-    'Archivo Público': DJS.filter(d=>d.type==='Archivo Público'||d.type==='Archivo Publico'),
-  };
-
-  const subtabs = [
-    {id:'artistas', label:`Artistas (${DJS.length})`},
-    {id:'sets',     label:`Sets (${DJS.length})`},
-    {id:'leads',    label:`Leads (${leads.length})`},
-  ];
-
-  const subnavHTML = subtabs.map(s=>`
-    <button onclick="renderAdminArtists(document.getElementById('a-cont'),'${s.id}')"
-      style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;padding:8px 16px;
-      border:none;border-bottom:2px solid ${subtab===s.id?'var(--b)':'transparent'};
-      background:transparent;color:${subtab===s.id?'#fff':'rgba(255,255,255,.35)'};
-      cursor:pointer;font-family:'IBM Plex Mono',monospace;transition:all .18s"
-      onmouseover="this.style.color='#fff'"
-      onmouseout="this.style.color='${subtab===s.id?'#fff':'rgba(255,255,255,.35)'}'">
-      ${s.label}
-    </button>`).join('');
-
-  let bodyHTML = '';
-
-  if(subtab === 'artistas'){
-    bodyHTML = `
-      <table class="atable">
-        <thead><tr><th>Id</th><th>Artista</th><th>Género</th><th>Exp</th><th>Sesión</th><th>Reg</th><th></th></tr></thead>
-        <tbody>${DJS.map(d=>`<tr>
-          <td>${d.i}</td>
-          <td class="td-a">${d.artist}</td>
-          <td style="font-size:10px;color:var(--wd);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.genre||'—'}</td>
-          <td>${d.exp||'—'}</td><td>${d.session||'—'}</td><td>${d.reg||'—'}</td>
-          <td style="display:flex;gap:6px;align-items:center"><button class="tdbtn" data-adminficha="${d.i}">Ver ficha</button><button class="tdbtn" style="background:#1b00e6;color:#fff;border-color:#1b00e6" data-adminedit="${d.i}">✏ Editar</button><button class="tdbtn" data-admindel="${d.i}" style="background:rgba(200,0,0,.15);border-color:rgba(200,0,0,.3);color:#ff6666">✕ Eliminar</button></td>
-        </tr>`).join('')}</tbody>
-      </table>`;
+  // Lookup DJS tolerante (sin acentos, B2B -> primer artista)
+  function norm(s){ return s.normalize('NFD').replace(/[̀-ͯ]/g,'').toUpperCase().trim(); }
+  function findDj(smName){
+    var n = norm(smName);
+    return DJS.find(function(d){ return norm(d.artist)===n; })
+      || DJS.find(function(d){ return norm(d.artist)===norm(smName.split(' B2B ')[0]); });
   }
 
-  else if(subtab === 'sets'){
-    // Ordenar por fecha de registro (reg) cronológicamente
-    const sorted = [...DJS].sort((a,b)=>{
-      const months={'Ene':0,'Feb':1,'Mar':2,'Abr':3,'May':4,'Jun':5,'Jul':6,'Ago':7,'Sep':8,'Oct':9,'Nov':10,'Dic':11};
-      const parse = r => { if(!r) return 0; const [m,y]=r.split(' '); return (parseInt(y)||0)*12+(months[m]||0); };
-      return parse(a.reg)-parse(b.reg);
+  var searchQ = '';
+
+  function render(){
+    var list = searchQ
+      ? artistList.filter(function(a){ return a.name.toLowerCase().includes(searchQ); })
+      : artistList;
+
+    var pubTotal = SM.filter(function(s){ return s.estado==='Publicado'; }).length;
+
+    var header = '<div style="display:flex;align-items:center;gap:12px;margin-bottom:18px">'
+      +'<input id="am-search" placeholder="Buscar artista..." value="'+searchQ+'" '
+      +'oninput="window._amSearch(this.value)" '
+      +'style="flex:1;background:#0a0a0a;border:1px solid #1a1a1a;color:#ece4e2;font-size:10px;padding:8px 12px">'
+      +'<span style="font-size:9px;color:#444;white-space:nowrap">'
+      +list.length+' artistas &middot; '+pubTotal+' sets publicados</span></div>';
+
+    var rows = list.map(function(a){
+      var dj   = findDj(a.name);
+      var pub  = a.sets.filter(function(s){ return s.estado==='Publicado'; }).length;
+      var pend = a.sets.filter(function(s){ return s.estado==='Pendiente'; }).length;
+
+      // Para el cover: usar sets solo (artista exacto) para no inflar el chronoNum con B2B
+      var soloSets  = a.sets.filter(function(s){ return s.artista === a.name; });
+      var soloPub   = soloSets.filter(function(s){ return s.estado==='Publicado'; });
+      var coverSet  = soloPub[0] || soloSets[0] || a.sets[0];
+      var pubSets   = a.sets.filter(function(s){ return s.estado==='Publicado'; });
+      var coverFile = getCoverFilename(
+        (soloSets.length ? a.name : coverSet.artista),
+        soloPub.length || 1
+      );
+      var coverUrl  = imgURL('img/covers', coverFile);
+      var thumbLS   = null;
+      try{ thumbLS = localStorage.getItem('thumb_'+coverSet.id); }catch(ex){}
+      var coverHTML = '<img src="'+(thumbLS||coverUrl)+'"'
+        +' style="width:48px;height:60px;object-fit:cover;object-position:center top;border:1px solid #1a1a1a;flex-shrink:0">';
+
+      var genre = dj ? (dj.genre||'—') : '—';
+      var uid   = 'am_'+a.name.replace(/[^a-zA-Z0-9]/g,'_');
+
+      var statusTxt = pub > 0
+        ? '<span style="color:var(--b);font-size:9px">'+pub+' pub</span>'
+          +(pend>0 ? ' <span style="color:#555;font-size:9px">&middot; '+pend+' pend</span>':'')
+        : '<span style="color:#555;font-size:9px">'+pend+' pend</span>';
+
+      // Botones con data-attributes — sin JS inline con strings
+      var actionBtns = dj
+        ? '<button class="tdbtn" data-amficha="'+dj.i+'">Ver ficha</button>'
+          +'<button class="tdbtn am-edit-btn" data-amedit="'+dj.i+'">✎ Editar</button>'
+        : '<span style="font-size:8px;color:#444">sin ficha</span>';
+
+      var setsRows = a.sets.map(function(s){
+        var vis = smIsVisible(s.id);
+        var ytLink = s.url_yt
+          ? '<a href="'+s.url_yt+'" target="_blank" rel="noopener"'
+            +' style="color:var(--b);font-size:9px">'
+            +'↗ '+(s.url_yt.indexOf('v=')>-1 ? s.url_yt.split('v=')[1] : s.url_yt.split('/').pop()).slice(0,11)
+            +'</a>'
+          : '<span style="color:#444;font-size:9px">sin link</span>';
+        var badge = s.estado==='Publicado'
+          ? '<span style="color:var(--b);font-size:8px;letter-spacing:.08em">PUB</span>'
+          : '<span style="color:#555;font-size:8px;letter-spacing:.08em">PEND</span>';
+        var toggleBtn = '<button class="tdbtn'+(vis?'':' sm-toggle-off')+'"'
+          +' data-amtoggle="'+s.id+'">'
+          +(vis ? '👁 ON':'✖ OFF')+'</button>';
+        return '<tr style="border-top:1px solid #0f0f0f">'
+          +'<td style="padding:5px 8px;font-size:8px;color:#444">'+s.id+'</td>'
+          +'<td style="padding:5px 8px;font-size:9px;color:#666">'+s.categoria+'</td>'
+          +'<td style="padding:5px 8px;font-size:9px;color:#555">'+s.fecha+'</td>'
+          +'<td style="padding:5px 8px">'+badge+'</td>'
+          +'<td style="padding:5px 8px">'+ytLink+'</td>'
+          +'<td style="padding:5px 8px">'+toggleBtn+'</td>'
+          +'</tr>';
+      }).join('');
+
+      return '<div style="border:1px solid #111;margin-bottom:6px">'
+        +'<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;cursor:pointer;user-select:none"'
+        +' data-amexpand="'+uid+'">'
+        +coverHTML
+        +'<div style="flex:1;min-width:0">'
+        +'<div style="font-size:11px;font-weight:600;color:#ece4e2;letter-spacing:.06em;margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+a.name+'</div>'
+        +'<div style="font-size:9px;color:var(--wd);margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+genre+'</div>'
+        +'<div style="display:flex;align-items:center;gap:8px">'+statusTxt
+        +'<span style="color:#333;font-size:9px">&middot;</span>'
+        +'<span style="font-size:9px;color:#444">'+a.lastDate+'</span>'
+        +'</div></div>'
+        +'<div style="display:flex;gap:6px;align-items:center;flex-shrink:0">'+actionBtns+'</div>'
+        +'<span class="am-arr" style="color:#444;font-size:12px;margin-left:8px;flex-shrink:0">&#9656;</span>'
+        +'</div>'
+        +'<div id="'+uid+'_s" style="display:none;border-top:1px solid #0f0f0f">'
+        +'<table style="width:100%;border-collapse:collapse">'
+        +'<thead><tr>'
+        +'<th style="font-size:8px;color:#333;text-align:left;padding:5px 8px;font-weight:400">ID</th>'
+        +'<th style="font-size:8px;color:#333;text-align:left;padding:5px 8px;font-weight:400">Jornada</th>'
+        +'<th style="font-size:8px;color:#333;text-align:left;padding:5px 8px;font-weight:400">Fecha</th>'
+        +'<th style="font-size:8px;color:#333;text-align:left;padding:5px 8px;font-weight:400">Estado</th>'
+        +'<th style="font-size:8px;color:#333;text-align:left;padding:5px 8px;font-weight:400">YouTube</th>'
+        +'<th style="font-size:8px;color:#333;text-align:left;padding:5px 8px;font-weight:400">Visible</th>'
+        +'</tr></thead>'
+        +'<tbody>'+setsRows+'</tbody>'
+        +'</table></div></div>';
+    }).join('');
+
+    c.innerHTML = '<div style="padding:2px 0">'+header+rows+'</div>';
+
+    // Event delegation — un solo listener para todo el panel
+    c.addEventListener('click', function(e){
+      // Ver ficha
+      var ficha = e.target.getAttribute('data-amficha');
+      if(ficha){ fichaFrom='djsets'; openFicha(ficha); return; }
+      // Editar
+      var edit = e.target.getAttribute('data-amedit');
+      if(edit){ openAdminEditFicha(edit); return; }
+      // Toggle visibilidad
+      var tog = e.target.getAttribute('data-amtoggle');
+      if(tog){
+        smToggleVisible(tog);
+        var nowVis = smIsVisible(tog);
+        e.target.textContent = nowVis ? '👁 ON' : '✖ OFF';
+        e.target.classList.toggle('sm-toggle-off', !nowVis);
+        return;
+      }
+      // Expand/collapse
+      var exp = e.target.closest ? e.target.closest('[data-amexpand]') : null;
+      if(!exp && e.target.getAttribute('data-amexpand')) exp = e.target;
+      if(exp){
+        var uid2 = exp.getAttribute('data-amexpand');
+        var body = document.getElementById(uid2+'_s');
+        var arr  = exp.querySelector('.am-arr');
+        if(body){
+          var open = body.style.display === 'none';
+          body.style.display = open ? 'block' : 'none';
+          if(arr) arr.innerHTML = open ? '&#9662;' : '&#9656;';
+        }
+        return;
+      }
     });
 
-    const cats = [
-      {key:'DJ JAM',        label:'DJ JAM',          color:'var(--b)',    sets: sorted.filter(d=>d.type==='DJ JAM')},
-      {key:'Common Liveset',label:'Common Liveset',   color:'var(--green)',sets: sorted.filter(d=>d.type==='Common Liveset')},
-      {key:'Custom Liveset',label:'Custom Liveset',   color:'#f0a500',    sets: sorted.filter(d=>d.type==='Custom Liveset'||d.type==='Custom')},
-      {key:'Archivo Público',label:'Archivo Público', color:'rgba(255,255,255,.6)', sets: sorted.filter(d=>d.type==='Archivo Público'||d.type==='Archivo Publico')},
-      {key:'Otro',          label:'Sin categoría',   color:'var(--wd)',   sets: sorted.filter(d=>!['DJ JAM','Common Liveset','Custom Liveset','Custom','Archivo Público','Archivo Publico'].includes(d.type))},
-    ].filter(c=>c.sets.length>0);
-
-    bodyHTML = cats.map(cat=>`
-      <div style="margin-bottom:28px">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--wf)">
-          <div style="width:3px;height:18px;background:${cat.color}"></div>
-          <div style="font-size:9px;letter-spacing:.28em;color:${cat.color};text-transform:uppercase">${cat.label}</div>
-          <div style="font-size:9px;color:var(--wd)">${cat.sets.length} sets</div>
-        </div>
-        <table class="atable">
-          <thead><tr><th>#</th><th>Artista</th><th>Género</th><th>Modalidad</th><th>Registro</th><th>Video</th><th></th></tr></thead>
-          <tbody>${cat.sets.map((d,i)=>`<tr>
-            <td style="color:var(--wd);font-size:10px">${i+1}</td>
-            <td class="td-a">${d.artist}</td>
-            <td style="font-size:10px;color:var(--wd);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.genre||'—'}</td>
-            <td>${d.session||'—'}</td>
-            <td style="font-family:'Space Mono',monospace;font-size:10px">${d.reg||'—'}</td>
-            <td style="color:${videos[d.i]?'var(--green)':'var(--wd)'};">${videos[d.i]?'✓':'—'}</td>
-            <td style="display:flex;gap:6px;align-items:center"><button class="tdbtn" data-adminficha="${d.i}">Ver ficha</button><button class="tdbtn" style="background:#1b00e6;color:#fff;border-color:#1b00e6" data-adminedit="${d.i}">✏ Editar</button><button class="tdbtn" data-admindel="${d.i}" style="background:rgba(200,0,0,.15);border-color:rgba(200,0,0,.3);color:#ff6666">✕ Eliminar</button></td>
-          </tr>`).join('')}</tbody>
-        </table>
-      </div>`).join('');
+    window._amSearch = function(q){ searchQ = q.toLowerCase(); render(); };
   }
 
-  else if(subtab === 'leads'){
-    bodyHTML = leads.length ? `
-      <table class="atable">
-        <thead><tr><th>Artista</th><th>Género</th><th>Exp</th><th>Email</th><th>Redes</th><th></th></tr></thead>
-        <tbody>${leads.map(d=>`<tr>
-          <td class="td-a">${d.nombre_artistico}</td>
-          <td style="font-size:10px;color:var(--wd);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.genero||'—'}</td>
-          <td style="font-size:10px">${d.experiencia||'—'}</td>
-          <td style="font-size:9px;color:var(--wd)">${d.email||'—'}</td>
-          <td style="font-size:9px;color:var(--wd);max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.links||'—'}</td>
-          <td><button class="tdbtn" onclick="openFicha('${d.id}')">Ver ficha</button></td>
-        </tr>`).join('')}</tbody>
-      </table>` : `<div style="font-size:11px;color:var(--wd);padding:12px 0">Sin leads aún. Importalos desde el botón de abajo.</div>`;
-  }
-
-  c.innerHTML=`
-    <!-- Subtabs -->
-    <div style="display:flex;gap:0;border-bottom:1px solid var(--wf);margin-bottom:20px">${subnavHTML}</div>
-
-    <!-- Importar (siempre visible) -->
-    ${subtab !== 'sets' ? `<div style="background:rgba(255,255,255,.03);border:1px solid var(--wf);padding:16px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
-      <div>
-        <div style="font-size:9px;letter-spacing:.22em;color:var(--b);text-transform:uppercase;margin-bottom:3px">Importar desde Google Form</div>
-        <div style="font-size:10px;color:var(--wd)">Solo importa artistas nuevos — deduplicados por AKA.</div>
-      </div>
-      <div style="display:flex;gap:8px;align-items:center">
-        ${gcalToken?`<span style="font-size:8px;letter-spacing:.18em;color:var(--green);text-transform:uppercase">✓ Google conectado</span>`:`<button onclick="gcalLogin(()=>renderAdminArtists(document.getElementById('a-cont'),'${subtab}'))" style="font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;padding:8px 16px;background:rgba(27,0,230,.2);border:1px solid rgba(27,0,230,.4);color:#fff;cursor:pointer;font-family:'IBM Plex Mono',monospace">→ Conectar Google</button>`}
-        <button class="afsave" onclick="importFormSheet()">↓ Importar Form</button>
-        <button class="tdbtn" onclick="exportCSV()">↓ CSV</button>
-        <button class="afsave" onclick="importLeadsCSV()" style="background:rgba(0,201,103,.15);border-color:rgba(0,201,103,.3);color:var(--green)">↑ CSV Leads</button>
-      </div>
-    </div>
-    <div id="sheets-status" style="font-size:10px;color:var(--wd);margin-bottom:8px;min-height:14px"></div>
-    <div id="sheets-preview" style="margin-bottom:14px"></div>` : ''}
-
-    <!-- Contenido de la subtab -->
-    ${bodyHTML}
-  `;
+  render();
 }
 
-async function importFormSheet(){
-  if(!gcalToken){ alert('Primero conectá Google Calendar / Sheets.'); return; }
-  var sheetId = typeof ASDL_SHEET_ID !== 'undefined' ? ASDL_SHEET_ID : '1Hlqxx29qXOldpr-CvyXfrTNqq6CsH0DY6K6kekLnnP4';
-  var st = document.getElementById('sheets-status');
-  if(st){ st.textContent = 'Importando desde Google Sheets...'; st.style.color = 'var(--wd)'; }
-
-  var rows = await importFromSheets(sheetId, 'A:Z');
-  if(!rows || !rows.length){
-    if(st){ st.textContent = 'Error al importar. Verificá la conexión.'; st.style.color = '#f55'; }
-    return;
-  }
-
-  // Detectar headers en fila 1
-  var headers = rows[0].map(function(h){ return (h||'').toLowerCase().trim(); });
-  var colNombre  = headers.findIndex(function(h){ return /nombre|artista|artist|aka/i.test(h); });
-  var colEmail   = headers.findIndex(function(h){ return /email|mail/i.test(h); });
-  var colGenero  = headers.findIndex(function(h){ return /genero|genre|estilo/i.test(h); });
-  var colExp     = headers.findIndex(function(h){ return /exp|trayect|years/i.test(h); });
-  var colYT      = headers.findIndex(function(h){ return /youtube|link|url|yt/i.test(h); });
-  var colFecha   = headers.findIndex(function(h){ return /fecha|date|estreno/i.test(h); });
-  var colEstado  = headers.findIndex(function(h){ return /estado|status/i.test(h); });
-  var colSets    = headers.findIndex(function(h){ return /sets|grabados|cantidad/i.test(h); });
-
-  var get = function(row, col){ return col >= 0 && col < row.length ? (row[col]||'').trim() : ''; };
-
-  var imported = 0, updated = 0, errors = 0;
-  var dataRows = rows.slice(1);
-
-  dataRows.forEach(function(row){
-    if(!row.length || !get(row, colNombre)) return;
-    var nombre = get(row, colNombre);
-    // Buscar en DJS por nombre
-    var dj = DJS.find(function(d){ return d.artist.toLowerCase() === nombre.toLowerCase() || d.alias.toLowerCase() === nombre.toLowerCase(); });
-    var smEntry = SM.find(function(s){ return s.artista && s.artista.toLowerCase() === nombre.toLowerCase(); });
-
-    if(dj){
-      // Actualizar campos
-      if(colEmail  >= 0 && get(row,colEmail))  dj.email  = get(row,colEmail);
-      if(colGenero >= 0 && get(row,colGenero)) dj.genre  = get(row,colGenero);
-      if(colExp    >= 0 && get(row,colExp))    dj.exp    = get(row,colExp);
-      if(colYT     >= 0 && get(row,colYT)){
-        dj._ytFromSheet = get(row,colYT);
-        // Asignar al videos{} por id
-        videos[dj.i] = get(row,colYT);
-      }
-      if(colFecha  >= 0 && get(row,colFecha))  dj.releaseDate = get(row,colFecha);
-      if(colEstado >= 0 && get(row,colEstado)){
-        var est = get(row,colEstado).toLowerCase();
-        if(est.includes('pronto') || est.includes('soon')){
-          dj.isSoon = true; if(!SOON.includes(dj.artist)) SOON.push(dj.artist);
-        } else {
-          dj.isSoon = false; var si=SOON.indexOf(dj.artist); if(si>-1) SOON.splice(si,1);
-        }
-        if(est.includes('public')) dj.published = true;
-      }
-      updated++;
-    } else {
-      // Es un artista nuevo no en DJS — agregarlo como lead
-      if(nombre){
-        var newLead = {
-          i: 'lead_' + Date.now() + '_' + imported,
-          artist: nombre, alias: nombre,
-          genre: get(row,colGenero), exp: get(row,colExp),
-          email: get(row,colEmail), links: '',
-          bio: '', frase: '', type: 'DJ JAM', session: 'Solo',
-          isLead: true, isSoon: false,
-          _ytFromSheet: get(row,colYT),
-          releaseDate: get(row,colFecha)
-        };
-        DJS.push(newLead);
-        imported++;
-      }
-    }
-    if(smEntry && colYT >= 0 && get(row,colYT)){
-      smEntry.url_yt = get(row,colYT);
-    }
-  });
-
-  // Refrescar todo
-  if(typeof renderDjs==='function') renderDjs();
-  if(typeof renderCommon==='function') renderCommon();
-
-  var msg = updated + ' artistas actualizados, ' + imported + ' nuevos leads importados';
-  if(st){ st.textContent = '✓ ' + msg; st.style.color='var(--green)'; }
-  setTimeout(function(){ if(st) st.textContent=''; }, 5000);
-
-  // Preview
-  var prev = document.getElementById('sheets-preview');
-  if(prev) prev.innerHTML = '<div style="font-size:9px;color:var(--wd);margin-top:8px">Última importación: ' + new Date().toLocaleString('es-AR') + ' · ' + msg + '</div>';
-}
-
-async function confirmSheetImport(){
-  const st=document.getElementById('import-result');
-  const data=window._pendingImport||[];
-  if(!data.length) return;
-  if(st){st.textContent='Guardando...';st.style.color='var(--wd)';}
-  let ok=0,fail=0;
-  for(let i=0;i<data.length;i+=50){
-    const batch=data.slice(i,i+50);
-    try{
-      const {error}=await sb.from('djs').upsert(batch,{onConflict:'nombre_artistico',ignoreDuplicates:true});
-      if(error) fail+=batch.length; else ok+=batch.length;
-    }catch(e){fail+=batch.length;}
-  }
-  if(st){st.textContent=`✓ ${ok} leads guardados${fail?` · ${fail} errores`:''}`;st.style.color=fail?'var(--red)':'var(--green)';}
-  setTimeout(()=>adminTab('artists'),1200);
-}
 function renderAdminJams(c){
   // Normalizar campos
   JAMS.forEach(function(j){
@@ -5130,7 +5055,7 @@ function renderAdminAgenda(c){
     <div style="margin-bottom:28px">
       <div style="font-family:'Space Mono',monospace;font-size:16px;font-weight:700;color:var(--el);margin-bottom:8px">Próxima DJ JAM — 08/03/2026</div>
       <div style="font-size:11px;letter-spacing:.12em;color:var(--wd);line-height:2">
-        Artistas confirmados: Ishit, Arika, Celes Ronda, Magma, Majomushi + Adhila (2do set)
+        Artistas confirmados: Spacegirls (Ishit + Arika), Celes Ronda, Magma, Majomushi + Adhila (2do set)
       </div>
     </div>
     <div class="cal-box" style="max-width:500px">
@@ -5164,474 +5089,6 @@ function exportCSV(){
   a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
   a.download='ASDL_artistas.csv';a.click();
 }
-
-async function renderAdminEmail(c){
-  c.innerHTML=`<div style="font-size:10px;color:var(--wd);padding:10px">Cargando listas...</div>`;
-
-  // Artistas grabados — emails desde Supabase (total_sets > 0)
-  let grabadosEmails=[];
-  try{
-    const {data}=await sb.from('djs').select('nombre_artistico,email').gt('total_sets',0).not('email','is',null);
-    if(data) grabadosEmails=data.filter(d=>d.email&&d.email.trim());
-  }catch(e){}
-  // Fallback: emails del array DJS local si los hubiera
-  DJS.forEach(d=>{
-    if(d.email&&!grabadosEmails.find(g=>g.email===d.email)){
-      grabadosEmails.push({nombre_artistico:d.artist,email:d.email});
-    }
-  });
-
-  // Leads — emails desde Supabase (total_sets = 0)
-  let leads=[];
-  try{
-    const {data}=await sb.from('djs').select('nombre_artistico,email').eq('total_sets',0).not('email','is',null);
-    if(data) leads=data.filter(d=>d.email&&d.email.trim());
-  }catch(e){}
-
-  // Integrar leads del CSV local
-  var csvLeads = [];
-  try{ csvLeads = JSON.parse(localStorage.getItem('asdl_csv_leads')||'[]'); }catch(e){}
-  csvLeads.forEach(function(cl){
-    if(cl.email && !leads.find(function(l){ return l.email===cl.email; })){
-      leads.push({ nombre_artistico: cl.nombre_artistico, email: cl.email });
-    }
-  });
-
-  // Guardar globalmente para el envío
-  window._emailGrabados = grabadosEmails;
-  window._emailLeads    = leads;
-
-  const totalGrabados=grabadosEmails.length;
-  const totalLeads=leads.length;
-  const totalContacts=totalGrabados+totalLeads;
-
-  const templates=[
-    {id:'newsletter',name:'Newsletter General',icon:'📢',desc:'Novedades del archivo, sets nuevos, hitos del lab'},
-    {id:'promo',name:'Promo / Oferta',icon:'🎙',desc:'Descuento en cabina, renta especial, oferta limitada'},
-    {id:'jam',name:'Convocatoria Dj Jam',icon:'🎛',desc:'Apertura de inscripciones, fecha y cupos disponibles'},
-    {id:'youtube',name:'Nuevo set en YouTube',icon:'▶️',desc:'Aviso de publicación con link directo al video'},
-    {id:'whatsapp',name:'Redirección a WhatsApp',icon:'💬',desc:'CTA directo a WhatsApp para consultas o booking'},
-  ];
-
-  const tmplHTML=templates.map(t=>`
-    <div class="em-tmpl" onclick="selectTemplate('${t.id}',this)">
-      <div class="em-tmpl-icon">${t.icon}</div>
-      <div class="em-tmpl-name">${t.name}</div>
-      <div class="em-tmpl-desc">${t.desc}</div>
-    </div>`).join('');
-
-  c.innerHTML=`
-  <div class="em-layout">
-
-    <!-- LEFT: CONFIG -->
-    <div class="em-left">
-      <div class="em-section">
-        <div class="em-sec-title">Configuración Brevo</div>
-        <div class="em-sec-sub">Necesitás una cuenta gratuita en <a href="https://brevo.com" target="_blank" style="color:var(--b)">brevo.com</a> — el plan gratuito incluye 300 emails/día.</div>
-        <div class="em-field">
-          <div class="em-lbl">API Key de Brevo</div>
-          <input class="em-inp" id="brevo-key" type="password" autocomplete="off" placeholder="xkeysib-xxxxxxxx..." value="${window._brevoKey||''}">
-        </div>
-        <div class="em-field">
-          <div class="em-lbl">Email remitente (debe estar verificado en Brevo)</div>
-          <input class="em-inp" id="brevo-from" placeholder="archivo@tudominio.com" value="${window._brevoFrom||''}">
-        </div>
-        <div class="em-field">
-          <div class="em-lbl">Nombre remitente</div>
-          <input class="em-inp" id="brevo-name" placeholder="Archivo Secreto del Lab" value="${window._brevoSender||'Archivo Secreto del Lab'}">
-        </div>
-        <button class="afsave" onclick="saveBrevoConfig()" style="margin-top:6px">Guardar configuración</button>
-        <div id="brevo-status" style="font-size:9px;letter-spacing:.15em;color:var(--wd);margin-top:10px;min-height:16px">${window._brevoKey?'✓ API Key cargada desde este browser.':''}</div>
-      </div>
-
-      <div class="em-section">
-        <div class="em-sec-title">Listas de contactos</div>
-
-        <!-- Lista 1: Grabados -->
-        <div class="em-contacts-box" style="margin-bottom:8px">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-            <div>
-              <div class="em-cnum" style="font-size:28px">${totalGrabados}</div>
-              <div class="em-clbl">🎛 Artistas grabados</div>
-            </div>
-            <button class="tdbtn" onclick="selectEmailList('grabados',this)" style="color:var(--b);border-color:rgba(27,0,230,.4)">Seleccionar</button>
-          </div>
-          <div style="font-size:9px;color:var(--wd)">Artistas que ya pasaron por el Archivo. Tienen set grabado.</div>
-        </div>
-
-        <!-- Lista 2: Leads -->
-        <div class="em-contacts-box" style="background:rgba(255,255,255,.04);border-color:var(--wf)">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-            <div>
-              <div class="em-cnum" style="font-size:28px">${totalLeads}</div>
-              <div class="em-clbl">🔵 Leads / Pendientes</div>
-            </div>
-            <button class="tdbtn" onclick="selectEmailList('leads',this)">Seleccionar</button>
-          </div>
-          <div style="font-size:9px;color:var(--wd)">Registrados en el Form pero aún no grabaron. Importalos desde la tab Artistas.</div>
-        </div>
-
-        <!-- Botón ambas listas -->
-        <button class="tdbtn" style="width:100%;margin-top:8px;padding:10px" onclick="selectEmailList('all',this)">📋 Usar ambas listas (${totalContacts} contactos)</button>
-
-        <!-- Link del form -->
-        <div style="margin-top:16px;padding:12px;background:rgba(255,255,255,.03);border:1px solid var(--wf)">
-          <div style="font-size:9px;letter-spacing:.2em;color:var(--b);text-transform:uppercase;margin-bottom:8px">Link de registro</div>
-          <div style="font-size:10px;color:var(--wd);margin-bottom:8px">Incluí este link en tus emails para que nuevos artistas se registren.</div>
-          <button class="em-link-btn" onclick="insertLink('form')" style="width:100%">📝 Insertar link del Form</button>
-        </div>
-
-        <div id="list-selected" style="font-size:9px;letter-spacing:.16em;color:var(--green);margin-top:8px;min-height:14px"></div>
-        <div id="email-list-preview" style="margin-top:10px;padding:10px;background:rgba(0,0,0,.2);min-height:32px;font-size:9px"></div>
-
-        <div style="margin-top:14px">
-          <div class="em-lbl" style="margin-bottom:8px">Agregar contacto externo</div>
-          <div style="display:flex;gap:8px">
-            <input class="em-inp" id="extra-email" placeholder="email@ejemplo.com" style="flex:1">
-            <button class="afsave" onclick="addExtraEmail()" style="white-space:nowrap">+ Agregar</button>
-          </div>
-        </div>
-        <div id="extra-list" style="margin-top:12px;display:flex;flex-direction:column;gap:4px"></div>
-      </div>
-    </div>
-
-    <!-- RIGHT: COMPOSE -->
-    <div class="em-right">
-      <div class="em-section">
-        <div class="em-sec-title">Template de campaña</div>
-        <div class="em-tmpls">${tmplHTML}</div>
-      </div>
-
-      <div class="em-section">
-        <div class="em-sec-title">Redactar campaña</div>
-        <div class="em-field">
-          <div class="em-lbl">Asunto del email</div>
-          <input class="em-inp" id="em-subject" placeholder="Ej: Nueva Dj Jam — 08/03/2026 · Inscribite">
-        </div>
-        <div class="em-field">
-          <div class="em-lbl">Cuerpo del mensaje</div>
-          <textarea class="em-ta" id="em-body" placeholder="Escribí el contenido del email. Podés incluir links a YouTube, WhatsApp o al formulario de registro."></textarea>
-        </div>
-        <div class="em-field">
-          <div class="em-lbl">Links a incluir</div>
-          <div class="em-links-row">
-            <button class="em-link-btn" onclick="insertLink('yt')">▶ YouTube</button>
-            <button class="em-link-btn" onclick="insertLink('wa-sonido')">💬 WA Equipos</button>
-            <button class="em-link-btn" onclick="insertLink('wa-cabina')">💬 WA Cabina</button>
-            <button class="em-link-btn" onclick="insertLink('agenda')">📅 Agenda</button>
-            <button class="em-link-btn" onclick="insertLink('ig')">📷 Instagram</button>
-          </div>
-        </div>
-
-        <!-- PREVIEW -->
-        <div class="em-preview-wrap" id="em-preview-wrap" style="display:none">
-          <div class="em-lbl" style="margin-bottom:10px">Vista previa</div>
-          <div class="em-preview" id="em-preview"></div>
-        </div>
-
-        <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap">
-          <button class="afsave" onclick="previewEmail()">👁 Vista previa</button>
-          <button class="afsave" onclick="sendTestEmail()" style="background:rgba(255,255,255,.08);border:1px solid var(--wm)">Enviar prueba a mí</button>
-          <button class="afsave" onclick="sendCampaign()" style="background:var(--green);color:#000">▶ Enviar campaña a ${totalContacts} contactos</button>
-        </div>
-        <div id="em-send-status" style="font-size:10px;letter-spacing:.12em;color:var(--wd);margin-top:12px;min-height:16px;line-height:1.8"></div>
-      </div>
-    </div>
-
-  </div>
-
-  <style>
-  .em-layout{display:grid;grid-template-columns:340px 1fr;gap:2px;align-content:start}
-  .em-left,.em-right{display:flex;flex-direction:column;gap:2px}
-  .em-section{background:rgba(255,255,255,.03);border:1px solid var(--wf);padding:24px 26px}
-  .em-sec-title{font-size:10px;letter-spacing:.3em;color:var(--b);text-transform:uppercase;margin-bottom:6px}
-  .em-sec-sub{font-size:10px;letter-spacing:.08em;color:var(--wd);line-height:1.8;margin-bottom:16px}
-  .em-field{margin-bottom:16px}
-  .em-lbl{font-size:8.5px;letter-spacing:.28em;color:var(--wd);text-transform:uppercase;margin-bottom:7px}
-  .em-inp{width:100%;background:rgba(255,255,255,.04);border:none;border-bottom:1px solid var(--wm);color:var(--w);font-size:12px;letter-spacing:.06em;padding:9px 0;outline:none;font-family:'IBM Plex Mono',monospace;transition:border-color .2s}
-  .em-inp:focus{border-bottom-color:var(--b)}
-  .em-ta{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--wm);color:var(--w);font-size:12px;padding:10px;outline:none;resize:vertical;min-height:140px;font-family:'IBM Plex Mono',monospace;line-height:1.7}
-  .em-ta:focus{border-color:var(--b)}
-  .em-contacts-box{background:rgba(27,0,230,.08);border:1px solid rgba(27,0,230,.2);padding:18px 20px}
-  .em-cnum{font-family:'Space Mono',monospace;font-size:38px;font-weight:700;color:var(--b);line-height:1;margin-bottom:4px}
-  .em-clbl{font-size:9px;letter-spacing:.22em;color:var(--wd);text-transform:uppercase}
-  .em-tmpls{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-bottom:0}
-  .em-tmpl{background:rgba(255,255,255,.03);border:1px solid var(--wf);padding:14px 16px;cursor:pointer;transition:all .18s}
-  .em-tmpl:hover,.em-tmpl.on{background:rgba(27,0,230,.12);border-color:var(--b)}
-  .em-tmpl-icon{font-size:18px;margin-bottom:6px}
-  .em-tmpl-name{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:var(--w);margin-bottom:4px}
-  .em-tmpl-desc{font-size:8.5px;letter-spacing:.08em;color:var(--wd);line-height:1.6}
-  .em-links-row{display:flex;flex-wrap:wrap;gap:6px}
-  .em-link-btn{font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;padding:6px 12px;border:1px solid var(--wf);color:var(--wd);background:none;cursor:pointer;font-family:'IBM Plex Mono',monospace;transition:all .18s}
-  .em-link-btn:hover{background:var(--b);border-color:var(--b);color:var(--w)}
-  .em-preview-wrap{background:#0a0a0a;border:1px solid var(--wf);padding:20px}
-  .em-preview{font-size:13px;letter-spacing:.04em;color:var(--w);line-height:1.9;white-space:pre-wrap}
-  </style>
-  `;
-}
-
-// Email helpers
-// Cargar Brevo config desde localStorage al inicio
-(function(){
-  try{
-    window._brevoKey    = (CFG.brevo_key    || localStorage.getItem('asdl_brevo_key')    || '');
-    window._brevoFrom   = (CFG.brevo_from   || localStorage.getItem('asdl_brevo_from')   || '');
-    window._brevoSender = (CFG.brevo_sender || localStorage.getItem('asdl_brevo_sender') || 'Archivo Secreto del Lab');
-  }catch(e){
-    window._brevoKey=''; window._brevoFrom=''; window._brevoSender='Archivo Secreto del Lab';
-  }
-})();
-window._extraEmails=[];
-
-function saveBrevoConfig(){
-  window._brevoKey    = (document.getElementById('brevo-key')||{}).value||'';
-  window._brevoFrom   = (document.getElementById('brevo-from')||{}).value||'';
-  window._brevoSender = (document.getElementById('brevo-name')||{}).value||'Archivo Secreto del Lab';
-  try{
-    localStorage.setItem('asdl_brevo_key',    window._brevoKey);
-    localStorage.setItem('asdl_brevo_from',   window._brevoFrom);
-    localStorage.setItem('asdl_brevo_sender', window._brevoSender);
-  }catch(e){}
-  // Persistir en Supabase config
-  if(typeof sb !== 'undefined'){
-    var upserts = [
-      {key:'brevo_key',    value: window._brevoKey},
-      {key:'brevo_from',   value: window._brevoFrom},
-      {key:'brevo_sender', value: window._brevoSender}
-    ];
-    upserts.forEach(function(row){
-      sb.from('config').upsert(row, {onConflict:'key'})
-        .then(function(r){ if(r.error) console.warn('brevo config sync error:', r.error.message); });
-    });
-  }
-  const st=document.getElementById('brevo-status');
-  if(st){
-    st.textContent='✓ Configuración guardada — disponible en todos los browsers.';
-    st.style.color='var(--green)';
-  }
-}
-
-function addExtraEmail(){
-  const inp=document.getElementById('extra-email');
-  const val=(inp||{}).value?.trim()||'';
-  if(!val||!val.includes('@'))return;
-  window._extraEmails.push(val);
-  if(inp)inp.value='';
-  const list=document.getElementById('extra-list');
-  if(list){
-    const d=document.createElement('div');
-    d.style.cssText='font-size:10px;letter-spacing:.08em;color:var(--wd);padding:4px 0;border-bottom:1px solid var(--wf)';
-    d.textContent='+ '+val;
-    list.appendChild(d);
-  }
-}
-
-function selectTemplate(id,el){
-  document.querySelectorAll('.em-tmpl').forEach(t=>t.classList.remove('on'));
-  el.classList.add('on');
-  const subj=document.getElementById('em-subject');
-  const body=document.getElementById('em-body');
-  const templates={
-    newsletter:{s:'Novedades del Archivo Secreto del Lab 📡',b:'¡Hola! Desde el Archivo Secreto del Lab queremos contarte las últimas novedades.\n\nSets nuevos, jornadas grabadas y artistas que se suman al catálogo.\n\nSeguí el archivo en YouTube para no perderte nada:\nhttps://www.youtube.com/@ArchivoSecretodelLab/videos\n\nY en Instagram:\nhttps://www.instagram.com/archivosecretodellab\n\n— El equipo del Lab'},
-    promo:{s:'Oferta especial: Renta de cabina y equipos 🎙',b:'¡Hola! Tenemos una oferta especial en renta de equipos y cabina de grabación.\n\nNos adaptamos a tu proyecto — desde grabar en casa hasta producir un evento.\n\nConsultá disponibilidad y precios por WhatsApp:\nhttps://wa.link/xsg7l0 (equipos de sonido)\nhttps://wa.link/n7wg41 (cabina de grabación)\n\n— Archivo Secreto del Lab'},
-    jam:{s:'Nueva DJ JAM — ¡Los cupos están abiertos! 🎛',b:'¡Hola! La próxima DJ JAM ya tiene fecha.\n\nSi querés grabar tu set en el Lab, agendá tu sesión directamente en la web antes de que se llenen los cupos:\nhttps://archivosecretodellab.com/#agenda\n\nConsultas por WhatsApp:\nhttps://wa.link/n7wg41\n\n— El equipo del Lab'},
-    youtube:{s:'Nuevo set en el Archivo ▶',b:'¡Hola! Acabamos de publicar un nuevo set en el canal.\n\nPasate a escucharlo:\nhttps://www.youtube.com/@ArchivoSecretodelLab/videos\n\nY si querés ser parte del próximo, escribinos:\nhttps://wa.link/n7wg41\n\n— Archivo Secreto del Lab'},
-    whatsapp:{s:'¿Tenés alguna consulta? Escribinos por WhatsApp 💬',b:'¡Hola! Por cualquier consulta sobre el Lab, equipos o sesiones, escribinos directamente:\n\n🔊 Renta de equipos: https://wa.link/xsg7l0\n🎙 Cabina / consultas: https://wa.link/n7wg41\n📅 Agendar sesión: https://archivosecretodellab.com/#agenda\n\n— Archivo Secreto del Lab'},
-  };
-  if(templates[id]){
-    if(subj)subj.value=templates[id].s;
-    if(body)body.value=templates[id].b;
-  }
-}
-
-// Abrir Google Calendar para agendar sesión con mensaje prediseñado
-function openGcalAgenda(){
-  const tipo  = '{TIPO_SET}';
-  const fecha = '{FECHA}';
-  const hora  = '{HORARIO}';
-  const dir   = 'Confidencial — se envía con la confirmación';
-
-  const texto = encodeURIComponent(
-`🌀 ${tipo}
-📅 ${fecha} — ${hora}hs
-📍 ${dir}
-
-Grabamos sonido y video para dejar registro real de la escena local. Vos sos parte fundamental de este proceso.
-
-Para avisarnos que llegaste, mandá un mensaje a @archivosecretodellab en Instagram. Estaremos atentos y en cuanto podamos, bajamos a abrir.
-
-Recordá que el set no se modifica, no se repite ni se borra — preparate con antelación. La seña no es reembolsable. El tiempo de tolerancia es de 10 minutos: si llegás pasado ese margen y hay otro set pautado, se pierde la seña y se debe reagendar.
-
-Ese día tendrás unos minutos para probar sonido. Viniste, grabaste, quedó el registro para siempre.
-──────────────────────────────────────────
-📜 REGLAS DEL ARCHIVO
-Simples, pero sagradas.
-
-1. Máximo un acompañante por artista.
-2. No vestir colores oscuros ni negro.
-3. Solo el DJ entra a la cabina.
-4. Lavate las manos antes de tocar la consola.
-5. Sin alcohol durante la grabación.
-6. Con la comida y las bebidas, cuidado.
-7. El set visual no se toca.
-8. Si estás adentro, estás presente.
-9. Si grabás algo, etiquetanos.
-──────────────────────────────────────────
-Gracias por sumarte. Estamos ansiosos por escucharte y bailar.
-Nos vemos en la cabina.
-Archivo Secreto del Lab 👁️‍🗨️`);
-
-  const titulo = encodeURIComponent('Sesión en el Archivo Secreto del Lab');
-  const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${titulo}&details=${texto}&add=archivo.secreto.dellab@gmail.com`;
-  window.open(url, '_blank');
-}
-
-function insertLink(type){
-  const links={
-    yt:'https://www.youtube.com/@ArchivoSecretodelLab/videos',
-    'wa-sonido':'https://wa.link/xsg7l0',
-    'wa-cabina':'https://wa.link/n7wg41',
-    cal:'https://archivosecretodellab.com/#agenda',
-    ig:'https://www.instagram.com/archivosecretodellab',
-    form:'https://forms.gle/zafJ3QzJuB1VUaQTA',
-  };
-  const ta=document.getElementById('em-body');
-  if(ta&&links[type]){ta.value+='\n'+links[type];ta.focus();}
-}
-
-// Listas de email — selección de destinatarios
-let _selectedList = 'grabados';
-function selectEmailList(list, el){
-  _selectedList = list;
-  document.querySelectorAll('.em-section button.tdbtn').forEach(b=>b.style.background='');
-  if(el) el.style.background='rgba(27,0,230,.25)';
-
-  const grabados = window._emailGrabados||[];
-  const leads_   = window._emailLeads||[];
-  const extra    = window._extraEmails||[];
-
-  let emails=[];
-  if(list==='grabados') emails=[...grabados.map(d=>d.email),...extra];
-  else if(list==='leads') emails=[...leads_.map(d=>d.email)];
-  else emails=[...grabados.map(d=>d.email),...leads_.map(d=>d.email),...extra];
-  // deduplicar
-  emails=[...new Set(emails.filter(Boolean))];
-
-  const lbl = document.getElementById('list-selected');
-  const nombres = {grabados:`🎛 ${grabados.length} artistas grabados`,leads:`🔵 ${leads_.length} leads`,all:`📋 ${emails.length} contactos (ambas listas)`};
-  if(lbl){lbl.textContent=nombres[list]||'';}
-
-  // Mostrar emails
-  const preview = document.getElementById('email-list-preview');
-  if(preview){
-    if(!emails.length){
-      preview.innerHTML='<div style="font-size:10px;color:var(--wd);padding:6px 0">Sin emails registrados en esta lista. Los emails se agregan cuando los artistas completan el formulario de registro.</div>';
-    } else {
-      preview.innerHTML=`
-        <div style="font-size:9px;letter-spacing:.2em;color:var(--b);text-transform:uppercase;margin-bottom:8px">${emails.length} destinatarios</div>
-        <div style="max-height:120px;overflow-y:auto;display:flex;flex-direction:column;gap:3px">
-          ${emails.slice(0,50).map(e=>`<div style="font-size:9px;color:var(--wd);font-family:'IBM Plex Mono',monospace;padding:2px 0;border-bottom:1px solid rgba(255,255,255,.06)">${e}</div>`).join('')}
-          ${emails.length>50?`<div style="font-size:9px;color:rgba(255,255,255,.3);padding:4px 0">... y ${emails.length-50} más</div>`:''}
-        </div>`;
-    }
-  }
-}
-
-function previewEmail(){
-  const subj=(document.getElementById('em-subject')||{}).value||'(sin asunto)';
-  const body=(document.getElementById('em-body')||{}).value||'(sin contenido)';
-  const pw=document.getElementById('em-preview-wrap');
-  const pr=document.getElementById('em-preview');
-  if(pr)pr.textContent=`ASUNTO: ${subj}\n\n${body}`;
-  if(pw)pw.style.display='block';
-}
-
-async function sendTestEmail(){
-  const key=window._brevoKey;
-  const from=window._brevoFrom;
-  const sender=window._brevoSender;
-  const subj=(document.getElementById('em-subject')||{}).value||'Test';
-  const body=(document.getElementById('em-body')||{}).value||'Test';
-  const st=document.getElementById('em-send-status');
-
-  if(!key||!from){if(st){st.textContent='⚠ Configurá primero la API Key y el email remitente en el panel izquierdo.';st.style.color='var(--red)';}return;}
-  if(st){st.textContent='Enviando prueba...';st.style.color='var(--wd)';}
-
-  try{
-    const res=await fetch('https://api.brevo.com/v3/smtp/email',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','api-key':key},
-      body:JSON.stringify({
-        sender:{name:sender,email:from},
-        to:[{email:from,name:'Equipo ASDL'}],
-        subject:'[TEST] '+subj,
-        textContent:body,
-      })
-    });
-    if(res.ok){if(st){st.textContent='✓ Email de prueba enviado a '+from;st.style.color='var(--green)';}}
-    else{const err=await res.json();if(st){st.textContent='Error: '+(err.message||res.status);st.style.color='var(--red)';}}
-  }catch(e){if(st){st.textContent='Error de red — verificá la API key.';st.style.color='var(--red)';}}
-}
-
-async function sendCampaign(){
-  const key=window._brevoKey;
-  const from=window._brevoFrom;
-  const sender=window._brevoSender;
-  const subj=(document.getElementById('em-subject')||{}).value||'';
-  const body=(document.getElementById('em-body')||{}).value||'';
-  const st=document.getElementById('em-send-status');
-
-  if(!key||!from){if(st){st.textContent='⚠ Configurá la API Key y el email remitente primero.';st.style.color='var(--red)';}return;}
-  if(!subj||!body){if(st){st.textContent='⚠ Completá el asunto y el cuerpo del mensaje.';st.style.color='var(--red)';}return;}
-
-  const grabados_=(window._emailGrabados||[]).map(d=>({email:d.email,name:d.nombre_artistico||d.email}));
-  const leads__=(window._emailLeads||[]).map(d=>({email:d.email,name:d.nombre_artistico||d.email}));
-  const extra_=(window._extraEmails||[]).map(e=>({email:e,name:e}));
-  let allEmails=[];
-  if(_selectedList==='grabados') allEmails=[...grabados_,...extra_];
-  else if(_selectedList==='leads') allEmails=[...leads__];
-  else allEmails=[...grabados_,...leads__,...extra_];
-  // deduplicar por email
-  allEmails=[...new Map(allEmails.filter(x=>x.email).map(x=>[x.email,x])).values()];
-  if(!allEmails.length){if(st){st.textContent='No hay contactos disponibles.';st.style.color='var(--red)';}return;}
-
-  if(!confirm(`¿Enviás esta campaña a ${allEmails.length} contactos?\n\nAsunto: ${subj}`))return;
-
-  if(st){st.textContent=`Enviando a ${allEmails.length} contactos...`;st.style.color='var(--wd)';}
-
-  let ok=0,fail=0;
-  // Brevo permite hasta 50 destinatarios por llamada
-  const chunks=[];
-  for(let i=0;i<allEmails.length;i+=50)chunks.push(allEmails.slice(i,i+50));
-
-  for(const chunk of chunks){
-    try{
-      const res=await fetch('https://api.brevo.com/v3/smtp/email',{
-        method:'POST',
-        headers:{'Content-Type':'application/json','api-key':key},
-        body:JSON.stringify({
-          sender:{name:sender,email:from},
-          to:chunk,
-          subject:subj,
-          textContent:body,
-        })
-      });
-      if(res.ok)ok+=chunk.length; else fail+=chunk.length;
-    }catch(e){fail+=chunk.length;}
-    await new Promise(r=>setTimeout(r,200));// rate limit gentil
-  }
-
-  if(st){
-    st.textContent=`✓ Campaña enviada — ${ok} exitosos${fail?`, ${fail} fallidos`:''}. Revisá Brevo para el reporte completo.`;
-    st.style.color=fail?'var(--red)':'var(--green)';
-  }
-}
-// ═══════════════════════════════════════════════════════════════
-// GALERÍA CONTACTO — carga y renderiza el carrusel
-// ═══════════════════════════════════════════════════════════════
-
-// Fotos por defecto (se sobreescriben con las de Supabase)
-var fotosContacto = [];
 
 function getGaleriaLocal(){
   try{
@@ -5706,81 +5163,6 @@ function renderCarousel(){
 })();
 
 // ── Panel admin: Gestión de Galería de Contacto ──────────────────
-async function renderAdminGaleria(c){
-  var imgs = getGaleriaLocal();
-
-  function buildGrid(){
-    if(!imgs.length) return '<div style="font-size:10px;color:var(--wd);padding:8px 0">Sin imágenes. Subí la primera.</div>';
-    return '<div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:24px" id="g-grid">'
-      + imgs.map(function(url,i){
-          // Thumbnail 4:5 en el panel admin
-          var tw=88, th=Math.round(88*5/4); // 88x110px manteniendo 4:5
-          return '<div style="position:relative;width:'+tw+'px;margin-bottom:4px">'
-            + '<img src="'+url+'" loading="lazy" decoding="async" style="width:'+tw+'px;height:'+th+'px;object-fit:cover;object-position:center top;border:1px solid #222;display:block;background:#0a0a0a">'
-            + '<button onclick="gRemove('+i+')" style="position:absolute;top:3px;right:3px;width:18px;height:18px;background:rgba(0,0,0,.8);border:1px solid #555;color:#fff;font-size:9px;cursor:pointer;line-height:1;padding:0">✕</button>'
-            + '<div style="font-size:7px;letter-spacing:.1em;color:var(--wd);padding:2px 1px;text-align:center">'+(i+1)+'</div>'
-            + '</div>';
-        }).join('')
-      + '</div>';
-  }
-
-  c.innerHTML = '<div style="padding:32px 40px;max-width:860px">'
-    + '<div style="font-family:Space Mono,monospace;font-size:16px;font-weight:700;color:#fff;margin-bottom:4px">Galería de Contacto</div>'
-    + '<div style="font-size:9px;letter-spacing:.22em;color:var(--wd);text-transform:uppercase;margin-bottom:28px">Carrusel de contacto — subí JPGs directamente</div>'
-    + '<div id="g-grid-wrap">'+buildGrid()+'</div>'
-    + '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">'
-    +   '<button onclick="gUpload()" style="padding:11px 22px;background:#1b00e6;border:none;color:#fff;font-size:10px;letter-spacing:.22em;text-transform:uppercase;cursor:pointer;font-family:Space Mono,monospace">+ Subir imagen</button>'
-    +   '<button onclick="gClear()" style="padding:11px 18px;background:transparent;border:1px solid #333;color:#666;font-size:10px;letter-spacing:.18em;text-transform:uppercase;cursor:pointer;font-family:Space Mono,monospace">Limpiar todo</button>'
-    + '</div>'
-    + '<div id="g-status" style="font-size:10px;letter-spacing:.14em;color:var(--wd);min-height:16px"></div>'
-    + '</div>';
-
-  function refresh(){ document.getElementById('g-grid-wrap').innerHTML = buildGrid(); }
-  function status(msg,color){ var el=document.getElementById('g-status'); if(el){el.textContent=msg;el.style.color=color||'var(--wd)';} }
-
-  window.gRemove = function(i){
-    imgs.splice(i,1); setGaleriaLocal(imgs); fotosContacto=imgs.slice(); renderCarousel(); refresh();
-    status('Imagen eliminada. '+imgs.length+' en galería.');
-  };
-  window.gClear = function(){
-    if(!confirm('¿Eliminar todas las imágenes?')) return;
-    imgs=[]; setGaleriaLocal([]); fotosContacto=[]; renderCarousel(); refresh(); status('Galería vaciada.');
-  };
-  window.gUpload = function(){
-    var inp=document.createElement('input');
-    inp.type='file'; inp.accept='image/*'; inp.multiple=true;
-    inp.onchange=function(){
-      var files=Array.from(inp.files); if(!files.length) return;
-      status('Procesando '+files.length+' imagen(es)…');
-      var done=0;
-      files.forEach(function(file){
-        var reader=new FileReader();
-        reader.onload=function(e){
-          var img=new Image();
-          img.onload=function(){
-            // Canvas 4:5 — 1080x1350 (portrait nativo), crop centrado, JPEG 0.90
-            var tW=1080,tH=1350;
-            var sc=Math.max(tW/img.width,tH/img.height);
-            var sX=(img.width-tW/sc)/2,sY=(img.height-tH/sc)/2;
-            var canvas=document.createElement('canvas');
-            canvas.width=tW; canvas.height=tH;
-            canvas.getContext('2d').drawImage(img,sX,sY,tW/sc,tH/sc,0,0,tW,tH);
-            imgs.push(canvas.toDataURL('image/jpeg',0.90));
-            done++;
-            if(done===files.length){
-              setGaleriaLocal(imgs); fotosContacto=imgs.slice(); renderCarousel(); refresh();
-              status('✓ '+imgs.length+' imagen(es) en galería.','#5fffb0');
-            }
-          };
-          img.src=e.target.result;
-        };
-        reader.readAsDataURL(file);
-      });
-    };
-    inp.click();
-  };
-}
-
 async function renderAdminAgendaTab(c){
   c.innerHTML=`<div style="font-size:10px;letter-spacing:.2em;color:var(--wd);padding:10px 0">Cargando...</div>`;
 
@@ -6064,7 +5446,7 @@ function saveTicker(txt){
 })();
 
 // ═══ SETS MAESTRO ═══
-var SM = [{"id":"ASDL001","artista":"SAX","categoria":"DJ JAM 002","tipo":"DJ_JAM","fecha":"2025-05-28","url_yt":"https://youtu.be/hAt2afikVTQ?si=NQTvGk0BPWjdBgYz","estado":"Publicado","set_num":1},{"id":"ASDL002","artista":"NADERIX","categoria":"DJ JAM 002","tipo":"DJ_JAM","fecha":"2025-05-30","url_yt":"https://www.youtube.com/watch?v=IB-UNMDYnok","estado":"Publicado","set_num":1},{"id":"ASDL003","artista":"LYANNA","categoria":"DJ JAM 002","tipo":"DJ_JAM","fecha":"2025-06-03","url_yt":"https://youtu.be/iWJ5FZFoRVY?si=8nGC5pNFlyFCn-TS","estado":"Publicado","set_num":1},{"id":"ASDL004","artista":"ACU","categoria":"DJ JAM 002","tipo":"DJ_JAM","fecha":"2025-06-06","url_yt":"https://youtu.be/rpF99KjXUmo?si=ariJiz1pIZfLQHRg","estado":"Publicado","set_num":1},{"id":"ASDL005","artista":"VORTX","categoria":"DJ JAM 002","tipo":"DJ_JAM","fecha":"2025-06-08","url_yt":"https://www.youtube.com/watch?v=vescOLJykNw","estado":"Publicado","set_num":1},{"id":"ASDL006","artista":"SUVMASTER","categoria":"DJ JAM 002","tipo":"DJ_JAM","fecha":"2025-06-09","url_yt":"https://www.youtube.com/watch?v=wwFg5KlPwtc","estado":"Publicado","set_num":1},{"id":"ASDL007","artista":"LENNY OWEN","categoria":"DJ JAM 002","tipo":"DJ_JAM","fecha":"2025-06-10","url_yt":"https://youtu.be/0ZW7Sy7pVEE?si=QFxPIIaZjCLqU5a4","estado":"Publicado","set_num":1},{"id":"ASDL008","artista":"IVAN CORDA","categoria":"DJ JAM 003","tipo":"DJ_JAM","fecha":"2025-06-11","url_yt":"https://youtu.be/s0kcMKShy5g?si=a516URYrg55JDzti","estado":"Publicado","set_num":1},{"id":"ASDL009","artista":"EZRA","categoria":"DJ JAM 003","tipo":"DJ_JAM","fecha":"2025-06-12","url_yt":"https://youtu.be/xh34q293ykc?si=SCXtEvmlvNv_lHCV","estado":"Publicado","set_num":1},{"id":"ASDL010","artista":"JONY PEDER","categoria":"DJ JAM 003","tipo":"DJ_JAM","fecha":"2025-06-12","url_yt":"https://youtu.be/ynAYj7CDqdM?si=5wLG8CHe-0iJRQ8g","estado":"Publicado","set_num":1},{"id":"ASDL011","artista":"NIELO","categoria":"CUSTOM LIVESET","tipo":"CUSTOM","fecha":"2025-06-13","url_yt":"https://youtu.be/saVNBxvpCC8?si=xTC4bGPHOIG148Xe","estado":"Publicado","set_num":1,"nota":"Custom con Gente de Disco Domingo"},{"id":"ASDL012","artista":"DIMOSS","categoria":"DJ JAM 003","tipo":"DJ_JAM","fecha":"2025-06-18","url_yt":"https://youtu.be/c4wcUQcHn3Y?si=rwrYeRVe_jmzUheT","estado":"Publicado","set_num":1},{"id":"ASDL013","artista":"OLU","categoria":"DJ JAM 003","tipo":"DJ_JAM","fecha":"2025-06-19","url_yt":"https://youtu.be/YZck9d_I86g?si=wOEzwy8rQW8yrjfn","estado":"Publicado","set_num":1},{"id":"ASDL014","artista":"MARTIN G","categoria":"DJ JAM 004","tipo":"DJ_JAM","fecha":"2025-06-24","url_yt":"https://youtu.be/0GPiF1QrzEE?si=dAlwmLbN_9WGrCvW","estado":"Publicado","set_num":1},{"id":"ASDL015","artista":"ABBICA","categoria":"DJ JAM 004","tipo":"DJ_JAM","fecha":"2025-06-26","url_yt":"https://youtu.be/eQx4jGP7IlU?si=EvtBECmYuLLlln2u","estado":"Publicado","set_num":1},{"id":"ASDL016","artista":"MATI SLAST","categoria":"DJ JAM 004","tipo":"DJ_JAM","fecha":"2025-06-29","url_yt":"https://youtu.be/6Mp7gg2fTQ4?si=RaIJ_P_NvKgMhhwR","estado":"Publicado","set_num":1},{"id":"ASDL017","artista":"LUCIO KA","categoria":"DJ JAM 004","tipo":"DJ_JAM","fecha":"2025-07-01","url_yt":"https://youtu.be/TmzRfhPTfDU?si=CGBHGasvMAtz5jI-","estado":"Publicado","set_num":1},{"id":"ASDL018","artista":"SATURE","categoria":"DJ JAM 004","tipo":"DJ_JAM","fecha":"2025-07-01","url_yt":"https://youtu.be/FYGjAnVQ0I0?si=WVBDvdJ8SLxsFxda","estado":"Publicado","set_num":1},{"id":"ASDL019","artista":"UMRESH","categoria":"DJ JAM 004","tipo":"DJ_JAM","fecha":"2025-07-02","url_yt":"https://youtu.be/o6PWxDGLhug?si=c82dUSrEaHC5dLty","estado":"Publicado","set_num":1},{"id":"ASDL020","artista":"SIKO","categoria":"DJ JAM 004","tipo":"DJ_JAM","fecha":"2025-07-02","url_yt":"https://youtu.be/ZU452nPAUJo?si=sYYElc4OyGcMvBrY","estado":"Publicado","set_num":2,"nota":"2do set"},{"id":"ASDL021","artista":"RISCO B2B MATI PINO","categoria":"DJ JAM 004","tipo":"DJ_JAM","fecha":"2025-07-03","url_yt":"https://youtu.be/Kd1CHTz21K0?si=YG8nCrDWGfMG-v6U","estado":"Publicado","set_num":1},{"id":"ASDL022","artista":"JORRON","categoria":"DJ JAM 004","tipo":"DJ_JAM","fecha":"2025-07-07","url_yt":"https://youtu.be/HY6EzErh7bU?si=U9ziVTOuIcf7E5x_","estado":"Publicado","set_num":1,"nota":"Tambien conocido como FOMO"},{"id":"ASDL023","artista":"FALSO","categoria":"DJ JAM 004","tipo":"DJ_JAM","fecha":"2025-07-08","url_yt":"https://youtu.be/9XeYbexbo4o?si=xqwm8hzDZUNsSC0Z","estado":"Publicado","set_num":1},{"id":"ASDL024","artista":"BLACKMAIN","categoria":"DJ JAM 004","tipo":"DJ_JAM","fecha":"2025-07-08","url_yt":"https://youtu.be/VbAtNWEbNjU?si=Ws1HdGZ11_pN1cit","estado":"Publicado","set_num":1},{"id":"ASDL025","artista":"LOMAKIN","categoria":"DJ JAM 004","tipo":"DJ_JAM","fecha":"2025-07-10","url_yt":"https://youtu.be/wjxN_cIicp0?si=n9T9V9nu9IIgNuBM","estado":"Publicado","set_num":1},{"id":"ASDL026","artista":"EVGENI TROSHKOV","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-07-10","url_yt":"https://youtu.be/T8latyq3ryI?si=En6Z447yZQ49ahTO","estado":"Publicado","set_num":1},{"id":"ASDL027","artista":"KPUCCINA","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-07-16","url_yt":"https://www.youtube.com/watch?v=_G4J6VScAqE","estado":"Publicado","set_num":1},{"id":"ASDL028","artista":"TABORDA","categoria":"DJ JAM 005","tipo":"DJ_JAM","fecha":"2025-07-29","url_yt":"https://youtu.be/amHC_EL3dxk?si=l3mNYDQUo5yaSRjN","estado":"Publicado","set_num":1},{"id":"ASDL029","artista":"FARRS","categoria":"DJ JAM 005","tipo":"DJ_JAM","fecha":"2025-07-30","url_yt":"https://www.youtube.com/watch?v=IkylzHtjsL8&t=1995s","estado":"Publicado","set_num":1},{"id":"ASDL030","artista":"ATUA","categoria":"DJ JAM 005","tipo":"DJ_JAM","fecha":"2025-07-31","url_yt":"https://youtu.be/4jzPeNDh0q4?si=v9GRX4DMR6_LkK1H","estado":"Publicado","set_num":1},{"id":"ASDL031","artista":"BVLLY","categoria":"DJ JAM 005","tipo":"DJ_JAM","fecha":"2025-08-01","url_yt":"https://youtu.be/jOKvMtDTww0?si=DFi9mLjCp6JH7JQV","estado":"Publicado","set_num":1},{"id":"ASDL032","artista":"MARA KOLEVITCH","categoria":"DJ JAM 005","tipo":"DJ_JAM","fecha":"2025-08-03","url_yt":"https://youtu.be/Kd3l8zdgNC8?si=XP_xXIrg1Bbn7d4_","estado":"Publicado","set_num":1},{"id":"ASDL033","artista":"FARRS","categoria":"DJ JAM 005","tipo":"DJ_JAM","fecha":"2025-08-04","url_yt":"https://www.youtube.com/watch?v=58cZ4-ymjRI&t=1030s","estado":"Publicado","set_num":2,"nota":"2do set"},{"id":"ASDL034","artista":"BORONIK B2B SAX","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-08-20","url_yt":"https://youtu.be/x-FzwVN3FzI?si=CQHoiZ4jVSt_veMZ","estado":"Publicado","set_num":1},{"id":"ASDL035","artista":"AGUS OLIVO","categoria":"DJ JAM 006","tipo":"DJ_JAM","fecha":"2025-09-11","url_yt":"https://youtu.be/5CmUX6fIoHw?si=mPymVI5KW86dmRCo","estado":"Publicado","set_num":1},{"id":"ASDL036","artista":"ANTONELLA BELEN","categoria":"DJ JAM 006","tipo":"DJ_JAM","fecha":"2025-09-12","url_yt":"https://youtu.be/AinnhNKkQdM?si=eQ-HU0biEDf9ZnTu","estado":"Publicado","set_num":1},{"id":"ASDL037","artista":"FELIPE FERREYRA","categoria":"DJ JAM 006","tipo":"DJ_JAM","fecha":"2025-09-13","url_yt":"https://youtu.be/RDsz0-lDsIs?si=hKz-0_9ywfOtmwmF","estado":"Publicado","set_num":1},{"id":"ASDL038","artista":"MORTEL","categoria":"DJ JAM 006","tipo":"DJ_JAM","fecha":"2025-09-15","url_yt":"https://youtu.be/4BG8N792GlE?si=KkUxRC0V9GtG90Oh","estado":"Publicado","set_num":1},{"id":"ASDL039","artista":"SANTI PAEZ","categoria":"DJ JAM 006","tipo":"DJ_JAM","fecha":"2025-09-17","url_yt":"https://youtu.be/g8qqjHLjubs?si=X8Yk6VavTasRpPc1","estado":"Publicado","set_num":1},{"id":"ASDL040","artista":"RUKU","categoria":"DJ JAM 006","tipo":"DJ_JAM","fecha":"2025-09-17","url_yt":"https://youtu.be/zrky2wNwL-M?si=FJsdt-rEFNM7ManY","estado":"Publicado","set_num":1},{"id":"ASDL041","artista":"NUJIRE","categoria":"DJ JAM 006","tipo":"DJ_JAM","fecha":"2025-09-19","url_yt":"https://youtu.be/tmXbEUOxiJM?si=pCovr9y16Cg5URDi","estado":"Publicado","set_num":1},{"id":"ASDL042","artista":"SAITI","categoria":"DJ JAM 007","tipo":"DJ_JAM","fecha":"2025-09-22","url_yt":"https://youtu.be/uuYSNe0PoL0?si=zUj8xE--YOdVP9xT","estado":"Publicado","set_num":1},{"id":"ASDL043","artista":"DIMOSS","categoria":"DJ JAM 007","tipo":"DJ_JAM","fecha":"2025-09-23","url_yt":"https://youtu.be/KGBakd7eBKU?si=-39dLut5KLnpShb9","estado":"Publicado","set_num":2,"nota":"2do set"},{"id":"ASDL044","artista":"SIO B2B PERTY","categoria":"DJ JAM 007","tipo":"DJ_JAM","fecha":"2025-09-24","url_yt":"https://youtu.be/NphR4PXOwNo?si=hfrPl5h88HuAeZkI","estado":"Publicado","set_num":1},{"id":"ASDL045","artista":"KPUCCINA","categoria":"DJ JAM 007","tipo":"DJ_JAM","fecha":"2025-09-25","url_yt":"https://youtu.be/qzKK6uhU2BI?si=ZMB2zL8ii7C-VbAq","estado":"Publicado","set_num":2,"nota":"2do set"},{"id":"ASDL046","artista":"NINE","categoria":"DJ JAM 007","tipo":"DJ_JAM","fecha":"2025-09-26","url_yt":"https://youtu.be/8b5pRyumkEo?si=4t1BITLJHvs3ZExo","estado":"Publicado","set_num":1},{"id":"ASDL047","artista":"CATACLISMO","categoria":"DJ JAM 007","tipo":"DJ_JAM","fecha":"2025-09-27","url_yt":"https://youtu.be/CNovleuLoLg?si=btiUk7dXmT0IWP8O","estado":"Publicado","set_num":1},{"id":"ASDL048","artista":"ADHILA","categoria":"DJ JAM 007","tipo":"DJ_JAM","fecha":"2025-09-29","url_yt":"https://youtu.be/Zat8kKCkbHI?si=3Dor9dkgYy1fV1ez","estado":"Publicado","set_num":1},{"id":"ASDL049","artista":"SANTI DELFINO","categoria":"DJ JAM 007","tipo":"DJ_JAM","fecha":"2025-09-30","url_yt":"https://youtu.be/dIrPKLki-ds?si=2jZtve0OoU8nvwtb","estado":"Publicado","set_num":1},{"id":"ASDL050","artista":"SANTOS","categoria":"DJ JAM 007","tipo":"DJ_JAM","fecha":"2025-10-01","url_yt":"https://youtu.be/m-yit5mfxGo?si=zF2_a3LTAs_fS2xN","estado":"Publicado","set_num":1},{"id":"ASDL051","artista":"NUJIRE B2B D1NO DUBZ","categoria":"DJ JAM 008","tipo":"DJ_JAM","fecha":"2025-10-09","url_yt":"https://youtu.be/rQ62K_yc208?si=uhOJugDd_BD2-bX_","estado":"Publicado","set_num":2,"nota":"2do set de Nujire"},{"id":"ASDL052","artista":"SAFI","categoria":"DJ JAM 008","tipo":"DJ_JAM","fecha":"2025-10-10","url_yt":"https://youtu.be/-9DagC7FU0c?si=oc7Nhs8Vt2p93fOa","estado":"Publicado","set_num":1},{"id":"ASDL053","artista":"LUGHA","categoria":"DJ JAM 008","tipo":"DJ_JAM","fecha":"2025-10-11","url_yt":"https://youtu.be/UUGeDg1WQ4Q?si=Gc13vBp6EWpNEV7Q","estado":"Publicado","set_num":1},{"id":"ASDL054","artista":"SOULDER","categoria":"DJ JAM 008","tipo":"DJ_JAM","fecha":"2025-10-13","url_yt":"https://youtu.be/u3ODrpE07VM?si=IiAQbdPI4ZY8nl3j","estado":"Publicado","set_num":1},{"id":"ASDL055","artista":"VICTORIA POLETTI","categoria":"DJ JAM 008","tipo":"DJ_JAM","fecha":"2025-10-14","url_yt":"https://youtu.be/sVIqJOVP0XY?si=tgMh1E6gxenb8lM1","estado":"Publicado","set_num":1},{"id":"ASDL056","artista":"AGUS COSTA B2B AGUS DOMENE","categoria":"DJ JAM 008","tipo":"DJ_JAM","fecha":"2025-10-16","url_yt":"https://youtu.be/SAusbm59WRA?si=KadTffR2fezfCMiG","estado":"Publicado","set_num":1},{"id":"ASDL057","artista":"GRECIA","categoria":"DJ JAM 008","tipo":"DJ_JAM","fecha":"2025-10-17","url_yt":"https://youtu.be/nnDjHfEJTwY?si=kuMdp7DaxW_5fWpw","estado":"Publicado","set_num":1},{"id":"ASDL058","artista":"KOMI","categoria":"DJ JAM 009","tipo":"DJ_JAM","fecha":"2025-10-17","url_yt":"https://youtu.be/b7N6Yr7TcdM?si=q-nxasTYZW7J-isB","estado":"Publicado","set_num":1},{"id":"ASDL059","artista":"BVLLY","categoria":"DJ JAM 009","tipo":"DJ_JAM","fecha":"2025-10-18","url_yt":"https://youtu.be/nCiUWXAZ8oE?si=4TjS2h-JkiR04n9z","estado":"Publicado","set_num":2,"nota":"2do set"},{"id":"ASDL060","artista":"JULI HARLEY","categoria":"DJ JAM 009","tipo":"DJ_JAM","fecha":"2025-10-19","url_yt":"https://youtu.be/mcRfoft49Aw?si=nd8J4itDi790A7v-","estado":"Publicado","set_num":1},{"id":"ASDL061","artista":"BAU OLIVARES","categoria":"DJ JAM 009","tipo":"DJ_JAM","fecha":"2025-10-20","url_yt":"https://youtu.be/uF6crKtkrP0?si=xBKpIPmg2XVq0zYm","estado":"Publicado","set_num":1},{"id":"ASDL062","artista":"CARMELO","categoria":"DJ JAM 009","tipo":"DJ_JAM","fecha":"2025-10-21","url_yt":"https://youtu.be/BX94k1nl8Xk?si=SYRU4H-V4R9z4-9m","estado":"Publicado","set_num":1},{"id":"ASDL063","artista":"GABELL","categoria":"DJ JAM 009","tipo":"DJ_JAM","fecha":"2025-10-22","url_yt":"https://youtu.be/xlrrAdTdw-A?si=SFsdzXvQ2DaR5NJj","estado":"Publicado","set_num":1},{"id":"ASDL064","artista":"WAXX","categoria":"DJ JAM 009","tipo":"DJ_JAM","fecha":"2025-10-23","url_yt":"https://youtu.be/dHnX-XHXTu8?si=4NxGpF_cvULjkL-m","estado":"Publicado","set_num":1},{"id":"ASDL065","artista":"JORRON","categoria":"DJ JAM 009","tipo":"DJ_JAM","fecha":"2025-10-24","url_yt":"https://youtu.be/Hj7419eBZYk?si=vFS2aYHWbyNx_ZpH","estado":"Publicado","set_num":2,"nota":"Tambien conocido como FOMO - 2do set"},{"id":"ASDL066","artista":"NEEKHO","categoria":"DJ JAM 009","tipo":"DJ_JAM","fecha":"2025-10-25","url_yt":"https://youtu.be/Z3OA-tlMucY?si=gUmCpec-hSci8Fut","estado":"Publicado","set_num":1},{"id":"ASDL067","artista":"ZLATA","categoria":"CUSTOM LIVESET","tipo":"CUSTOM","fecha":"2025-10-31","url_yt":"https://youtu.be/GanZkHLHr3c?si=POWw_ZRPlpGF4sQZ","estado":"Publicado","set_num":1},{"id":"ASDL068","artista":"RAWDON","categoria":"DJ JAM 010","tipo":"DJ_JAM","fecha":"2025-11-11","url_yt":"https://youtu.be/ZFs4_aZ3H2Y?si=MI-K_wGkamxJh0ja","estado":"Publicado","set_num":1},{"id":"ASDL069","artista":"MARCOS ALVAREZ","categoria":"DJ JAM 010","tipo":"DJ_JAM","fecha":"2025-11-11","url_yt":"https://youtu.be/pA5NfqTgl4I?si=vt2BhEGQ1I06Z3d5","estado":"Publicado","set_num":1},{"id":"ASDL070","artista":"PACHO","categoria":"DJ JAM 010","tipo":"DJ_JAM","fecha":"2025-11-12","url_yt":"https://youtu.be/AS8yh2SXvvc?si=s1BFffV3PlA3rB2A","estado":"Publicado","set_num":1},{"id":"ASDL071","artista":"JEILI B2B TUCUMALO","categoria":"DJ JAM 010","tipo":"DJ_JAM","fecha":"2025-11-13","url_yt":"https://youtu.be/XEvMhIPb06g?si=aYK3cIC7Nus3aJxC","estado":"Publicado","set_num":1},{"id":"ASDL072","artista":"EL HEREJE","categoria":"DJ JAM 010","tipo":"DJ_JAM","fecha":"2025-11-14","url_yt":"https://youtu.be/Twk_xx62kew?si=4mTQ9o2ALF1P7Yef","estado":"Publicado","set_num":1},{"id":"ASDL073","artista":"ROXIE","categoria":"DJ JAM 010","tipo":"DJ_JAM","fecha":"2025-11-15","url_yt":"https://youtu.be/4WAULAZpshI?si=PXNsFmVwakQRm5Gp","estado":"Publicado","set_num":1},{"id":"ASDL074","artista":"LUXRAY","categoria":"DJ JAM 010","tipo":"DJ_JAM","fecha":"2025-11-16","url_yt":"https://youtu.be/_IM30Dtxjxw?si=OKlwPGT5j-ctVKBe","estado":"Publicado","set_num":1},{"id":"ASDL075","artista":"AIXA YAEL","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-11-17","url_yt":"https://youtu.be/cqE_XUg80Xw?si=UuWUwevTmJS6VaaP","estado":"Publicado","set_num":1},{"id":"ASDL076","artista":"VENUSINO","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-11-18","url_yt":"https://youtu.be/bXLfLB0o4wM?si=DGlvS2_k_yCFK8bF","estado":"Publicado","set_num":1},{"id":"ASDL077","artista":"UNDERDUST","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-11-19","url_yt":"https://youtu.be/MiAbEuF7LAo?si=AYnaA0NyQXsQTItq","estado":"Publicado","set_num":1},{"id":"ASDL078","artista":"NEIKITA","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-11-20","url_yt":"https://youtu.be/YZWSX5wKHnE?si=EAiSgUgt5eJm8EqC","estado":"Publicado","set_num":1},{"id":"ASDL079","artista":"THIAGO LAUTARO","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-11-22","url_yt":"https://youtu.be/DArn8genlss?si=njr6MB_gdjsZ8rj6","estado":"Publicado","set_num":1},{"id":"ASDL080","artista":"JU4MPI","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-11-26","url_yt":"https://youtu.be/lSY_RwEB58A?si=SmJS5aAcr463Qiu4","estado":"Publicado","set_num":1},{"id":"ASDL081","artista":"ARTHUR CHEFFER","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-12-04","url_yt":"https://youtu.be/1R3RYLSKpmA?si=zEjGsnHbVHPNAMvL","estado":"Publicado","set_num":1},{"id":"ASDL082","artista":"LEF","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-12-11","url_yt":"https://www.youtube.com/watch?v=by4NPOHhsDA&list=RDby4NPOHhsDA&start_radio=1","estado":"Publicado","set_num":1},{"id":"ASDL083","artista":"ALEX HEDIGER","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-12-23","url_yt":"https://www.youtube.com/watch?v=YNxq9HievZg&t=11s","estado":"Publicado","set_num":1},{"id":"ASDL084","artista":"SOUNDSIX","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-12-24","url_yt":"https://youtu.be/0ZmseKca1oM?si=806lqA-QjQjoiHse","estado":"Publicado","set_num":1},{"id":"ASDL085","artista":"TUSIMONIUM","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-12-24","url_yt":"https://youtu.be/lCZR1O8O2os?si=gRbhr0dgQNizJJRo","estado":"Publicado","set_num":1},{"id":"ASDL086","artista":"SIKO","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-12-25","url_yt":"https://youtu.be/W7jJN1jQYtw?si=X9rGTpx8Wk6pXu0v","estado":"Publicado","set_num":3,"nota":"3er set"},{"id":"ASDL087","artista":"TEKNILLS","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-12-25","url_yt":"https://youtu.be/c9xTwj62pko?si=HtiOtGaVEPXZn8Ty","estado":"Publicado","set_num":1},{"id":"ASDL088","artista":"ATUA","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-12-26","url_yt":"https://youtu.be/bVeXbobt5i4?si=Yz3n_crNagraAghz","estado":"Publicado","set_num":2,"nota":"2do set"},{"id":"ASDL089","artista":"KAIF","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-12-26","url_yt":"https://youtu.be/3pWkvhGIfDs?si=xHyIJw8TytU22Af4","estado":"Publicado","set_num":1},{"id":"ASDL090","artista":"NMIN","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-12-27","url_yt":"https://youtu.be/6bX_-GUfFMY?si=B2QNbU2lL7QbJIOB","estado":"Publicado","set_num":1},{"id":"ASDL091","artista":"NINK09","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-12-27","url_yt":"https://youtu.be/gvYX7c7eZzc?si=-0FobQ5neboobRUR","estado":"Publicado","set_num":1},{"id":"ASDL092","artista":"SIKO","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-12-28","url_yt":"https://youtu.be/LRcjEwCLDsw?si=uzopVjx7kG_H0fYQ","estado":"Publicado","set_num":4,"nota":"4to set"},{"id":"ASDL093","artista":"TROMIX","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-12-28","url_yt":"https://youtu.be/TL6hsjNLLzA?si=pBWcgbvAKAhyPTkm","estado":"Publicado","set_num":1},{"id":"ASDL094","artista":"MARK STRAITS","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-12-29","url_yt":"https://youtu.be/3T0xFM0xREw?si=ercbmjMalvKMto_j","estado":"Publicado","set_num":1},{"id":"ASDL095","artista":"VIKTOR NAHVEL","categoria":"CUSTOM LIVESET","tipo":"CUSTOM","fecha":"2025-12-29","url_yt":"https://youtu.be/Erb6eTSoQac?si=OfBT280L5oLSTxTo","estado":"Publicado","set_num":1},{"id":"ASDL096","artista":"DJ BRIVN","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-12-30","url_yt":"https://youtu.be/3UTr-T0EQrs?si=WU7qu9l7Ct3RtWN3","estado":"Publicado","set_num":1},{"id":"ASDL097","artista":"REBEKAOS","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-12-30","url_yt":"https://youtu.be/WNNMxcXiaCM?si=w3Tc8O9fZS-CFYIV","estado":"Publicado","set_num":1},{"id":"ASDL098","artista":"LEON ELLUS","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-12-31","url_yt":"https://youtu.be/xIqedCfjxiI?si=AANKn0CQnNrm3Rib","estado":"Publicado","set_num":1},{"id":"ASDL099","artista":"NESKAU","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2026-01-15","url_yt":"https://youtu.be/KmT4yXgTThA?si=niQgMSbLV7bqr8W5","estado":"Publicado","set_num":1},{"id":"ASDL100","artista":"SAX","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2026-01-20","url_yt":"https://youtu.be/jY69f1KoIOo?si=7CpYT0hnoIaV28q2","estado":"Publicado","set_num":2,"nota":"2do set solo"},{"id":"ASDL101","artista":"BORONIK","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2026-01-21","url_yt":"https://youtu.be/c5usk-vecKY?si=lFFDYAfJBrudLQGV","estado":"Publicado","set_num":1},{"id":"ASDL102","artista":"MAKSE","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2026-01-25","url_yt":"https://youtu.be/xBVHA_qUoc0?si=eIQMFHxUsAgV_pK3","estado":"Publicado","set_num":1},{"id":"ASDL103","artista":"KONKOR","categoria":"ARCHIVO PUBLICO","tipo":"ARCHIVO_PUBLICO","fecha":"2026-01-26","url_yt":"https://youtu.be/7QYelJJqMp8?si=YAN0yJLmTYoim-8s","estado":"Publicado","set_num":1},{"id":"ASDL104","artista":"(B)EVA","categoria":"ARCHIVO PUBLICO","tipo":"ARCHIVO_PUBLICO","fecha":"2026-01-27","url_yt":"https://youtu.be/xroDKIy8f9E?si=69Ten-Gg7Vkrwywy","estado":"Publicado","set_num":1},{"id":"ASDL127","artista":"BIAN DE BLANCO","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2026-03-16","url_yt":"https://www.youtube.com/watch?v=iUDoUmLYFBI","estado":"Publicado","set_num":1},{"id":"ASDL105","artista":"NINE","categoria":"ARCHIVO PUBLICO","tipo":"ARCHIVO_PUBLICO","fecha":"2026-01-28","url_yt":"https://youtu.be/MHX4zm8Ya0o?si=WgTfXz9d5BTlt8Ib","estado":"Publicado","set_num":2,"nota":"2do set"},{"id":"ASDL106","artista":"MORTEL","categoria":"ARCHIVO PUBLICO","tipo":"ARCHIVO_PUBLICO","fecha":"2026-01-29","url_yt":"https://youtu.be/2jalthHWYQI?si=mGi5JOj8aW-WZ7J1","estado":"Publicado","set_num":2,"nota":"2do set"},{"id":"ASDL107","artista":"SIKO","categoria":"ARCHIVO PUBLICO","tipo":"ARCHIVO_PUBLICO","fecha":"2026-01-30","url_yt":"https://youtu.be/9lLaifupV_8?si=S4kfFs-W7ZqB3mTh","estado":"Publicado","set_num":5,"nota":"5to set"},{"id":"ASDL108","artista":"WEARSPRADA","categoria":"ARCHIVO PUBLICO","tipo":"ARCHIVO_PUBLICO","fecha":"2026-01-31","url_yt":"https://youtu.be/rBZ92hMsyiU?si=KTEpqz681G2LsmdU","estado":"Publicado","set_num":1},{"id":"ASDL109","artista":"GERMANY","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2026-02-18","url_yt":"https://youtu.be/gOo9hdyG7DI?si=2bKYQaftToZTubWV","estado":"Publicado","set_num":1},{"id":"ASDL110","artista":"RIBZ","categoria":"CUSTOM LIVESET","tipo":"CUSTOM","fecha":"2026-02-19","url_yt":"https://youtu.be/cIiBLyZkgqE?si=rsM8egUCSUHFYbse","estado":"Publicado","set_num":1},{"id":"ASDL111","artista":"LETARGIKO","categoria":"DJ JAM 011","tipo":"DJ_JAM","fecha":"2026-02-20","url_yt":"https://youtu.be/qA20H0R36TM?si=daHfw4xlXJX5GW4a","estado":"Publicado","set_num":1},{"id":"ASDL112","artista":"MARSHALL","categoria":"DJ JAM 011","tipo":"DJ_JAM","fecha":"2026-02-21","url_yt":"https://youtu.be/zbRinppQYes?si=3o51PTCu8y5YW5PN","estado":"Publicado","set_num":1},{"id":"ASDL113","artista":"PAIVA B2B DELIYUS","categoria":"DJ JAM 011","tipo":"DJ_JAM","fecha":"2026-02-23","url_yt":"https://youtu.be/y5N3htB_cBU?si=yZZbblTcX3XtEYh9","estado":"Publicado","set_num":1},{"id":"ASDL114","artista":"MARCOS ALVAREZ","categoria":"DJ JAM 011","tipo":"DJ_JAM","fecha":"2026-02-24","url_yt":"https://youtu.be/R2fS5JuUfkA?si=OwhI7IrjDUaX-RqN","estado":"Publicado","set_num":2,"nota":"2do set"},{"id":"ASDL115","artista":"TUSIMONIUM","categoria":"DJ JAM 011","tipo":"DJ_JAM","fecha":"2026-02-25","url_yt":"https://youtu.be/D5EK5eMkY0w?si=ikgWEBr1gFo6kMpc","estado":"Publicado","set_num":2,"nota":"2do set"},{"id":"ASDL116","artista":"ROBER AYALA","categoria":"DJ JAM 011","tipo":"DJ_JAM","fecha":"2026-02-26","url_yt":"https://youtu.be/kEaytbopbms?si=MXfO53TGa07bmeS5","estado":"Publicado","set_num":1},{"id":"ASDL117","artista":"BRIKET","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2026-02-27","url_yt":"https://youtu.be/1yn6l4g23a4?si=jT9CrDe72CeJrQmh","estado":"Publicado","set_num":1},{"id":"ASDL118","artista":"BOTTI","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2026-03-05","url_yt":"https://youtu.be/O5-CibjeAzQ?si=Vkr4MRRjprWjXQ2k","estado":"Publicado","set_num":1},{"id":"ASDL119","artista":"MVTANT KITTY","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2026-03-06","url_yt":"https://youtu.be/Of19IWVQjVI?si=LgG8B8EAoXaivFYa","estado":"Publicado","set_num":1},{"id":"ASDL120","artista":"KOVEN","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2026-03-07","url_yt":"https://youtu.be/ChQ2XnJZYOk?si=6EiQOxToIKBY16HX","estado":"Publicado","set_num":1},{"id":"ASDL121","artista":"TINXH","categoria":"DJ JAM 012","tipo":"DJ_JAM","fecha":"2026-03-10","url_yt":"https://www.youtube.com/watch?v=U1Zbye7YhS8&t=1s","estado":"Publicado","set_num":1},{"id":"ASDL122","artista":"HACHI","categoria":"DJ JAM 012","tipo":"DJ_JAM","fecha":"2026-03-11","url_yt":"https://www.youtube.com/watch?v=F9TnQktSoBI&t=3s","estado":"Publicado","set_num":1},{"id":"ASDL123","artista":"NADERIX","categoria":"DJ JAM 012","tipo":"DJ_JAM","fecha":"2026-03-12","url_yt":"https://www.youtube.com/watch?v=LsEihbUW1-g&t=5s","estado":"Publicado","set_num":2,"nota":"2do set"},{"id":"ASDL124","artista":"BREY","categoria":"DJ JAM 012","tipo":"DJ_JAM","fecha":"2026-03-13","url_yt":"https://www.youtube.com/watch?v=xc04Hn2jDnQ&t=2431s","estado":"Publicado","set_num":1},{"id":"ASDL125","artista":"SOUNDSIX","categoria":"DJ JAM 012","tipo":"DJ_JAM","fecha":"2026-03-14","url_yt":"https://www.youtube.com/watch?v=yiAHHeZspMM&t=1s","estado":"Publicado","set_num":2,"nota":"2do set"},{"id":"ASDL126","artista":"NACHO NTE","categoria":"DJ JAM 012","tipo":"DJ_JAM","fecha":"2026-03-15","url_yt":"https://www.youtube.com/watch?v=EygB9uYXbcQ","estado":"Publicado","set_num":1},{"id":"ASDL128","artista":"AGUS OLIVO","categoria":"DJ JAM 013","tipo":"DJ_JAM","fecha":"2026-03-21","url_yt":"https://www.youtube.com/watch?v=8m5ENHKfZ0w","estado":"Publicado","set_num":2},{"id":"ASDL129","artista":"ISHIT B2B ARIKA","categoria":"DJ JAM 013","tipo":"DJ_JAM","fecha":"2026-03-18","url_yt":"https://www.youtube.com/watch?v=r-BPA8Gn_Ls","estado":"Publicado","set_num":1},{"id":"ASDL130","artista":"CELES RONDA","categoria":"DJ JAM 013","tipo":"DJ_JAM","fecha":"2026-03-19","url_yt":"https://www.youtube.com/watch?v=oZvGdC43Gvs","estado":"Publicado","set_num":1},{"id":"ASDL131","artista":"MAJO MUSHI","categoria":"DJ JAM 013","tipo":"DJ_JAM","fecha":"2026-03-20","url_yt":"https://www.youtube.com/watch?v=2ilkNc39Clc","estado":"Publicado","set_num":1},{"id":"ASDL132","artista":"MAGMA","categoria":"DJ JAM 013","tipo":"DJ_JAM","fecha":"2026-03-21","url_yt":"https://www.youtube.com/watch?v=N8pxMYTIHBQ","estado":"Publicado","set_num":1},{"id":"ASDL133","artista":"ADHILA","categoria":"DJ JAM 013","tipo":"DJ_JAM","fecha":"2026-03-26","url_yt":null,"estado":"Pendiente","set_num":2,"nota":"2do set"},{"id":"ASDL134","artista":"BAKAN MUSIC","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2026-03-27","url_yt":null,"estado":"Pendiente","set_num":1},{"id":"ASDL135","artista":"SHARON B3","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2026-03-28","url_yt":null,"estado":"Pendiente","set_num":1},{"id":"ASDL136","artista":"LE ROSA NEGRA","categoria":"CUSTOM LIVESET","tipo":"CUSTOM","fecha":"2026-03-30","url_yt":null,"estado":"Pendiente","set_num":1},{"id":"ASDL137","artista":"PEKKO","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2026-03-31","url_yt":null,"estado":"Pendiente","set_num":1},{"id":"ASDL138","artista":"AXEL MORALES","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2026-03-29","url_yt":null,"estado":"Pendiente","set_num":1},{"id":"ASDL139","artista":"MANUEL SANCHEZ","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2026-04-01","url_yt":null,"estado":"Pendiente","set_num":1},{"id":"ASDL140","artista":"R4W","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2026-04-02","url_yt":null,"estado":"Pendiente","set_num":1}];
+var SM = [{"id":"ASDL001","artista":"SAX","categoria":"DJ JAM 002","tipo":"DJ_JAM","fecha":"2025-05-28","url_yt":"https://youtu.be/hAt2afikVTQ?si=NQTvGk0BPWjdBgYz","estado":"Publicado","set_num":1},{"id":"ASDL002","artista":"NADERIX","categoria":"DJ JAM 002","tipo":"DJ_JAM","fecha":"2025-05-30","url_yt":"https://www.youtube.com/watch?v=IB-UNMDYnok","estado":"Publicado","set_num":1},{"id":"ASDL003","artista":"LYANNA","categoria":"DJ JAM 002","tipo":"DJ_JAM","fecha":"2025-06-03","url_yt":"https://youtu.be/iWJ5FZFoRVY?si=8nGC5pNFlyFCn-TS","estado":"Publicado","set_num":1},{"id":"ASDL004","artista":"ACU","categoria":"DJ JAM 002","tipo":"DJ_JAM","fecha":"2025-06-06","url_yt":"https://youtu.be/rpF99KjXUmo?si=ariJiz1pIZfLQHRg","estado":"Publicado","set_num":1},{"id":"ASDL005","artista":"VORTX","categoria":"DJ JAM 002","tipo":"DJ_JAM","fecha":"2025-06-08","url_yt":"https://www.youtube.com/watch?v=vescOLJykNw","estado":"Publicado","set_num":1},{"id":"ASDL006","artista":"SUVMASTER","categoria":"DJ JAM 002","tipo":"DJ_JAM","fecha":"2025-06-09","url_yt":"https://www.youtube.com/watch?v=wwFg5KlPwtc","estado":"Publicado","set_num":1},{"id":"ASDL007","artista":"LENNY OWEN","categoria":"DJ JAM 002","tipo":"DJ_JAM","fecha":"2025-06-10","url_yt":"https://youtu.be/0ZW7Sy7pVEE?si=QFxPIIaZjCLqU5a4","estado":"Publicado","set_num":1},{"id":"ASDL008","artista":"IVAN CORDA","categoria":"DJ JAM 003","tipo":"DJ_JAM","fecha":"2025-06-11","url_yt":"https://youtu.be/s0kcMKShy5g?si=a516URYrg55JDzti","estado":"Publicado","set_num":1},{"id":"ASDL009","artista":"EZRA","categoria":"DJ JAM 003","tipo":"DJ_JAM","fecha":"2025-06-12","url_yt":"https://youtu.be/xh34q293ykc?si=SCXtEvmlvNv_lHCV","estado":"Publicado","set_num":1},{"id":"ASDL010","artista":"JONY PEDER","categoria":"DJ JAM 003","tipo":"DJ_JAM","fecha":"2025-06-12","url_yt":"https://youtu.be/ynAYj7CDqdM?si=5wLG8CHe-0iJRQ8g","estado":"Publicado","set_num":1},{"id":"ASDL011","artista":"NIELO","categoria":"CUSTOM LIVESET","tipo":"CUSTOM","fecha":"2025-06-13","url_yt":"https://youtu.be/saVNBxvpCC8?si=xTC4bGPHOIG148Xe","estado":"Publicado","set_num":1,"nota":"Custom con Gente de Disco Domingo"},{"id":"ASDL012","artista":"DIMOSS","categoria":"DJ JAM 003","tipo":"DJ_JAM","fecha":"2025-06-18","url_yt":"https://youtu.be/c4wcUQcHn3Y?si=rwrYeRVe_jmzUheT","estado":"Publicado","set_num":1},{"id":"ASDL013","artista":"OLU","categoria":"DJ JAM 003","tipo":"DJ_JAM","fecha":"2025-06-19","url_yt":"https://youtu.be/YZck9d_I86g?si=wOEzwy8rQW8yrjfn","estado":"Publicado","set_num":1},{"id":"ASDL014","artista":"MARTIN G","categoria":"DJ JAM 004","tipo":"DJ_JAM","fecha":"2025-06-24","url_yt":"https://youtu.be/0GPiF1QrzEE?si=dAlwmLbN_9WGrCvW","estado":"Publicado","set_num":1},{"id":"ASDL015","artista":"ABBICA","categoria":"DJ JAM 004","tipo":"DJ_JAM","fecha":"2025-06-26","url_yt":"https://youtu.be/eQx4jGP7IlU?si=EvtBECmYuLLlln2u","estado":"Publicado","set_num":1},{"id":"ASDL016","artista":"MATI SLAST","categoria":"DJ JAM 004","tipo":"DJ_JAM","fecha":"2025-06-29","url_yt":"https://youtu.be/6Mp7gg2fTQ4?si=RaIJ_P_NvKgMhhwR","estado":"Publicado","set_num":1},{"id":"ASDL017","artista":"LUCIO KA","categoria":"DJ JAM 004","tipo":"DJ_JAM","fecha":"2025-07-01","url_yt":"https://youtu.be/TmzRfhPTfDU?si=CGBHGasvMAtz5jI-","estado":"Publicado","set_num":1},{"id":"ASDL018","artista":"SATURE","categoria":"DJ JAM 004","tipo":"DJ_JAM","fecha":"2025-07-01","url_yt":"https://youtu.be/FYGjAnVQ0I0?si=WVBDvdJ8SLxsFxda","estado":"Publicado","set_num":1},{"id":"ASDL019","artista":"UMRESH","categoria":"DJ JAM 004","tipo":"DJ_JAM","fecha":"2025-07-02","url_yt":"https://youtu.be/o6PWxDGLhug?si=c82dUSrEaHC5dLty","estado":"Publicado","set_num":1},{"id":"ASDL020","artista":"SIKO","categoria":"DJ JAM 004","tipo":"DJ_JAM","fecha":"2025-07-02","url_yt":"https://youtu.be/ZU452nPAUJo?si=sYYElc4OyGcMvBrY","estado":"Publicado","set_num":2,"nota":"2do set"},{"id":"ASDL021","artista":"RISCO B2B MATI PINO","categoria":"DJ JAM 004","tipo":"DJ_JAM","fecha":"2025-07-03","url_yt":"https://youtu.be/Kd1CHTz21K0?si=YG8nCrDWGfMG-v6U","estado":"Publicado","set_num":1},{"id":"ASDL022","artista":"JORRON","categoria":"DJ JAM 004","tipo":"DJ_JAM","fecha":"2025-07-07","url_yt":"https://youtu.be/HY6EzErh7bU?si=U9ziVTOuIcf7E5x_","estado":"Publicado","set_num":1,"nota":"Tambien conocido como FOMO"},{"id":"ASDL023","artista":"FALSO","categoria":"DJ JAM 004","tipo":"DJ_JAM","fecha":"2025-07-08","url_yt":"https://youtu.be/9XeYbexbo4o?si=xqwm8hzDZUNsSC0Z","estado":"Publicado","set_num":1},{"id":"ASDL024","artista":"BLACKMAIN","categoria":"DJ JAM 004","tipo":"DJ_JAM","fecha":"2025-07-08","url_yt":"https://youtu.be/VbAtNWEbNjU?si=Ws1HdGZ11_pN1cit","estado":"Publicado","set_num":1},{"id":"ASDL025","artista":"LOMAKIN","categoria":"DJ JAM 004","tipo":"DJ_JAM","fecha":"2025-07-10","url_yt":"https://youtu.be/wjxN_cIicp0?si=n9T9V9nu9IIgNuBM","estado":"Publicado","set_num":1},{"id":"ASDL026","artista":"EVGENI TROSHKOV","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-07-10","url_yt":"https://youtu.be/T8latyq3ryI?si=En6Z447yZQ49ahTO","estado":"Publicado","set_num":1},{"id":"ASDL027","artista":"KPUCCINA","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-07-16","url_yt":"https://www.youtube.com/watch?v=_G4J6VScAqE","estado":"Publicado","set_num":1},{"id":"ASDL028","artista":"TABORDA","categoria":"DJ JAM 005","tipo":"DJ_JAM","fecha":"2025-07-29","url_yt":"https://youtu.be/amHC_EL3dxk?si=l3mNYDQUo5yaSRjN","estado":"Publicado","set_num":1},{"id":"ASDL029","artista":"FARRS","categoria":"DJ JAM 005","tipo":"DJ_JAM","fecha":"2025-07-30","url_yt":"https://www.youtube.com/watch?v=IkylzHtjsL8&t=1995s","estado":"Publicado","set_num":1},{"id":"ASDL030","artista":"ATUA","categoria":"DJ JAM 005","tipo":"DJ_JAM","fecha":"2025-07-31","url_yt":"https://youtu.be/4jzPeNDh0q4?si=v9GRX4DMR6_LkK1H","estado":"Publicado","set_num":1},{"id":"ASDL031","artista":"BVLLY","categoria":"DJ JAM 005","tipo":"DJ_JAM","fecha":"2025-08-01","url_yt":"https://youtu.be/jOKvMtDTww0?si=DFi9mLjCp6JH7JQV","estado":"Publicado","set_num":1},{"id":"ASDL032","artista":"MARA KOLEVITCH","categoria":"DJ JAM 005","tipo":"DJ_JAM","fecha":"2025-08-03","url_yt":"https://youtu.be/Kd3l8zdgNC8?si=XP_xXIrg1Bbn7d4_","estado":"Publicado","set_num":1},{"id":"ASDL033","artista":"FARRS","categoria":"DJ JAM 005","tipo":"DJ_JAM","fecha":"2025-08-04","url_yt":"https://www.youtube.com/watch?v=58cZ4-ymjRI&t=1030s","estado":"Publicado","set_num":2,"nota":"2do set"},{"id":"ASDL034","artista":"BORONIK B2B SAX","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-08-20","url_yt":"https://youtu.be/x-FzwVN3FzI?si=CQHoiZ4jVSt_veMZ","estado":"Publicado","set_num":1},{"id":"ASDL035","artista":"AGUS OLIVO","categoria":"DJ JAM 006","tipo":"DJ_JAM","fecha":"2025-09-11","url_yt":"https://youtu.be/5CmUX6fIoHw?si=mPymVI5KW86dmRCo","estado":"Publicado","set_num":1},{"id":"ASDL036","artista":"ANTONELLA BELEN","categoria":"DJ JAM 006","tipo":"DJ_JAM","fecha":"2025-09-12","url_yt":"https://youtu.be/AinnhNKkQdM?si=eQ-HU0biEDf9ZnTu","estado":"Publicado","set_num":1},{"id":"ASDL037","artista":"FELIPE FERREYRA","categoria":"DJ JAM 006","tipo":"DJ_JAM","fecha":"2025-09-13","url_yt":"https://youtu.be/RDsz0-lDsIs?si=hKz-0_9ywfOtmwmF","estado":"Publicado","set_num":1},{"id":"ASDL038","artista":"MORTEL","categoria":"DJ JAM 006","tipo":"DJ_JAM","fecha":"2025-09-15","url_yt":"https://youtu.be/4BG8N792GlE?si=KkUxRC0V9GtG90Oh","estado":"Publicado","set_num":1},{"id":"ASDL039","artista":"SANTI PAEZ","categoria":"DJ JAM 006","tipo":"DJ_JAM","fecha":"2025-09-17","url_yt":"https://youtu.be/g8qqjHLjubs?si=X8Yk6VavTasRpPc1","estado":"Publicado","set_num":1},{"id":"ASDL040","artista":"RUKU","categoria":"DJ JAM 006","tipo":"DJ_JAM","fecha":"2025-09-17","url_yt":"https://youtu.be/zrky2wNwL-M?si=FJsdt-rEFNM7ManY","estado":"Publicado","set_num":1},{"id":"ASDL041","artista":"NUJIRE","categoria":"DJ JAM 006","tipo":"DJ_JAM","fecha":"2025-09-19","url_yt":"https://youtu.be/tmXbEUOxiJM?si=pCovr9y16Cg5URDi","estado":"Publicado","set_num":1},{"id":"ASDL042","artista":"SAITI","categoria":"DJ JAM 007","tipo":"DJ_JAM","fecha":"2025-09-22","url_yt":"https://youtu.be/uuYSNe0PoL0?si=zUj8xE--YOdVP9xT","estado":"Publicado","set_num":1},{"id":"ASDL043","artista":"DIMOSS","categoria":"DJ JAM 007","tipo":"DJ_JAM","fecha":"2025-09-23","url_yt":"https://youtu.be/KGBakd7eBKU?si=-39dLut5KLnpShb9","estado":"Publicado","set_num":2,"nota":"2do set"},{"id":"ASDL044","artista":"SIO B2B PERTY","categoria":"DJ JAM 007","tipo":"DJ_JAM","fecha":"2025-09-24","url_yt":"https://youtu.be/NphR4PXOwNo?si=hfrPl5h88HuAeZkI","estado":"Publicado","set_num":1},{"id":"ASDL045","artista":"KPUCCINA","categoria":"DJ JAM 007","tipo":"DJ_JAM","fecha":"2025-09-25","url_yt":"https://youtu.be/qzKK6uhU2BI?si=ZMB2zL8ii7C-VbAq","estado":"Publicado","set_num":2,"nota":"2do set"},{"id":"ASDL046","artista":"NINE","categoria":"DJ JAM 007","tipo":"DJ_JAM","fecha":"2025-09-26","url_yt":"https://youtu.be/8b5pRyumkEo?si=4t1BITLJHvs3ZExo","estado":"Publicado","set_num":1},{"id":"ASDL047","artista":"CATACLISMO","categoria":"DJ JAM 007","tipo":"DJ_JAM","fecha":"2025-09-27","url_yt":"https://youtu.be/CNovleuLoLg?si=btiUk7dXmT0IWP8O","estado":"Publicado","set_num":1},{"id":"ASDL048","artista":"ADHILA","categoria":"DJ JAM 007","tipo":"DJ_JAM","fecha":"2025-09-29","url_yt":"https://youtu.be/Zat8kKCkbHI?si=3Dor9dkgYy1fV1ez","estado":"Publicado","set_num":1},{"id":"ASDL049","artista":"SANTI DELFINO","categoria":"DJ JAM 007","tipo":"DJ_JAM","fecha":"2025-09-30","url_yt":"https://youtu.be/dIrPKLki-ds?si=2jZtve0OoU8nvwtb","estado":"Publicado","set_num":1},{"id":"ASDL050","artista":"SANTOS","categoria":"DJ JAM 007","tipo":"DJ_JAM","fecha":"2025-10-01","url_yt":"https://youtu.be/m-yit5mfxGo?si=zF2_a3LTAs_fS2xN","estado":"Publicado","set_num":1},{"id":"ASDL051","artista":"NUJIRE B2B D1NO DUBZ","categoria":"DJ JAM 008","tipo":"DJ_JAM","fecha":"2025-10-09","url_yt":"https://youtu.be/rQ62K_yc208?si=uhOJugDd_BD2-bX_","estado":"Publicado","set_num":2,"nota":"2do set de Nujire"},{"id":"ASDL052","artista":"SAFI","categoria":"DJ JAM 008","tipo":"DJ_JAM","fecha":"2025-10-10","url_yt":"https://youtu.be/-9DagC7FU0c?si=oc7Nhs8Vt2p93fOa","estado":"Publicado","set_num":1},{"id":"ASDL053","artista":"LUGHA","categoria":"DJ JAM 008","tipo":"DJ_JAM","fecha":"2025-10-11","url_yt":"https://youtu.be/UUGeDg1WQ4Q?si=Gc13vBp6EWpNEV7Q","estado":"Publicado","set_num":1},{"id":"ASDL054","artista":"SOULDER","categoria":"DJ JAM 008","tipo":"DJ_JAM","fecha":"2025-10-13","url_yt":"https://youtu.be/u3ODrpE07VM?si=IiAQbdPI4ZY8nl3j","estado":"Publicado","set_num":1},{"id":"ASDL055","artista":"VICTORIA POLETTI","categoria":"DJ JAM 008","tipo":"DJ_JAM","fecha":"2025-10-14","url_yt":"https://youtu.be/sVIqJOVP0XY?si=tgMh1E6gxenb8lM1","estado":"Publicado","set_num":1},{"id":"ASDL056","artista":"AGUS COSTA B2B AGUS DOMENE","categoria":"DJ JAM 008","tipo":"DJ_JAM","fecha":"2025-10-16","url_yt":"https://youtu.be/SAusbm59WRA?si=KadTffR2fezfCMiG","estado":"Publicado","set_num":1},{"id":"ASDL057","artista":"GRECIA","categoria":"DJ JAM 008","tipo":"DJ_JAM","fecha":"2025-10-17","url_yt":"https://youtu.be/nnDjHfEJTwY?si=kuMdp7DaxW_5fWpw","estado":"Publicado","set_num":1},{"id":"ASDL058","artista":"KOMI","categoria":"DJ JAM 009","tipo":"DJ_JAM","fecha":"2025-10-17","url_yt":"https://youtu.be/b7N6Yr7TcdM?si=q-nxasTYZW7J-isB","estado":"Publicado","set_num":1},{"id":"ASDL059","artista":"BVLLY","categoria":"DJ JAM 009","tipo":"DJ_JAM","fecha":"2025-10-18","url_yt":"https://youtu.be/nCiUWXAZ8oE?si=4TjS2h-JkiR04n9z","estado":"Publicado","set_num":2,"nota":"2do set"},{"id":"ASDL060","artista":"JULI HARLEY","categoria":"DJ JAM 009","tipo":"DJ_JAM","fecha":"2025-10-19","url_yt":"https://youtu.be/mcRfoft49Aw?si=nd8J4itDi790A7v-","estado":"Publicado","set_num":1},{"id":"ASDL061","artista":"BAU OLIVARES","categoria":"DJ JAM 009","tipo":"DJ_JAM","fecha":"2025-10-20","url_yt":"https://youtu.be/uF6crKtkrP0?si=xBKpIPmg2XVq0zYm","estado":"Publicado","set_num":1},{"id":"ASDL062","artista":"CARMELO","categoria":"DJ JAM 009","tipo":"DJ_JAM","fecha":"2025-10-21","url_yt":"https://youtu.be/BX94k1nl8Xk?si=SYRU4H-V4R9z4-9m","estado":"Publicado","set_num":1},{"id":"ASDL063","artista":"GABELL","categoria":"DJ JAM 009","tipo":"DJ_JAM","fecha":"2025-10-22","url_yt":"https://youtu.be/xlrrAdTdw-A?si=SFsdzXvQ2DaR5NJj","estado":"Publicado","set_num":1},{"id":"ASDL064","artista":"WAXX","categoria":"DJ JAM 009","tipo":"DJ_JAM","fecha":"2025-10-23","url_yt":"https://youtu.be/dHnX-XHXTu8?si=4NxGpF_cvULjkL-m","estado":"Publicado","set_num":1},{"id":"ASDL065","artista":"JORRON","categoria":"DJ JAM 009","tipo":"DJ_JAM","fecha":"2025-10-24","url_yt":"https://youtu.be/Hj7419eBZYk?si=vFS2aYHWbyNx_ZpH","estado":"Publicado","set_num":2,"nota":"Tambien conocido como FOMO - 2do set"},{"id":"ASDL066","artista":"NEEKHO","categoria":"DJ JAM 009","tipo":"DJ_JAM","fecha":"2025-10-25","url_yt":"https://youtu.be/Z3OA-tlMucY?si=gUmCpec-hSci8Fut","estado":"Publicado","set_num":1},{"id":"ASDL067","artista":"ZLATA","categoria":"CUSTOM LIVESET","tipo":"CUSTOM","fecha":"2025-10-31","url_yt":"https://youtu.be/GanZkHLHr3c?si=POWw_ZRPlpGF4sQZ","estado":"Publicado","set_num":1},{"id":"ASDL068","artista":"RAWDON","categoria":"DJ JAM 010","tipo":"DJ_JAM","fecha":"2025-11-11","url_yt":"https://youtu.be/ZFs4_aZ3H2Y?si=MI-K_wGkamxJh0ja","estado":"Publicado","set_num":1},{"id":"ASDL069","artista":"MARCOS ALVAREZ","categoria":"DJ JAM 010","tipo":"DJ_JAM","fecha":"2025-11-11","url_yt":"https://youtu.be/pA5NfqTgl4I?si=vt2BhEGQ1I06Z3d5","estado":"Publicado","set_num":1},{"id":"ASDL070","artista":"PACHO","categoria":"DJ JAM 010","tipo":"DJ_JAM","fecha":"2025-11-12","url_yt":"https://youtu.be/AS8yh2SXvvc?si=s1BFffV3PlA3rB2A","estado":"Publicado","set_num":1},{"id":"ASDL071","artista":"JEILI B2B TUCUMALO","categoria":"DJ JAM 010","tipo":"DJ_JAM","fecha":"2025-11-13","url_yt":"https://youtu.be/XEvMhIPb06g?si=aYK3cIC7Nus3aJxC","estado":"Publicado","set_num":1},{"id":"ASDL072","artista":"EL HEREJE","categoria":"DJ JAM 010","tipo":"DJ_JAM","fecha":"2025-11-14","url_yt":"https://youtu.be/Twk_xx62kew?si=4mTQ9o2ALF1P7Yef","estado":"Publicado","set_num":1},{"id":"ASDL073","artista":"ROXIE","categoria":"DJ JAM 010","tipo":"DJ_JAM","fecha":"2025-11-15","url_yt":"https://youtu.be/4WAULAZpshI?si=PXNsFmVwakQRm5Gp","estado":"Publicado","set_num":1},{"id":"ASDL074","artista":"LUXRAY","categoria":"DJ JAM 010","tipo":"DJ_JAM","fecha":"2025-11-16","url_yt":"https://youtu.be/_IM30Dtxjxw?si=OKlwPGT5j-ctVKBe","estado":"Publicado","set_num":1},{"id":"ASDL075","artista":"AIXA YAEL","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-11-17","url_yt":"https://youtu.be/cqE_XUg80Xw?si=UuWUwevTmJS6VaaP","estado":"Publicado","set_num":1},{"id":"ASDL076","artista":"VENUSINO","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-11-18","url_yt":"https://youtu.be/bXLfLB0o4wM?si=DGlvS2_k_yCFK8bF","estado":"Publicado","set_num":1},{"id":"ASDL077","artista":"UNDERDUST","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-11-19","url_yt":"https://youtu.be/MiAbEuF7LAo?si=AYnaA0NyQXsQTItq","estado":"Publicado","set_num":1},{"id":"ASDL078","artista":"NEIKITA","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-11-20","url_yt":"https://youtu.be/YZWSX5wKHnE?si=EAiSgUgt5eJm8EqC","estado":"Publicado","set_num":1},{"id":"ASDL079","artista":"THIAGO LAUTARO","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-11-22","url_yt":"https://youtu.be/DArn8genlss?si=njr6MB_gdjsZ8rj6","estado":"Publicado","set_num":1},{"id":"ASDL080","artista":"JU4MPI","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-11-26","url_yt":"https://youtu.be/lSY_RwEB58A?si=SmJS5aAcr463Qiu4","estado":"Publicado","set_num":1},{"id":"ASDL081","artista":"ARTHUR CHEFFER","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-12-04","url_yt":"https://youtu.be/1R3RYLSKpmA?si=zEjGsnHbVHPNAMvL","estado":"Publicado","set_num":1},{"id":"ASDL082","artista":"LEF","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-12-11","url_yt":"https://www.youtube.com/watch?v=by4NPOHhsDA&t=1747s","estado":"Publicado","set_num":1},{"id":"ASDL083","artista":"ALEX HEDIGER","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-12-23","url_yt":"https://www.youtube.com/watch?v=YNxq9HievZg&t=11s","estado":"Publicado","set_num":1},{"id":"ASDL084","artista":"SOUNDSIX","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-12-24","url_yt":"https://youtu.be/0ZmseKca1oM?si=806lqA-QjQjoiHse","estado":"Publicado","set_num":1},{"id":"ASDL085","artista":"TUSIMONIUM","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-12-24","url_yt":"https://youtu.be/lCZR1O8O2os?si=gRbhr0dgQNizJJRo","estado":"Publicado","set_num":1},{"id":"ASDL086","artista":"SIKO","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-12-25","url_yt":"https://youtu.be/W7jJN1jQYtw?si=X9rGTpx8Wk6pXu0v","estado":"Publicado","set_num":3,"nota":"3er set"},{"id":"ASDL087","artista":"TEKNILLS","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-12-25","url_yt":"https://youtu.be/c9xTwj62pko?si=HtiOtGaVEPXZn8Ty","estado":"Publicado","set_num":1},{"id":"ASDL088","artista":"ATUA","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-12-26","url_yt":"https://youtu.be/bVeXbobt5i4?si=Yz3n_crNagraAghz","estado":"Publicado","set_num":2,"nota":"2do set"},{"id":"ASDL089","artista":"KAIF","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-12-26","url_yt":"https://youtu.be/3pWkvhGIfDs?si=xHyIJw8TytU22Af4","estado":"Publicado","set_num":1},{"id":"ASDL090","artista":"NMIN","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-12-27","url_yt":"https://youtu.be/6bX_-GUfFMY?si=B2QNbU2lL7QbJIOB","estado":"Publicado","set_num":1},{"id":"ASDL091","artista":"NINK09","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-12-27","url_yt":"https://youtu.be/gvYX7c7eZzc?si=-0FobQ5neboobRUR","estado":"Publicado","set_num":1},{"id":"ASDL092","artista":"SIKO","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-12-28","url_yt":"https://youtu.be/LRcjEwCLDsw?si=uzopVjx7kG_H0fYQ","estado":"Publicado","set_num":4,"nota":"4to set"},{"id":"ASDL093","artista":"TROMIX","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-12-28","url_yt":"https://youtu.be/TL6hsjNLLzA?si=pBWcgbvAKAhyPTkm","estado":"Publicado","set_num":1},{"id":"ASDL094","artista":"MARK STRAITS","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-12-29","url_yt":"https://youtu.be/3T0xFM0xREw?si=ercbmjMalvKMto_j","estado":"Publicado","set_num":1},{"id":"ASDL095","artista":"VIKTOR NAHVEL","categoria":"CUSTOM LIVESET","tipo":"CUSTOM","fecha":"2025-12-29","url_yt":"https://youtu.be/Erb6eTSoQac?si=OfBT280L5oLSTxTo","estado":"Publicado","set_num":1},{"id":"ASDL096","artista":"DJ BRIVN","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-12-30","url_yt":"https://youtu.be/3UTr-T0EQrs?si=WU7qu9l7Ct3RtWN3","estado":"Publicado","set_num":1},{"id":"ASDL097","artista":"REBEKAOS","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-12-30","url_yt":"https://youtu.be/WNNMxcXiaCM?si=w3Tc8O9fZS-CFYIV","estado":"Publicado","set_num":1},{"id":"ASDL098","artista":"LEON ELLUS","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2025-12-31","url_yt":"https://youtu.be/xIqedCfjxiI?si=AANKn0CQnNrm3Rib","estado":"Publicado","set_num":1},{"id":"ASDL099","artista":"NESKAU","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2026-01-15","url_yt":"https://youtu.be/KmT4yXgTThA?si=niQgMSbLV7bqr8W5","estado":"Publicado","set_num":1},{"id":"ASDL100","artista":"SAX","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2026-01-20","url_yt":"https://youtu.be/jY69f1KoIOo?si=7CpYT0hnoIaV28q2","estado":"Publicado","set_num":2,"nota":"2do set solo"},{"id":"ASDL101","artista":"BORONIK","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2026-01-21","url_yt":"https://youtu.be/c5usk-vecKY?si=lFFDYAfJBrudLQGV","estado":"Publicado","set_num":1},{"id":"ASDL102","artista":"MAKSE","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2026-01-25","url_yt":"https://youtu.be/xBVHA_qUoc0?si=eIQMFHxUsAgV_pK3","estado":"Publicado","set_num":1},{"id":"ASDL103","artista":"KONKOR","categoria":"ARCHIVO PUBLICO","tipo":"ARCHIVO_PUBLICO","fecha":"2026-01-26","url_yt":"https://youtu.be/7QYelJJqMp8?si=YAN0yJLmTYoim-8s","estado":"Publicado","set_num":1},{"id":"ASDL104","artista":"(B)EVA","categoria":"ARCHIVO PUBLICO","tipo":"ARCHIVO_PUBLICO","fecha":"2026-01-27","url_yt":"https://youtu.be/xroDKIy8f9E?si=69Ten-Gg7Vkrwywy","estado":"Publicado","set_num":1},{"id":"ASDL127","artista":"BIAN DE BLANCO","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2026-03-16","url_yt":"https://www.youtube.com/watch?v=iUDoUmLYFBI","estado":"Publicado","set_num":1},{"id":"ASDL105","artista":"NINE","categoria":"ARCHIVO PUBLICO","tipo":"ARCHIVO_PUBLICO","fecha":"2026-01-28","url_yt":"https://youtu.be/MHX4zm8Ya0o?si=WgTfXz9d5BTlt8Ib","estado":"Publicado","set_num":2,"nota":"2do set"},{"id":"ASDL106","artista":"MORTEL","categoria":"ARCHIVO PUBLICO","tipo":"ARCHIVO_PUBLICO","fecha":"2026-01-29","url_yt":"https://youtu.be/2jalthHWYQI?si=mGi5JOj8aW-WZ7J1","estado":"Publicado","set_num":2,"nota":"2do set"},{"id":"ASDL107","artista":"SIKO","categoria":"ARCHIVO PUBLICO","tipo":"ARCHIVO_PUBLICO","fecha":"2026-01-30","url_yt":"https://youtu.be/9lLaifupV_8?si=S4kfFs-W7ZqB3mTh","estado":"Publicado","set_num":5,"nota":"5to set"},{"id":"ASDL108","artista":"WEARSPRADA","categoria":"ARCHIVO PUBLICO","tipo":"ARCHIVO_PUBLICO","fecha":"2026-01-31","url_yt":"https://youtu.be/rBZ92hMsyiU?si=KTEpqz681G2LsmdU","estado":"Publicado","set_num":1},{"id":"ASDL109","artista":"GERMANY","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2026-02-18","url_yt":"https://youtu.be/gOo9hdyG7DI?si=2bKYQaftToZTubWV","estado":"Publicado","set_num":1},{"id":"ASDL110","artista":"RIBZ","categoria":"CUSTOM LIVESET","tipo":"CUSTOM","fecha":"2026-02-19","url_yt":"https://youtu.be/cIiBLyZkgqE?si=rsM8egUCSUHFYbse","estado":"Publicado","set_num":1},{"id":"ASDL111","artista":"LETARGIKO","categoria":"DJ JAM 011","tipo":"DJ_JAM","fecha":"2026-02-20","url_yt":"https://youtu.be/qA20H0R36TM?si=daHfw4xlXJX5GW4a","estado":"Publicado","set_num":1},{"id":"ASDL112","artista":"MARSHALL","categoria":"DJ JAM 011","tipo":"DJ_JAM","fecha":"2026-02-21","url_yt":"https://youtu.be/zbRinppQYes?si=3o51PTCu8y5YW5PN","estado":"Publicado","set_num":1},{"id":"ASDL113","artista":"PAIVA B2B DELIYUS","categoria":"DJ JAM 011","tipo":"DJ_JAM","fecha":"2026-02-23","url_yt":"https://youtu.be/y5N3htB_cBU?si=yZZbblTcX3XtEYh9","estado":"Publicado","set_num":1},{"id":"ASDL114","artista":"MARCOS ALVAREZ","categoria":"DJ JAM 011","tipo":"DJ_JAM","fecha":"2026-02-24","url_yt":"https://youtu.be/R2fS5JuUfkA?si=OwhI7IrjDUaX-RqN","estado":"Publicado","set_num":2,"nota":"2do set"},{"id":"ASDL115","artista":"TUSIMONIUM","categoria":"DJ JAM 011","tipo":"DJ_JAM","fecha":"2026-02-25","url_yt":"https://youtu.be/D5EK5eMkY0w?si=ikgWEBr1gFo6kMpc","estado":"Publicado","set_num":2,"nota":"2do set"},{"id":"ASDL116","artista":"ROBER AYALA","categoria":"DJ JAM 011","tipo":"DJ_JAM","fecha":"2026-02-26","url_yt":"https://youtu.be/kEaytbopbms?si=MXfO53TGa07bmeS5","estado":"Publicado","set_num":1},{"id":"ASDL117","artista":"BRIKET","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2026-02-27","url_yt":"https://youtu.be/1yn6l4g23a4?si=jT9CrDe72CeJrQmh","estado":"Publicado","set_num":1},{"id":"ASDL118","artista":"BOTTI","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2026-03-05","url_yt":"https://youtu.be/O5-CibjeAzQ?si=Vkr4MRRjprWjXQ2k","estado":"Publicado","set_num":1},{"id":"ASDL119","artista":"MVTANT KITTY","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2026-03-06","url_yt":"https://youtu.be/Of19IWVQjVI?si=LgG8B8EAoXaivFYa","estado":"Publicado","set_num":1},{"id":"ASDL120","artista":"KOVEN","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2026-03-07","url_yt":"https://youtu.be/ChQ2XnJZYOk?si=6EiQOxToIKBY16HX","estado":"Publicado","set_num":1},{"id":"ASDL121","artista":"TINXH","categoria":"DJ JAM 012","tipo":"DJ_JAM","fecha":"2026-03-10","url_yt":"https://www.youtube.com/watch?v=U1Zbye7YhS8&t=1s","estado":"Publicado","set_num":1},{"id":"ASDL122","artista":"HACHI","categoria":"DJ JAM 012","tipo":"DJ_JAM","fecha":"2026-03-11","url_yt":"https://www.youtube.com/watch?v=F9TnQktSoBI&t=3s","estado":"Publicado","set_num":1},{"id":"ASDL123","artista":"NADERIX","categoria":"DJ JAM 012","tipo":"DJ_JAM","fecha":"2026-03-12","url_yt":"https://www.youtube.com/watch?v=LsEihbUW1-g&t=5s","estado":"Publicado","set_num":2,"nota":"2do set"},{"id":"ASDL124","artista":"BREY","categoria":"DJ JAM 012","tipo":"DJ_JAM","fecha":"2026-03-13","url_yt":"https://www.youtube.com/watch?v=xc04Hn2jDnQ&t=2431s","estado":"Publicado","set_num":1},{"id":"ASDL125","artista":"SOUNDSIX","categoria":"DJ JAM 012","tipo":"DJ_JAM","fecha":"2026-03-14","url_yt":"https://www.youtube.com/watch?v=yiAHHeZspMM&t=1s","estado":"Publicado","set_num":2,"nota":"2do set"},{"id":"ASDL126","artista":"NACHO NTE","categoria":"DJ JAM 012","tipo":"DJ_JAM","fecha":"2026-03-15","url_yt":"https://www.youtube.com/watch?v=EygB9uYXbcQ","estado":"Publicado","set_num":1},{"id":"ASDL128","artista":"AGUS OLIVO","categoria":"DJ JAM 013","tipo":"DJ_JAM","fecha":"2026-03-21","url_yt":"https://www.youtube.com/watch?v=8m5ENHKfZ0w","estado":"Publicado","set_num":2},{"id":"ASDL129","artista":"SPACEGIRLS","categoria":"DJ JAM 013","tipo":"DJ_JAM","fecha":"2026-03-18","url_yt":"https://www.youtube.com/watch?v=r-BPA8Gn_Ls","estado":"Publicado","set_num":1},{"id":"ASDL130","artista":"CELES RONDA","categoria":"DJ JAM 013","tipo":"DJ_JAM","fecha":"2026-03-19","url_yt":"https://www.youtube.com/watch?v=oZvGdC43Gvs","estado":"Publicado","set_num":1},{"id":"ASDL131","artista":"MAJO MUSHI","categoria":"DJ JAM 013","tipo":"DJ_JAM","fecha":"2026-03-20","url_yt":"https://www.youtube.com/watch?v=2ilkNc39Clc","estado":"Publicado","set_num":1},{"id":"ASDL132","artista":"MAGMA","categoria":"DJ JAM 013","tipo":"DJ_JAM","fecha":"2026-03-21","url_yt":"https://www.youtube.com/watch?v=N8pxMYTIHBQ","estado":"Publicado","set_num":1},{"id":"ASDL133","artista":"ADHILA","categoria":"DJ JAM 013","tipo":"DJ_JAM","fecha":"2026-03-26","url_yt":"https://www.youtube.com/watch?v=pohAiz8XAuA","estado":"Publicado","set_num":2,"nota":"2do set"},{"id":"ASDL134","artista":"BAKAN MUSIC","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2026-03-27","url_yt":null,"estado":"Pendiente","set_num":1},{"id":"ASDL135","artista":"SHARON B3","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2026-03-28","url_yt":null,"estado":"Pendiente","set_num":1},{"id":"ASDL136","artista":"LE ROSA NEGRA","categoria":"CUSTOM LIVESET","tipo":"CUSTOM","fecha":"2026-03-30","url_yt":null,"estado":"Pendiente","set_num":1},{"id":"ASDL137","artista":"PEKKO","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2026-03-31","url_yt":null,"estado":"Pendiente","set_num":1},{"id":"ASDL138","artista":"AXEL MORALES","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2026-03-29","url_yt":null,"estado":"Pendiente","set_num":1},{"id":"ASDL139","artista":"MANUEL SANCHEZ","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2026-04-01","url_yt":null,"estado":"Pendiente","set_num":1},{"id":"ASDL140","artista":"R4W","categoria":"COMMON LIVESET","tipo":"COMMON","fecha":"2026-04-02","url_yt":null,"estado":"Pendiente","set_num":1}];
 
 function smYTid(u){
   if(!u) return null;
@@ -6950,7 +6332,7 @@ function adminSaveFicha(djId){
   // Refrescar tabla y ficha si están abiertas
   var cont = document.getElementById('a-cont');
   if(cont && cont.innerHTML.includes('atable')){
-    renderAdminArtists(cont);
+    renderAdminArtistsMerged(cont);
   }
   if(document.getElementById('ficha') && document.getElementById('ficha').classList.contains('show')){
     fichaFrom = 'admin';
@@ -7097,7 +6479,7 @@ async function saveLeadsFromCSV(leads){
 
   // Refrescar tabla
   var cont = document.getElementById('a-cont');
-  if(cont) renderAdminArtists(cont, 'leads');
+  if(cont) renderAdminArtistsMerged(cont);
 }
 
 // Exponer leads de localStorage para email marketing
@@ -7621,6 +7003,45 @@ async function saveFichaAdmin(id){
   }catch(e){}
 })();
 
+// Cargar estado de DJs desde Supabase al inicio (fuente de verdad compartida)
+(function loadDjEditsFromSupabase(){
+  if(typeof sb === 'undefined') return;
+  sb.from('djs').select('nombre_artistico,estado,release_date,yt_link')
+    .then(function(res){
+      if(res.error || !res.data || !res.data.length) return;
+      var updated = false;
+      res.data.forEach(function(row){
+        if(!row.estado && !row.release_date && !row.yt_link) return;
+        var dj = DJS.find(function(d){ return d.artist === row.nombre_artistico; });
+        if(!dj) return;
+        if(row.estado === 'soon'){
+          dj.isSoon = true; dj.published = false;
+          if(!SOON.includes(dj.artist)) SOON.push(dj.artist);
+        } else if(row.estado === 'ready'){
+          dj.isSoon = false; dj.published = false;
+          var si = SOON.indexOf(dj.artist); if(si > -1) SOON.splice(si, 1);
+        } else if(row.estado === 'published'){
+          dj.isSoon = false; dj.published = true;
+          var si2 = SOON.indexOf(dj.artist); if(si2 > -1) SOON.splice(si2, 1);
+        }
+        if(row.release_date) dj.releaseDate = row.release_date;
+        if(row.yt_link) videos[dj.i] = row.yt_link;
+        updated = true;
+      });
+      if(updated){
+        var djCache = {};
+        DJS.forEach(function(d){
+          if(d.isSoon || d.published || d.releaseDate || videos[d.i]){
+            djCache[d.i] = { isSoon: !!d.isSoon, published: !!d.published, releaseDate: d.releaseDate || null, yt: videos[d.i] || null };
+          }
+        });
+        try{ localStorage.setItem('asdl_dj_edits', JSON.stringify(djCache)); }catch(e){}
+        if(typeof renderDjs    === 'function') renderDjs();
+        if(typeof renderCommon === 'function') renderCommon();
+      }
+    });
+})();
+
 
 // ── FOTO DE PERFIL EN FICHA ──────────────────────────────────────
 function buildPhotoHTML(id, dj){
@@ -7943,7 +7364,7 @@ function adminDeleteDJ(djId){
 
   // 6. Refrescar panel y grids
   var cont = document.getElementById('a-cont');
-  if(cont) renderAdminArtists(cont);
+  if(cont) renderAdminArtistsMerged(cont);
   if(typeof renderDjs === 'function') renderDjs();
   if(typeof renderCommon === 'function') renderCommon();
 
