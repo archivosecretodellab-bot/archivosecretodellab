@@ -957,11 +957,11 @@ input[type=file]{display:none}
     flex-shrink:0;
   }
 
-  /* ── INICIO: hero más pequeño y centrado ─────────────────── */
+  /* ── INICIO: hero más compacto, arriba para dejar espacio a cards ── */
   .hero{
     position:absolute;
     bottom:auto;
-    top:50%;
+    top:35%;
     transform:translateY(-50%);
     left:0; right:0;
     padding:0 20px;
@@ -970,28 +970,29 @@ input[type=file]{display:none}
   .h-eye{
     font-size:8px;
     letter-spacing:.22em;
-    margin-bottom:12px;
-    line-height:1.8;
+    margin-bottom:10px;
+    line-height:1.6;
   }
-  .h-w{ font-size:clamp(52px,13vw,80px); }
-  .h-n{ font-size:clamp(52px,13vw,80px); }
-  .h-c{ margin-bottom:14px; }
+  .h-w{ font-size:clamp(44px,11vw,68px); }
+  .h-n{ font-size:clamp(44px,11vw,68px); }
+  .h-c{ margin-bottom:12px; }
   .h-d{
     font-size:8px;
     letter-spacing:.16em;
-    line-height:2;
-    margin-bottom:22px;
+    line-height:1.9;
+    margin-bottom:18px;
+    max-width:280px;
   }
   .cta{
     font-size:9px;
-    padding:12px 22px;
+    padding:11px 20px;
     letter-spacing:.22em;
   }
-  /* Cards flotantes: menos a la vez, zona más amplia */
-  .fc{ width:180px; padding:15px 17px 13px; }
-  .fc-a{ font-size:20px; }
-  .fc-n{ font-size:8px; }
-  .fc-g{ font-size:9px; }
+  /* Cards flotantes: compactas, espacio propio al lado derecho */
+  .fc{ width:155px; padding:12px 14px 10px; }
+  .fc-a{ font-size:17px; }
+  .fc-n{ font-size:7px; letter-spacing:.25em; }
+  .fc-g{ font-size:8px; }
 
   /* ── DJ SETS: grilla 1 columna, texto legible ───────────── */
   .pgrid{
@@ -1113,9 +1114,11 @@ input[type=file]{display:none}
 /* ── Extra pequeño: 380px ────────────────────────────────────── */
 @media(max-width:380px){
   .logo{ font-size:10px; }
-  .h-w, .h-n{ font-size:clamp(44px,12vw,64px); }
+  .hero{ top:30%; }
+  .h-w, .h-n{ font-size:clamp(38px,10vw,56px); }
   .nt{ font-size:7px; padding:0 9px; }
-  .fc{ width:160px; }
+  .fc{ width:140px; padding:10px 12px 9px; }
+  .fc-a{ font-size:15px; }
 }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
@@ -2330,7 +2333,7 @@ async function notificarEquipo(r){
 // ═══════════════════════════════════════════════════════
 // DATA
 // ═══════════════════════════════════════════════════════
-const SOON = ['Magma','Celes Ronda','Majomushi','Mvtant Kitty','Koven'];
+const SOON = ['Manuel Sanchez','R4W','Barbara Pola','Exe Mendez','Wet'];
 // Contador: override manual tiene prioridad, sino calcula de SM
 var _counterOverride = null;
 try{
@@ -2624,7 +2627,7 @@ const DJS = [
  {i:'076',artist:'Venusino',alias:'Venusino',genre:'Open Format · House · Reggaeton · Amapiano · Funk',exp:'3–5 años',bio:'Arriesgado, conceptual, salvaje. Toca Open Format en toda su expresión — salsa, reggaeton, house, baile funk, amapiano, dancehall, acid jazz, R&B, soul. Mezcla fina, detallista y agresiva.',type:'Common Liveset',session:'Solo',links:'https://www.instagram.com/venusinoo/ · SoundCloud · Mixcloud',reg:'Oct 2025'},
  {i:'071',artist:'Tucumalo',alias:'Tucumalo',genre:'Dancehall · Reggaeton',exp:'1–3 años',bio:'Mezclar los dos estilos caribeños que más le gustan — reggaeton y dancehall — respetando la esencia cultural de cada uno sin dejar de hacer bailar. Llegó al archivo por Jeili, con quien toca en B2B.',type:'DJ JAM',session:'B2B',links:'SoundCloud',reg:'Oct 2025'},
  {i:'074',artist:'Luxray',alias:'Luxray',genre:'Riddim · Dubstep',exp:'1–3 años',bio:'Variado, con loops y choppeo de faders acompañado de drops salseros. Su misión: que la gente conozca el bass music y lo hermoso que es.',type:'Common Liveset',session:'Solo',links:'@_.luxray (IG) · luxray (SoundCloud)',reg:'Nov 2025'},
- {i:'057',artist:'Grecia',alias:'Grecia',genre:'Experimental · Ambient',exp:'Menos de 1 año',bio:'Cualquiera puede mezclar — no porque sea fácil, sino porque todos tenemos música en nuestras vidas. Grecia necesitó mostrar lo que tiene en el corazón. (Sí, es la esposa de Saiti — y grabó porque quiso.)',type:'DJ JAM',session:'Solo',links:'SoundCloud',reg:'Oct 2025'},
+ {i:'057',artist:'Grecia',alias:'Grecia',genre:'Sin Género',exp:'Menos de 1 año',bio:'Conocida como la "Mamá del Archivo", Grecia es el motor detrás de la dirección creativa y comunicacional de Archivo Secreto. Su rol como gestora no se limita a la organización; es la encargada de darle identidad y voz a un proyecto que late al ritmo de la escena electrónica. Su filosofía es clara: aunque la técnica es fundamental, mezclar es ante todo un medio para exteriorizar lo que lleva en el corazón. Grecia busca democratizar esa expresión, recordando que la música ya habita en todos nosotros y que el verdadero arte surge cuando nos atrevemos a mostrarlo.',type:'DJ JAM',session:'Solo',links:'SoundCloud',reg:'Oct 2025'},
  {i:'030',artist:'Atua',alias:'Atua',genre:'Techno · Ambient · Hardcore · Acid',exp:'1–3 años',bio:'Beats orgánicos donde los ritmos ancestrales se encuentran con la hipnosis de las máquinas. Sus sets son portales — orgánicos, físicos, de otro mundo. Recuerda los tiempos de las fábricas abandonadas, el acid de los 90, el gabber.',type:'Common Liveset',session:'Solo',links:'SoundCloud · @atuamusic (YouTube)',reg:'Oct 2025'},
  {i:'111',artist:'Letargiko',alias:'Letargiko',genre:'Techno Melódico',exp:'Menos de 1 año',bio:'Contraste entre lo oscuro e hipnótico con lo rítmico y tribal. Primeros pasos con una propuesta ya definida. Su profesor Rawdon le recomendó el formato del archivo.',type:'DJ JAM',session:'Solo',links:'Letargiko (SoundCloud)',reg:'Oct 2025'},
  {i:'079',artist:'Thiago Lautaro',alias:'Thiago Lautaro',genre:'House · Tech House',exp:'1–3 años',bio:'Muy bailable y fácil de entender, pero sin parecerse a ningún otro sonido. Sus influencias en múltiples géneros le dan un viaje musical enfocado en el tech house con progresión entre estilos.',type:'Common Liveset',session:'Solo',links:'@thiagolautaroo_ (IG) · SoundCloud',reg:'Oct 2025'},
@@ -2659,37 +2662,40 @@ const DJS = [
  {i:'127',artist:'Bian De Blanco',alias:'Bian De Blanco',genre:'Techno · Trance · Bounce · Hard Groove',exp:'1–3 años',bio:'Divertirse es la prioridad. Regalar un momento de (des)conexión con uno mismo y con el mundo.',type:'DJ JAM',session:'Solo',links:'@biandeblanco (IG) · @biandeblanco (SC)',reg:'Feb 2026'},
  {i:'002',artist:'Naderix',alias:'Naderix',genre:'House · Techno · DnB · Ambient',exp:'Más de 5 años',bio:'Ama la curaduría musical — sentarse horas a buscar música en los lugares más recónditos. Más de 5 años, vinilos en camino. No es su primera vez en el archivo ni la última.',type:'Common Liveset',session:'Solo',links:'@Naderix.official (IG) · Spotify · SoundCloud · Mixcloud',reg:'Feb 2026'},
 
- {i:'130',artist:'Celes Ronda',alias:'Celes Ronda',genre:'Techno · Hard Techno · Bounce',exp:'3–5 años',bio:'Empezó a los 18 como productora de eventos en la escena tech house. Con el tiempo construyó su identidad artística dentro del techno y el hard techno. Tiene su proyecto de eventos: Kur<3mi.',type:'DJ JAM',session:'Solo',links:'YouTube · SoundCloud',reg:'Feb 2026',isSoon:true},
- {i:'132',artist:'Magma',alias:'Magma',genre:'House · Open Format',exp:'Más de 5 años',bio:'Dinámico, groovero e hipnótico. Tiene un EP con support de Yulia Niko. Una carrera sólida con criterio propio.',type:'DJ JAM',session:'Solo',links:'@_djmagma_ (IG) · SoundCloud',reg:'Feb 2026',isSoon:true},
+ {i:'130',artist:'Celes Ronda',alias:'Celes Ronda',genre:'Techno · Hard Techno · Bounce',exp:'3–5 años',bio:'Empezó a los 18 como productora de eventos en la escena tech house. Con el tiempo construyó su identidad artística dentro del techno y el hard techno. Tiene su proyecto de eventos: Kur<3mi.',type:'DJ JAM',session:'Solo',links:'YouTube · SoundCloud',reg:'Feb 2026'},
+ {i:'132',artist:'Magma',alias:'Magma',genre:'House · Open Format',exp:'Más de 5 años',bio:'Dinámico, groovero e hipnótico. Tiene un EP con support de Yulia Niko. Una carrera sólida con criterio propio.',type:'DJ JAM',session:'Solo',links:'@_djmagma_ (IG) · SoundCloud',reg:'Feb 2026'},
  {i:'129',artist:'Spacegirls',alias:'Spacegirls',genre:'Techno · Drum & Bass',exp:'Menos de 1 año',bio:'Dúo conformado por Ishit y Arika. Abrieron la Primera Female DJ JAM (ASDL013). Dos mundos que se fusionan: potencia y sensibilidad en una sola cabina.',type:'DJ JAM',session:'B2B',links:'@ishiikawaa_ (IG) · @arika2.0 (IG)',reg:'Mar 2026',b2b:true},
- {i:'131',artist:'Majomushi',alias:'Majomushi',genre:'Por confirmar',exp:'',bio:'Próximamente en el archivo. Graba en la DJ JAM del 08/03/2026.',type:'DJ JAM',session:'',links:'https://www.instagram.com/majomushi.com.ar/',reg:'Mar 2026',isSoon:true},
+ {i:'131',artist:'Majomushi',alias:'Majomushi',genre:'Por confirmar',exp:'',bio:'Grabó en la DJ JAM ASDL013 — Female Edition.',type:'DJ JAM',session:'Solo',links:'https://www.instagram.com/majomushi.com.ar/',reg:'Mar 2026'},
 
  // Artistas del sheet no incluidos previamente
 
  {i:'080',artist:'Ju4mpi',alias:'Ju4mpi',genre:'House · Techno',exp:'',bio:'Common Liveset grabado entre ASDL010 y ASDL011.',type:'Common Liveset',session:'Solo',links:'https://www.instagram.com/soyju4mpi/',reg:'Oct 2025'},
- {i:'006',artist:'Suvmaster',alias:'Suvmaster',genre:'House · Techno',exp:'',bio:'Parte del lineup de la DJ JAM ASDL002 — 07/05/2025.',type:'DJ JAM',session:'Solo',links:'https://www.instagram.com/vsuvorin/',reg:'May 2025'},
- {i:'005',artist:'Vortx',alias:'Vortx',genre:'House · Techno',exp:'',bio:'Parte del lineup de la DJ JAM ASDL002 — 07/05/2025.',type:'DJ JAM',session:'Solo',links:'',reg:'May 2025'},
- {i:'004',artist:'Acu',alias:'Acu',genre:'House · Techno',exp:'',bio:'Parte del lineup de la DJ JAM ASDL002 — 07/05/2025.',type:'DJ JAM',session:'Solo',links:'https://www.instagram.com/lucasacu.co/',reg:'May 2025'},
- {i:'003',artist:'Lyanna',alias:'Lyanna',genre:'House · Techno',exp:'',bio:'Parte del lineup de la DJ JAM ASDL002 — 07/05/2025.',type:'DJ JAM',session:'Solo',links:'https://www.instagram.com/____lyanna/',reg:'May 2025'},
- {i:'008',artist:'Ivan Corda',alias:'Ivan Corda',genre:'House · Techno',exp:'',bio:'Parte del lineup de la DJ JAM ASDL003 — 24/05/2025.',type:'DJ JAM',session:'Solo',links:'https://www.instagram.com/ivancorda.dj/',reg:'May 2025'},
- {i:'009',artist:'Ezra',alias:'Ezra',genre:'House · Techno',exp:'',bio:'Parte del lineup de la DJ JAM ASDL003 — 24/05/2025.',type:'DJ JAM',session:'Solo',links:'https://www.instagram.com/_ezra.dj_/',reg:'May 2025'},
- {i:'010',artist:'Jony Peder',alias:'Jony Peder',genre:'House · Techno',exp:'',bio:'Parte del lineup de la DJ JAM ASDL003 — 24/05/2025.',type:'DJ JAM',session:'Solo',links:'https://www.instagram.com/jonypeder/',reg:'May 2025'},
- {i:'011',artist:'Nielo',alias:'Nielo',genre:'House · Disco',exp:'3–5 años',bio:'Custom Liveset grabado con Gente de Disco Domingo. Una sesión especial que fusiona house y disco con la energía del colectivo.',type:'Custom Liveset',session:'Solo',links:'',reg:'Jun 2025'},
- {i:'013',artist:'Olu',alias:'Olu',genre:'House · Techno',exp:'',bio:'Parte del lineup de la DJ JAM ASDL003 — 24/05/2025.',type:'DJ JAM',session:'Solo',links:'https://www.instagram.com/oluoluoluoluoluoluoluolu/',reg:'May 2025'},
- {i:'108',artist:'Wearsprada',alias:'Wearsprada',genre:'Por confirmar',exp:'',bio:'Archivo Público — Don Gato Edition.',type:'Public Liveset',session:'Solo',links:'https://www.instagram.com/wearspradaa/',reg:'Nov 2025'},
- {i:'042',artist:'Saiti',alias:'Saiti',genre:'House · Techno',exp:'Más de 5 años',bio:'Fundador del Archivo Secreto del Lab. Parte del lineup de la DJ JAM ASDL007.',type:'DJ JAM',session:'Solo',links:'https://www.instagram.com/by.saiti/',reg:'Sep 2025'},
+ {i:'006',artist:'Suvmaster',alias:'Suvmaster',genre:'Funky House · House · Disco · Progressive',exp:'Más de 5 años',bio:'Desde Rusia a Buenos Aires: Suvmaster llegó al Archivo Secreto del Lab con más de 10 años de experiencia detrás de las bandejas, trayendo un set que combina lo mejor del house, funky, disco y matices melódicos progresivos.',type:'DJ JAM',session:'Solo',links:'https://www.instagram.com/vsuvorin/',reg:'May 2025'},
+ {i:'005',artist:'Vortx',alias:'Vortx',genre:'Tech House · Deep Tech',exp:'1–3 años',bio:'Su sonido se mueve entre el tech house y el deep tech, con selecciones sólidas, beats marcados y un pulso bien presente. Preciso, dinámico.',type:'DJ JAM',session:'Solo',links:'',reg:'May 2025'},
+ {i:'004',artist:'Acu',alias:'Acu',genre:'Tech House · House · Disco · Chicago Sound',exp:'Más de 5 años',bio:'Aprendió a mezclar a los 18, pero su historia con la electrónica empezó mucho antes. Influenciado por leyendas como Frankie Knuckles y referentes locales como Aldo Haydar, Acu viaja entre el house, disco, tech house y chicago sound.',type:'DJ JAM',session:'Solo',links:'@lucasacu.co (IG)',reg:'May 2025'},
+ {i:'003',artist:'Lyanna',alias:'Lyanna',genre:'House · Deep Tech',exp:'1–3 años',bio:'DJ y productora de Buenos Aires. Ya ha dejado su marca en cabinas como Zegre, Moscú y La Biblioteca. Su sonido se mueve entre el house y deep tech, influenciada por artistas como Chelina Manuhutu y Lee Burridge.',type:'DJ JAM',session:'Solo',links:'@lyannabe (IG)',reg:'May 2025'},
+ {i:'008',artist:'Ivan Corda',alias:'Ivan Corda',genre:'Progressive House',exp:'1–3 años',bio:'DJ y productor argentino orientado a crear sets con groove y coherencia musical. Piensa bien sus selecciones — cada track tiene un porqué dentro del viaje.',type:'DJ JAM',session:'Solo',links:'@ivancorda.dj (IG)',reg:'May 2025'},
+ {i:'009',artist:'Ezra',alias:'Ezra',genre:'Hard Groove · Techno · Hard Techno · Minimal',exp:'1–3 años',bio:'EZRA prende fuego el Archivo con una sesión intensa y sin respiro. Hard groove, techno, hard techno y trazos de minimal se combinan en un set directo al cuerpo, con estructura sólida y presión constante. DJ argentino con pulso firme y selección quirúrgica, crea una narrativa cargada de energía, ideal para perderse en la pista y no querer salir. Nada de relleno: puro ritmo, tensión y soltura.',type:'DJ JAM',session:'Solo',links:'@_ezra.dj_ (IG)',reg:'May 2025'},
+ {i:'010',artist:'Jony Peder',alias:'Jony Peder',genre:'Tech House · Pop · Funky Disco',exp:'Más de 5 años',bio:'DJ y residente de su propio ciclo de música electrónica @wamup.rooftop. Se mueve en el tech house influenciado por el pop y el funky disco. Más de 5 años en la escena, pasó por cabinas emblemáticas como Crobar, Morocco y KIKA. Para el archivo, presenta una selección vibrante con transiciones dinámicas y pulso.',type:'DJ JAM',session:'Solo',links:'@jonypeder (IG)',reg:'May 2025'},
+ {i:'011',artist:'Nielo',alias:'Nielo',genre:'Disco · House · Funk',exp:'3–5 años',bio:'Músico, productor musical y DJ, creador de @discodomingobuenosaires. Su carrera comenzó en eventos de Ecstatic Dance en México, pero encontró su esencia fusionando House, Disco y Funk en sus propias fiestas. Su estilo, bautizado como Ecstatic Disco, mezcla clásicos de la música disco de los 80s con electrónica y sonidos orgánicos, creando una atmósfera cargada de alegría, inclusión y mucho baile.',type:'Custom Liveset',session:'Solo',links:'@nielomusic (IG)',reg:'Jun 2025'},
+ {i:'013',artist:'Olu',alias:'Olu',genre:'Hard Techno',exp:'1–3 años',bio:'OLU presenta un set donde el contraste es protagonista: una base sonora oscura, intensa, atravesada por momentos de luz, emoción y espontaneidad. Un recorrido que combina texturas profundas con destellos que despiertan el cuerpo y los sentidos. Su sonido está fuertemente influenciado por la escena siberiana — origen de su camino en la música — y se nutre de referencias visuales y sensoriales: el cine, la fotografía, la naturaleza.',type:'DJ JAM',session:'Solo',links:'@oluoluoluoluoluoluoluolu (IG)',reg:'May 2025'},
+ {i:'108',artist:'Wearsprada',alias:'Wearsprada',genre:'Pop · Hard Dance · Percusiones Latinas',exp:'3–5 años',bio:'Llegó a la cabina del Archivo Público en @dongato.bar a demostrar por qué es una de las figuras más magnéticas del underground porteño. Percusiones latinas para sumirnos en un viaje rítmico poderoso donde la música Pop y el Hard Dance conviven para crear una catarsis de todos los colores. Con presencia escénica cargada de carisma y versatilidad única, transformó el cierre del primer evento del Archivo en un espacio de pura conexión y disfrute colectivo.',type:'Public Liveset',session:'Solo',links:'@wearspradaa (IG)',reg:'Nov 2025'},
+ {i:'042',artist:'Saiti',alias:'Saiti',genre:'Tech House · Deep Tech · House',exp:'Más de 5 años',bio:'DJ internacional y productor de música electrónica que se distingue por su capacidad para transformar la pista de baile a través de una energía positiva y estimulante. Su estilo fusiona el Deep Groovy House con texturas de Minimal y Tech House. Cofundador de Archivo Secreto — conocido como el "Papá del Archivo" — se dedica activamente a la formación de nuevos talentos, guiándolos en sus primeros pasos en la carrera de DJ.',type:'DJ JAM',session:'Solo',links:'@by.saiti (IG) · SAITI (YouTube)',reg:'Sep 2025'},
  {i:'051b',hidden:true,artist:'D1N0 DUBZ',alias:'D1N0 DUBZ',genre:'Techno · Hardgroove',exp:'1–3 años',bio:'Grabó en la DJ JAM ASDL008 en B2B junto a Nujire. Un encuentro de dos mundos que dejó uno de los sets más potentes de esa jornada.',type:'DJ JAM',session:'B2B',links:'https://www.instagram.com/d1nodubz/',reg:'Sep 2025'},
- {i:'113',artist:'Deliyus',alias:'Deliyus',genre:'House · Techno',exp:'1–3 años',bio:'Grabó en la DJ JAM ASDL011 en B2B junto a P4iva.',type:'DJ JAM',session:'B2B',links:'https://www.instagram.com/deliyusfm/',reg:'Feb 2026'},
- {i:'119',artist:'Mvtant Kitty',alias:'Mvtant Kitty',genre:'Por confirmar',exp:'1–3 años',bio:'Common Liveset que se estrena próximamente en el Archivo.',type:'Common Liveset',session:'Solo',links:'https://www.instagram.com/mutantkitty69/',reg:'Mar 2026',isSoon:true},
- {i:'120',artist:'Koven',alias:'Koven',genre:'Por confirmar',exp:'1–3 años',bio:'Common Liveset que se estrena próximamente en el Archivo, después de Mvtant Kitty.',type:'Common Liveset',session:'Solo',links:'https://www.instagram.com/kovenr/',reg:'Mar 2026',isSoon:true},
+ {i:'113',artist:'Deliyus',alias:'Deliyus',genre:'Drum & Bass · Riddim',exp:'1–3 años',bio:'Un "loquito" confeso del Bass Music y sus orígenes, trajo toda la oscuridad del UK Dubstep clásico. Su curiosidad por la producción lo llevó a entender esos sonidos que "le cosquillean el cerebro", logrando una selección cruda y auténtica.',type:'DJ JAM',session:'B2B',links:'@deliyusfm (IG)',reg:'Feb 2026'},
+ {i:'119',artist:'Mvtant Kitty',alias:'Mvtant Kitty',genre:'Por confirmar',exp:'1–3 años',bio:'Common Liveset grabado en el Archivo.',type:'Common Liveset',session:'Solo',links:'https://www.instagram.com/mutantkitty69/',reg:'Mar 2026'},
+ {i:'120',artist:'Koven',alias:'Koven',genre:'Por confirmar',exp:'1–3 años',bio:'Common Liveset grabado en el Archivo.',type:'Common Liveset',session:'Solo',links:'https://www.instagram.com/kovenr/',reg:'Mar 2026'},
 
- {i:'137',artist:'Pekko',alias:'Pekko',genre:'Por confirmar',exp:'',bio:'Próximamente en el archivo.',type:'Common Liveset',session:'Solo',links:'',reg:'Mar 2026',isSoon:true},
- {i:'134',artist:'Bakan Music',alias:'Bakan Music',genre:'Por confirmar',exp:'',bio:'Próximamente en el archivo.',type:'Common Liveset',session:'Solo',links:'',reg:'Mar 2026',isSoon:true},
- {i:'135',artist:'Sharon B3',alias:'Sharon B3',genre:'Por confirmar',exp:'',bio:'Próximamente en el archivo.',type:'Common Liveset',session:'Solo',links:'',reg:'Mar 2026',isSoon:true},
- {i:'136',artist:'Le Rosa Negra',alias:'Le Rosa Negra',genre:'Por confirmar',exp:'',bio:'Próximamente en el archivo.',type:'Custom Liveset',session:'Solo',links:'',reg:'Mar 2026',isSoon:true},
- {i:'138',artist:'Axel Morales',alias:'Axel Morales',genre:'Por confirmar',exp:'',bio:'Próximamente en el archivo.',type:'Common Liveset',session:'Solo',links:'',reg:'Mar 2026',isSoon:true},
+ {i:'137',artist:'Pekko',alias:'Pekko',genre:'Por confirmar',exp:'',bio:'Grabó en el archivo.',type:'Common Liveset',session:'Solo',links:'',reg:'Mar 2026'},
+ {i:'134',artist:'Bakan Music',alias:'Bakan Music',genre:'Por confirmar',exp:'',bio:'Grabó en el archivo.',type:'Common Liveset',session:'Solo',links:'',reg:'Mar 2026'},
+ {i:'135',artist:'Sharon B3',alias:'Sharon B3',genre:'Por confirmar',exp:'',bio:'Grabó en el archivo.',type:'Common Liveset',session:'Solo',links:'',reg:'Mar 2026'},
+ {i:'136',artist:'Le Rosa Negra',alias:'Le Rosa Negra',genre:'Por confirmar',exp:'',bio:'Grabó en el archivo.',type:'Custom Liveset',session:'Solo',links:'',reg:'Mar 2026'},
+ {i:'138',artist:'Axel Moralez',alias:'Axel Moralez',genre:'Por confirmar',exp:'',bio:'Grabó en el archivo.',type:'Common Liveset',session:'Solo',links:'',reg:'Mar 2026'},
  {i:'139',artist:'Manuel Sanchez',alias:'Manuel Sanchez',genre:'Por confirmar',exp:'',bio:'Próximamente en el archivo.',type:'Common Liveset',session:'Solo',links:'',reg:'Abr 2026',isSoon:true},
  {i:'140',artist:'R4W',alias:'R4W',genre:'RAW Techno · Trance · Hard Trance · Phonk',exp:'',bio:'Un balance entre suavidad y potencia. Buscan envolver a sus oyentes en atmósferas psicodélicas y sensuales a través del RAW techno y trance, incorporando RAW Groove para marcar ritmos con tambores. Para otro tipo de público buscan la intensidad, diversión y viaje a través de hard trance y derivados.',type:'Common Liveset',session:'B2B',links:'',reg:'Abr 2026',isSoon:true},
+ {i:'141',artist:'Barbara Pola',alias:'Barbara Pola',genre:'Por confirmar',exp:'',bio:'Próximamente en el archivo.',type:'Common Liveset',session:'Solo',links:'',reg:'Abr 2026',isSoon:true,multi:['Common Liveset (1/2)','Common Liveset (2/2)']},
+ {i:'142',artist:'Exe Mendez',alias:'Exe Mendez',genre:'Por confirmar',exp:'',bio:'Próximamente en el archivo.',type:'Common Liveset',session:'Solo',links:'',reg:'Abr 2026',isSoon:true},
+ {i:'143',artist:'Wet',alias:'Wet',genre:'Por confirmar',exp:'',bio:'Próximamente en el archivo.',type:'Common Liveset',session:'Solo',links:'',reg:'Abr 2026',isSoon:true},
 ];
 
 // GENRE CATEGORIES
