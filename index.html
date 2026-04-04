@@ -24,7 +24,8 @@
 <meta name="description" content="Grabá tu DJ set en Buenos Aires con producción audiovisual profesional. +127 sets publicados. Archivo de la escena electrónica porteña. Booking online, entrega rápida.">
 <meta name="keywords" content="grabar dj set Buenos Aires, grabación dj set Argentina, cabina dj Buenos Aires, registro audiovisual DJ, escena electrónica Buenos Aires, archivo DJ sets, dj jam Buenos Aires, grabar set techno, grabar set house Buenos Aires, underground electrónico Buenos Aires, cabina grabación electrónica, dj set profesional Buenos Aires, archivo secreto del lab, common liveset, dj jam, música electrónica porteña, grabar set electronic music Argentina">
 <meta name="robots" content="index, follow">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://apis.google.com https://accounts.google.com https://fonts.googleapis.com https://*.supabase.co https://api.allorigins.win https://corsproxy.io https://*.cloudflare.com https://www.googletagmanager.com https://*.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https: https://*.google-analytics.com https://www.googletagmanager.com; frame-src https://www.youtube.com https://calendar.google.com https://content.googleapis.com https://content-sheets.googleapis.com https://docs.google.com;">
+<!-- CSP temporarily disabled for Figma capture -->
+<!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://apis.google.com https://accounts.google.com https://fonts.googleapis.com https://*.supabase.co https://api.allorigins.win https://corsproxy.io https://*.cloudflare.com https://www.googletagmanager.com https://*.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https: https://*.google-analytics.com https://www.googletagmanager.com; frame-src https://www.youtube.com https://calendar.google.com https://content.googleapis.com https://content-sheets.googleapis.com https://docs.google.com;"> -->
 <link rel="canonical" href="https://archivosecretodellab.com">
   <meta property="og:title" content="Archivo Secreto del Lab | Grabar DJ Set Buenos Aires">
   <meta property="og:description" content="Registro audiovisual independiente de la escena electrónica porteña. +127 DJ sets publicados. Booking online, producción profesional. Buenos Aires, Argentina.">
@@ -1131,6 +1132,7 @@ input[type=file]{display:none}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+<script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
 </head>
 <body>
 
@@ -1923,6 +1925,7 @@ function imgOnError(el, url){
 var PERFILES_MAP = {
   '(B)EVA': '(B)EVA',
   'ABBICA': 'ABBICA',
+  'ACU': 'ACU',
   'ADHILA': 'ADHILA',
   'AGUS COSTA': 'AGUS COSTA',
   'AGUS COSTA B2B AGUS DOMENE': 'AGUS COSTA',
@@ -1933,6 +1936,7 @@ var PERFILES_MAP = {
   'AIXA YAEL': 'AIXA YAEL',
   'ALEX HEDIGER': 'ALEX HEDIGER',
   'ANTONELLA BELEN': 'ANTONELLA BELEN',
+  'ARIKA': 'ARIKA',
   'ARTHUR CHEFFER': 'ARTHUR CHEFFER',
   'ATUA': 'ATUA',
   'BAU OLIVARES': 'BAU OLIVARES',
@@ -1946,8 +1950,10 @@ var PERFILES_MAP = {
   'BVLLY': 'BVLLY',
   'CARMELO': 'CARMELO',
   'CATACLISMO': 'CATACLISMO',
+  'CELES RONDA': 'CELES RONDA',
   'D1NO DUBZ': 'D1NO DUBZ',
   'D1no Dubz': 'D1NO DUBZ',
+  'DELIYUS': 'DELIYUS',
   'DI-MOSS': 'DIMOSS',
   'DIMOSS': 'DIMOSS',
   'DJ BRIVN': 'DJ BRIVN',
@@ -1962,6 +1968,7 @@ var PERFILES_MAP = {
   'GERMANY': 'GERMANY',
   'GRECIA': 'GRECIA',
   'HACHI': 'HACHI',
+  'ISHIT': 'ISHIT',
   'IVAN CORDA': 'IVAN CORDA',
   'IVÁN CORDA': 'IVAN CORDA',
   'JEILI': 'JEILI',
@@ -1980,6 +1987,7 @@ var PERFILES_MAP = {
   'LEF': 'LEF',
   'LENNY OWEN': 'LENNY OWEN',
   'LENNY ØWEN': 'LENNY OWEN',
+  'LAUTARO CARRIZO': 'Lautaro Carrizo',
   'LEON ELLUS': 'LEON ELLUS',
   'LETARGIKO': 'LETARGIKO',
   'LOMAKIN': 'LOMAKIN',
@@ -1988,6 +1996,8 @@ var PERFILES_MAP = {
   'LUGHA': 'LUGHA',
   'LUXRAY': 'LUXRAY',
   'LYANNA': 'LYANNA',
+  'MAGMA': 'MAGMA',
+  'MAJOMUSHI': 'MAJOMUSHI',
   'MAKSE': 'MAKSE',
   'MARA KOLEVITCH': 'MARA KOLEVITCH',
   'MARCOS ALVAREZ': 'MARCOS ALVAREZ',
@@ -1995,6 +2005,7 @@ var PERFILES_MAP = {
   'MARSHALL': 'MARSHALL',
   'MARTIN G': 'MARTIN G',
   'MARTÍN G': 'MARTIN G',
+  'MATI PINO': 'MATI PINO',
   'MATI SLAST': 'MATI SLAST',
   'MORTEL': 'MORTEL',
   'MVTANT KITTY': 'MVTANT KITTY',
@@ -2013,6 +2024,7 @@ var PERFILES_MAP = {
   'NUJIRE': 'NUJIRE',
   'NUJIRE B2B D1NO DUBZ': 'NUJIRE',
   'OLU': 'OLU',
+  'P4IVA': 'P4IVA',
   'P4IVA B2B DELIYUS': 'P4IVA B2B DELIYUS',
   'PACHO': 'PACHO',
   'PAIVA B2B DELIYUS': 'P4IVA B2B DELIYUS',
@@ -2020,8 +2032,10 @@ var PERFILES_MAP = {
   'RAWDON': 'RAWDON',
   'REBEKAOS': 'REBEKAOS',
   'RIBZ': 'RIBZ',
+  'RISCO': 'RISCO',
   'RISCO B2B MATI PINO': 'RISCO B2B MATI PINO',
   'ROBER AYALA': 'ROBER AYALA',
+  'RODRIGO GARBUIO': 'Rodrigo Garbuio',
   'ROXIE': 'ROXIE',
   'RUKU': 'RUKU',
   'SAFI': 'SAFI',
@@ -2034,6 +2048,7 @@ var PERFILES_MAP = {
   'SIKO': 'SIKO',
   'SIO': 'SIO',
   'SIO B2B PERTY': 'SIO',
+  'SPACEGIRLS': 'ISHIT',
   'SOULDER': 'SOULDER',
   'SOUNDSIX': 'SOUNDSIX',
   'SOUND SIX': 'SOUNDSIX',
@@ -2064,7 +2079,7 @@ function getPerfilFilename(artista){
   // buscar sin B2B
   var base = artista.split(' B2B ')[0].trim().toUpperCase();
   if(PERFILES_MAP[base]) return PERFILES_MAP[base];
-  return artista; // fallback
+  return artista.toUpperCase(); // fallback: archivos en GitHub son UPPERCASE
 }
 const IMG_BASE = 'https://raw.githubusercontent.com/archivosecretodellab-bot/archivosecretodellab/main';
 const GCAL_CALENDAR_ID = 'archivo.secreto.dellab@gmail.com';
