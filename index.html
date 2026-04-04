@@ -3696,7 +3696,7 @@ function spawnCard(){
     return sn === _djUpper || sn === _aliasUpper || _normCard(sn) === _djNorm || sn.indexOf(_djUpper) > -1 || _djUpper.indexOf(sn) > -1;
   })[0];
   var coverSlug = smMatch ? smSlug(smMatch.artista) : smSlug(dj.artist);
-  var coverUrl = smMatch ? (IMG_BASE + '/img/perfiles/' + smMatch.artista + '.jpg') : (IMG_BASE + '/img/perfiles/' + dj.artist.toUpperCase() + '.jpg');
+  var coverUrl = imgURL('img/perfiles', getPerfilFilename(smMatch ? smMatch.artista : dj.artist));
   // Intentar localStorage también
   var storedCover = null;
   if(smMatch){ try{ storedCover=localStorage.getItem('thumb_'+smMatch.id); }catch(e){} }
@@ -3708,21 +3708,37 @@ function spawnCard(){
   var _hpfoto = _photoCache[dj.i] || photos[dj.i] || null;
   if(!_hpfoto && smMatch) _hpfoto = _photoCache[smMatch.id] || photos[smMatch.id] || null;
   if(!_hpfoto && dj.fotoPerfil) _hpfoto = dj.fotoPerfil;
-  // Foto de perfil desde GitHub como fallback final
-  var _githubFoto = imgURL('img/perfiles', getPerfilFilename(dj.artist));
+  // Foto de perfil desde GitHub como fallback final — prueba múltiples variaciones de case
+  var _artistName = dj.artist;
+  var _mapped = getPerfilFilename(_artistName);
+  var _upper = _artistName.toUpperCase();
+  var _perfilUrls = [];
+  var _pSeen = {};
+  [_mapped, _artistName, _upper].forEach(function(n){
+    var u = imgURL('img/perfiles', n);
+    if(!_pSeen[u]){ _pSeen[u]=1; _perfilUrls.push(u); }
+  });
   if(!soon){
     if(_hpfoto){
       el.style.backgroundImage = 'url('+_hpfoto+')';
     } else {
-      // Intentar cargar desde GitHub silenciosamente
-      var testImg = new Image();
-      testImg.onload = function(){
-        el.style.backgroundImage = 'url('+_githubFoto+')';
-        el.style.backgroundSize = 'cover';
-        el.style.backgroundPosition = 'center top';
-        el.classList.add('fc-has-photo');
-      };
-      testImg.src = _githubFoto;
+      // Intentar cargar desde GitHub silenciosamente con fallback de case
+      (function(urls, target){
+        var i = 0;
+        function tryLoad(){
+          if(i >= urls.length) return;
+          var testImg = new Image();
+          testImg.onload = function(){
+            target.style.backgroundImage = 'url('+urls[i]+')';
+            target.style.backgroundSize = 'cover';
+            target.style.backgroundPosition = 'center top';
+            target.classList.add('fc-has-photo');
+          };
+          testImg.onerror = function(){ i++; tryLoad(); };
+          testImg.src = urls[i];
+        }
+        tryLoad();
+      })(_perfilUrls, el);
     }
     if(_hpfoto){
       el.style.backgroundSize = 'cover';
@@ -5515,14 +5531,26 @@ function smSlug(artista){
 }
 
 // ─── CARGA DE FOTOS LOCALES ──────────────────────────────────────────────────
-// Busca img/perfiles/[nombre].jpg en GitHub (nombre exacto del Sheet)
+// Busca img/perfiles/[nombre].jpg en GitHub — prueba múltiples variaciones de case
 function smLoadPhotos(artista, cb){
-  // Carga img/perfiles/[nombre exacto].jpg desde GitHub
-  var url = IMG_BASE + '/img/perfiles/' + artista + '.jpg';
-  var img = new Image();
-  img.onload  = function(){ if(cb) cb([{n:1, url:url}]); };
-  img.onerror = function(){ if(cb) cb([]); };
-  img.src = url;
+  var mapped = getPerfilFilename(artista);
+  var upper = artista.toUpperCase();
+  var urls = [];
+  var seen = {};
+  [mapped, artista, upper].forEach(function(n){
+    var u = imgURL('img/perfiles', n);
+    if(!seen[u]){ seen[u]=1; urls.push(u); }
+  });
+  var idx = 0;
+  function tryNext(){
+    if(idx >= urls.length){ if(cb) cb([]); return; }
+    var url = urls[idx++];
+    var img = new Image();
+    img.onload  = function(){ if(cb) cb([{n:1, url:url}]); };
+    img.onerror = tryNext;
+    img.src = url;
+  }
+  tryNext();
 }
 
 // ─── CARD DEL SET ───────────────────────────────────────────────────────────
@@ -7089,10 +7117,32 @@ function buildPhotoHTML(id, dj){
     photos[id] = stored; _photoCache[id] = stored;
     return '<img src="' + stored + '" alt="' + dj.artist + '" style="' + imgStyle + '">';
   }
-  // 3. GitHub raw
-  var perfilFilename = getPerfilFilename(dj.artist);
-  var perfilUrl = imgURL('img/perfiles', perfilFilename);
-  return '<img src="' + perfilUrl + '" alt="' + dj.artist + '" loading="lazy" decoding="async" style="' + imgStyle + '" onerror="this.style.display=&quot;none&quot;">';
+  // 3. GitHub raw — intenta múltiples variaciones del nombre (case-insensitive)
+  var mapped = getPerfilFilename(dj.artist);
+  var original = dj.artist;
+  var upper = dj.artist.toUpperCase();
+  var urls = [];
+  var seen = {};
+  [mapped, original, upper].forEach(function(n){
+    var u = imgURL('img/perfiles', n);
+    if(!seen[u]){ seen[u]=1; urls.push(u); }
+  });
+  // data-fallbacks guarda las URLs alternativas separadas por |
+  var fallbacks = urls.slice(1).join('|');
+  return '<img src="' + urls[0] + '" alt="' + dj.artist + '" loading="lazy" decoding="async" '
+    + 'style="' + imgStyle + '" '
+    + (fallbacks ? 'data-fallbacks="' + fallbacks.replace(/"/g, '&quot;') + '" ' : '')
+    + 'onerror="perfilImgFallback(this)">';
+}
+function perfilImgFallback(el){
+  var fb = el.getAttribute('data-fallbacks');
+  if(fb){
+    var urls = fb.split('|');
+    el.setAttribute('data-fallbacks', urls.slice(1).join('|'));
+    el.src = urls[0];
+  } else {
+    el.style.display = 'none';
+  }
 }
 
 
