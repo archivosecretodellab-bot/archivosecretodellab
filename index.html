@@ -1365,22 +1365,20 @@ input[type=file]{display:none}
             </div>
           </div>
 
-          <!-- Redes -->
-          <div class="redes-grid">
-            <a class="red-link" href="https://www.instagram.com/archivosecretodellab" target="_blank">
-              <svg width="22" height="22" fill="none" stroke="rgba(240,236,226,.6)" stroke-width="1.5" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="rgba(240,236,226,.6)" stroke="none"/></svg>
-              <div>
-                <div style="font-family:'Space Mono',monospace;font-size:16px;font-weight:700;color:#fff" id="ig-followers">—</div>
-                <div style="font-size:9px;letter-spacing:.2em;color:var(--wd);text-transform:uppercase;margin-top:2px">Seguidores en Instagram</div>
-              </div>
-            </a>
-            <a class="red-link" href="https://www.youtube.com/@ArchivoSecretodelLab/videos" target="_blank">
-              <svg width="22" height="22" fill="none" stroke="rgba(240,236,226,.6)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M22.54 6.42a2.78 2.78 0 00-1.95-1.97C18.88 4 12 4 12 4s-6.88 0-8.59.45A2.78 2.78 0 001.46 6.42 29 29 0 001 12a29 29 0 00.46 5.58A2.78 2.78 0 003.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.45a2.78 2.78 0 001.95-1.97A29 29 0 0023 12a29 29 0 00-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="rgba(240,236,226,.5)" stroke="none"/></svg>
-              <div>
-                <div style="font-family:'Space Mono',monospace;font-size:16px;font-weight:700;color:#fff" id="yt-videos">—</div>
-                <div style="font-size:9px;letter-spacing:.2em;color:var(--wd);text-transform:uppercase;margin-top:2px">Videos en YouTube</div>
-              </div>
-            </a>
+          <!-- Stats Instagram — actualizado manualmente (última actualización: 24/05/2026) -->
+          <div class="arc-stats" style="margin-top:2px">
+            <div class="arc-stat">
+              <div class="arc-stat-n" id="ig-stat-followers">1.391</div>
+              <div class="arc-stat-l">Seguidores Instagram</div>
+            </div>
+            <div class="arc-stat">
+              <div class="arc-stat-n" id="ig-stat-views">369.970</div>
+              <div class="arc-stat-l">Vistas Instagram (90d)</div>
+            </div>
+            <div class="arc-stat">
+              <div class="arc-stat-n" id="ig-stat-posts">306</div>
+              <div class="arc-stat-l">Posts publicados</div>
+            </div>
           </div>
 
           <div class="enter-row">
@@ -2444,12 +2442,15 @@ async function loadTotalFromSupabase(){
     if(res.error) throw res.error;
     var n = res.count;
     if(!n || n < 1) return; // fallback al valor local
-    try{ localStorage.setItem('asdl_last_count', n); }catch(e){}
-    // Actualizar SM en memoria para consistencia
+    // El número de SM (hardcodeado) es la fuente de verdad cuando es mayor que Supabase.
+    // Esto evita que el conteo BAJE si Supabase está desactualizado.
+    var smCount = (typeof SM !== 'undefined') ? SM.filter(function(s){return s.estado==='Publicado';}).length : 0;
+    var finalCount = Math.max(n, smCount);
+    try{ localStorage.setItem('asdl_last_count', finalCount); }catch(e){}
     if(_counterOverride === null){
-      // Solo actualizar si no hay override manual
-      TOTAL = n;
+      TOTAL = finalCount;
     }
+    console.log('[ASDL] Contador: SM=' + smCount + ' · Supabase=' + n + ' · Usado=' + finalCount);
     updateAllCounters();
     // Actualizar arc-stat-sets (artistas únicos publicados)
     var arcEl = document.getElementById('arc-stat-sets');
@@ -2989,10 +2990,8 @@ function navTo(pg, el){
   document.getElementById('content').scrollTop = 0;
 }
 async function loadSocialStats(){
-  const igEl = document.getElementById('ig-followers');
-  const ytEl = document.getElementById('yt-videos');
-  if(igEl) igEl.textContent = '1.270 seguidores';
-  if(ytEl) ytEl.textContent = '132 videos · 302 suscriptores';
+  // Instagram stats están hardcodeados (actualizar manualmente en el HTML, sección stats).
+  // YouTube stats se cargan automáticamente vía fetchYouTubeStats() — no hace falta nada acá.
 }
 
 function goHome(){
