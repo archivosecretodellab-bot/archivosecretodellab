@@ -146,6 +146,11 @@
   --el:#5533ff; --soon:#08001a; --soon-br:rgba(85,51,255,.5);
   --w:#f0ece2; --wd:rgba(255,255,255,.76); --wf:rgba(240,236,226,.09);
   --wm:rgba(240,236,226,.18); --green:#00c967; --red:#ff3b3b;
+  /* Paleta categorías (basada en la tuya) */
+  --c-jam:#0809E7;       /* Ultrasonic Blue - DJ JAM */
+  --c-common:#FFFAE7;    /* Ivory Mist - Common Liveset */
+  --c-custom:#F8502A;    /* Blazing Flame - Custom Liveset */
+  --c-publico:#00C2A8;   /* Teal - Archivo Público (NUEVO, podés cambiarlo) */
   --TH:66px; --NH:44px; --TK:36px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
@@ -156,8 +161,8 @@ body::before{
   position:fixed;
   inset:-20px;
   background:url('https://raw.githubusercontent.com/archivosecretodellab-bot/archivosecretodellab/main/img/bg-hero.png') center center / cover no-repeat;
-  filter:blur(14px) brightness(.32) saturate(1.3) contrast(1.05);
-  transform:scale(1.08);
+  filter:blur(5px) brightness(.55) saturate(1.25) contrast(1.08);
+  transform:scale(1.04);
   z-index:0;
   pointer-events:none;
   opacity:0;
@@ -167,7 +172,7 @@ body::after{
   content:'';
   position:fixed;
   inset:0;
-  background:radial-gradient(ellipse at center, rgba(6,6,6,.55) 0%, rgba(6,6,6,.85) 70%, rgba(6,6,6,.95) 100%);
+  background:radial-gradient(ellipse at center, rgba(6,6,6,.38) 0%, rgba(6,6,6,.7) 60%, rgba(6,6,6,.88) 100%);
   z-index:0;
   pointer-events:none;
   opacity:0;
@@ -722,6 +727,108 @@ input[type=file]{display:none}
 }
 @keyframes gcFU{from{opacity:0;transform:translateY(32px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
 @keyframes gcFU-soon{from{opacity:0;transform:translateY(32px) scale(.96)}to{opacity:.45;transform:translateY(0) scale(1)}}
+
+/* ── Barra de color por categoría (3px en el top de cada card) ── */
+.gc-set{position:relative}
+.gc-set::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  z-index:5;background:var(--c-jam);
+  transition:height .35s cubic-bezier(.16,1,.3,1),box-shadow .35s ease;
+}
+.gc-set.cat-common::before{background:var(--c-common)}
+.gc-set.cat-custom::before{background:var(--c-custom)}
+.gc-set.cat-publico::before{background:var(--c-publico)}
+.gc-set:hover::before{height:5px;box-shadow:0 0 18px currentColor}
+.gc-set.cat-jam:hover::before{box-shadow:0 0 18px rgba(8,9,231,.7)}
+.gc-set.cat-common:hover::before{box-shadow:0 0 18px rgba(255,250,231,.5)}
+.gc-set.cat-custom:hover::before{box-shadow:0 0 18px rgba(248,80,42,.7)}
+.gc-set.cat-publico:hover::before{box-shadow:0 0 18px rgba(0,194,168,.7)}
+
+/* Brillo del border y sombra del card por categoría */
+.gc-set.cat-jam:hover{border-color:var(--c-jam);box-shadow:0 14px 50px rgba(8,9,231,.32)}
+.gc-set.cat-common:hover{border-color:var(--c-common);box-shadow:0 14px 50px rgba(255,250,231,.14)}
+.gc-set.cat-custom:hover{border-color:var(--c-custom);box-shadow:0 14px 50px rgba(248,80,42,.28)}
+.gc-set.cat-publico:hover{border-color:var(--c-publico);box-shadow:0 14px 50px rgba(0,194,168,.24)}
+
+/* ── FICHA HOVER OVERLAY (estilo E. CLEO, centrado, sin huérfanos) ── */
+.gc-set-ficha{
+  position:absolute;inset:0;z-index:6;
+  background:rgba(6,6,6,.92);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;visibility:hidden;
+  transition:opacity .35s cubic-bezier(.16,1,.3,1),visibility 0s .35s;
+  padding:24px;
+}
+.gc-set:hover .gc-set-ficha{
+  opacity:1;visibility:visible;
+  transition:opacity .35s cubic-bezier(.16,1,.3,1),visibility 0s 0s;
+}
+.ficha-inner{
+  width:100%;max-width:360px;
+  text-align:center;
+  font-family:'IBM Plex Mono',monospace;
+}
+.ficha-name{
+  font-family:'Space Mono',monospace;font-weight:700;
+  font-size:18px;letter-spacing:.04em;color:var(--w);
+  text-transform:uppercase;margin-bottom:8px;
+}
+.ficha-line{
+  width:60px;height:1px;background:currentColor;margin:0 auto 22px;
+}
+.gc-set.cat-jam .ficha-line{background:var(--c-jam)}
+.gc-set.cat-common .ficha-line{background:var(--c-common)}
+.gc-set.cat-custom .ficha-line{background:var(--c-custom)}
+.gc-set.cat-publico .ficha-line{background:var(--c-publico)}
+.ficha-data{
+  display:flex;flex-direction:column;gap:9px;
+  margin-bottom:24px;
+}
+.ficha-row{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:14px;align-items:baseline;
+}
+.ficha-row .k{
+  font-size:8.5px;letter-spacing:.24em;
+  color:rgba(240,236,226,.42);text-transform:uppercase;
+  text-align:right;
+}
+.ficha-row .v{
+  font-family:'Space Mono',monospace;font-weight:700;
+  font-size:11px;letter-spacing:.05em;color:var(--w);
+  text-align:left;
+}
+.ficha-actions{
+  display:flex;flex-direction:column;gap:6px;margin-top:8px;
+}
+.ficha-btn{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:9px;letter-spacing:.26em;font-weight:700;
+  text-transform:uppercase;
+  padding:11px 14px;
+  background:transparent;color:var(--w);
+  border:1px solid rgba(240,236,226,.22);
+  cursor:pointer;
+  transition:all .3s cubic-bezier(.16,1,.3,1);
+}
+.ficha-btn:hover{
+  background:var(--w);color:var(--k);
+  border-color:var(--w);
+  letter-spacing:.32em;
+}
+.ficha-btn-primary{
+  background:var(--c-jam);border-color:var(--c-jam);
+}
+.gc-set.cat-common .ficha-btn-primary{background:var(--c-common);border-color:var(--c-common);color:var(--k)}
+.gc-set.cat-custom .ficha-btn-primary{background:var(--c-custom);border-color:var(--c-custom)}
+.gc-set.cat-publico .ficha-btn-primary{background:var(--c-publico);border-color:var(--c-publico);color:var(--k)}
+.ficha-btn-primary:hover{background:var(--w);color:var(--k);border-color:var(--w)}
+
+/* Mobile: ficha SIEMPRE visible (sin hover en touch) */
+@media (hover:none) and (pointer:coarse){
+  .gc-set-ficha{display:none}
+}
 /* Blur bg desactivado — la imagen ya está en el fondo del card */
 .gc-blur-bg{ display:none; }
 /* El thumb es invisible — la imagen se aplica como bg del card via JS */
@@ -3816,9 +3923,6 @@ function spawnCard(){
   })[0];
   var coverSlug = smMatch ? smSlug(smMatch.artista) : smSlug(dj.artist);
   var coverUrl = imgURL('img/perfiles', getPerfilFilename(smMatch ? smMatch.artista : dj.artist));
-  // Intentar localStorage también
-  var storedCover = null;
-  if(smMatch){ try{ storedCover=localStorage.getItem('thumb_'+smMatch.id); }catch(e){} }
 
   el.className = 'fc fc-glass';
   if(soon) el.classList.add('fc-soon-glass');
@@ -5713,11 +5817,18 @@ function smBuildCard(s, delay){
 
   // Card container — Pendiente: compacto sin imagen
   var isPendCard = s.estado === 'Pendiente';
+  // Asignar clase de categoría según tipo
+  var catClass = 'cat-jam';
+  if(s.tipo === 'COMMON') catClass = 'cat-common';
+  else if(s.tipo === 'CUSTOM') catClass = 'cat-custom';
+  else if(s.tipo === 'ARCHIVO_PUBLICO') catClass = 'cat-publico';
   var card = document.createElement('div');
-  card.className = 'gc-set no-cover' + (isPendCard ? ' pend-card' : '');
+  card.className = 'gc-set no-cover ' + catClass + (isPendCard ? ' pend-card' : '');
   card.style.animationDelay = delay + 's';
   card.dataset.smid = s.id;
-  card.addEventListener('click', function(){
+  card.addEventListener('click', function(e){
+    // No abrir ficha si el click vino de un botón de la ficha-overlay
+    if(e.target.closest('.ficha-btn')) return;
     fichaFrom = 'djs';
     openFicha(this.dataset.smid);
   });
@@ -5793,6 +5904,57 @@ function smBuildCard(s, delay){
     + eH + mH
     + '<div class="gc-set-fecha">' + smDate(s.fecha) + '</div>';
   card.appendChild(body);
+
+  // ── FICHA HOVER OVERLAY (estilo E. CLEO) ──
+  var djMatch = (typeof DJS !== 'undefined') ? DJS.find(function(d){
+    var a = (d.artist || '').toUpperCase();
+    var al = (d.alias || '').toUpperCase();
+    var sn = artNombre.toUpperCase();
+    return a === sn || al === sn;
+  }) : null;
+  var genre = djMatch && djMatch.genre ? djMatch.genre : '';
+  var dateStr = '';
+  if(s.fecha){
+    var dp = s.fecha.split('-');
+    if(dp.length === 3) dateStr = dp[2] + ' . ' + dp[1] + ' . ' + dp[0];
+  }
+  var ficha = document.createElement('div');
+  ficha.className = 'gc-set-ficha';
+  var rows = '';
+  rows += '<div class="ficha-row"><span class="k">ID</span><span class="v">' + s.id + '</span></div>';
+  rows += '<div class="ficha-row"><span class="k">TYPE</span><span class="v">' + (s.categoria || '') + '</span></div>';
+  if(genre) rows += '<div class="ficha-row"><span class="k">G&Eacute;NERO</span><span class="v">' + genre + '</span></div>';
+  if(dateStr) rows += '<div class="ficha-row"><span class="k">FECHA</span><span class="v">' + dateStr + '</span></div>';
+  if(hasMulti) rows += '<div class="ficha-row"><span class="k">SET</span><span class="v">' + s.set_num + ' / ' + sibs.length + '</span></div>';
+  var ytBtn = s.url_yt
+    ? '<button class="ficha-btn ficha-btn-primary" data-action="yt" data-yt="' + s.url_yt + '">VER EL SET</button>'
+    : '';
+  ficha.innerHTML =
+      '<div class="ficha-inner">'
+    +   '<div class="ficha-name">' + _displayName + '</div>'
+    +   '<div class="ficha-line"></div>'
+    +   '<div class="ficha-data">' + rows + '</div>'
+    +   '<div class="ficha-actions">'
+    +     '<button class="ficha-btn" data-action="dj">CONOC&Eacute; AL ARTISTA</button>'
+    +     ytBtn
+    +   '</div>'
+    + '</div>';
+  card.appendChild(ficha);
+  // Listeners de los botones
+  ficha.querySelectorAll('.ficha-btn').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      var action = btn.dataset.action;
+      if(action === 'dj'){
+        fichaFrom = 'djs';
+        openFicha(card.dataset.smid);
+      } else if(action === 'yt'){
+        var url = btn.dataset.yt;
+        if(url) window.open(url, '_blank', 'noopener');
+      }
+    });
+  });
+
   return card;
 }
 
@@ -7267,9 +7429,9 @@ function buildPhotoHTML(id, dj){
   if(cached){
     return '<img src="' + cached + '" alt="' + dj.artist + '" style="' + imgStyle + '">';
   }
-  // 2. localStorage fallback (fotos pequeñas que sí entraron)
+  // 2. localStorage fallback SOLO desde perfil_ (NUNCA desde thumb_ porque eso son covers de sets)
   var stored = null;
-  try{ stored = localStorage.getItem('perfil_'+id) || localStorage.getItem('thumb_'+id); }catch(e){}
+  try{ stored = localStorage.getItem('perfil_'+id); }catch(e){}
   if(stored){
     photos[id] = stored; _photoCache[id] = stored;
     return '<img src="' + stored + '" alt="' + dj.artist + '" style="' + imgStyle + '">';
@@ -7358,12 +7520,12 @@ function savePhoto(id, dataUrl){
   });
 }
 
-// Obtener foto (devuelve Promise<string|null>)
+// Obtener foto de PERFIL (NUNCA mezclar con thumb_ porque eso son covers de sets)
 function getPhoto(id){
   return idbGet('perfil_'+id).then(function(val){
     if(val) return val;
-    // Fallback localStorage
-    try{ return localStorage.getItem('perfil_'+id) || localStorage.getItem('thumb_'+id) || null; }
+    // Fallback localStorage SOLO desde perfil_
+    try{ return localStorage.getItem('perfil_'+id) || null; }
     catch(e){ return null; }
   });
 }
