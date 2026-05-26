@@ -161,8 +161,8 @@ body::before{
   position:fixed;
   inset:-20px;
   background:url('https://raw.githubusercontent.com/archivosecretodellab-bot/archivosecretodellab/main/img/bg-hero.png') center center / cover no-repeat;
-  filter:blur(5px) brightness(.55) saturate(1.25) contrast(1.08);
-  transform:scale(1.04);
+  filter:blur(2px) brightness(.85) saturate(1.3) contrast(1.1);
+  transform:scale(1.02);
   z-index:0;
   pointer-events:none;
   opacity:0;
@@ -172,7 +172,7 @@ body::after{
   content:'';
   position:fixed;
   inset:0;
-  background:radial-gradient(ellipse at center, rgba(6,6,6,.38) 0%, rgba(6,6,6,.7) 60%, rgba(6,6,6,.88) 100%);
+  background:radial-gradient(ellipse at center, rgba(6,6,6,.15) 0%, rgba(6,6,6,.45) 55%, rgba(6,6,6,.75) 100%);
   z-index:0;
   pointer-events:none;
   opacity:0;
@@ -368,9 +368,12 @@ background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0
 .pgrid{
   padding:24px 40px 44px;
   display:grid;
-  grid-template-columns:1fr 1fr;
+  grid-template-columns:repeat(3,1fr);
   gap:2px;
   align-content:start;
+}
+@media(max-width:1100px){
+  .pgrid{grid-template-columns:1fr 1fr}
 }
 @media(max-width:700px){
   .pgrid{padding:12px 8px 40px;grid-template-columns:1fr}
@@ -728,27 +731,12 @@ input[type=file]{display:none}
 @keyframes gcFU{from{opacity:0;transform:translateY(32px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
 @keyframes gcFU-soon{from{opacity:0;transform:translateY(32px) scale(.96)}to{opacity:.45;transform:translateY(0) scale(1)}}
 
-/* ── Barra de color por categoría (3px en el top de cada card) ── */
-.gc-set{position:relative}
-.gc-set::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:3px;
-  z-index:5;background:var(--c-jam);
-  transition:height .35s cubic-bezier(.16,1,.3,1),box-shadow .35s ease;
-}
-.gc-set.cat-common::before{background:var(--c-common)}
-.gc-set.cat-custom::before{background:var(--c-custom)}
-.gc-set.cat-publico::before{background:var(--c-publico)}
-.gc-set:hover::before{height:5px;box-shadow:0 0 18px currentColor}
-.gc-set.cat-jam:hover::before{box-shadow:0 0 18px rgba(8,9,231,.7)}
-.gc-set.cat-common:hover::before{box-shadow:0 0 18px rgba(255,250,231,.5)}
-.gc-set.cat-custom:hover::before{box-shadow:0 0 18px rgba(248,80,42,.7)}
-.gc-set.cat-publico:hover::before{box-shadow:0 0 18px rgba(0,194,168,.7)}
+/* Scroll-triggered reveal (las cards aparecen suavemente al entrar al viewport) */
+.gc-set.reveal-pending{opacity:0;transform:translateY(40px);animation:none !important}
+.gc-set.reveal-in{opacity:1;transform:translateY(0);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
 
-/* Brillo del border y sombra del card por categoría */
-.gc-set.cat-jam:hover{border-color:var(--c-jam);box-shadow:0 14px 50px rgba(8,9,231,.32)}
-.gc-set.cat-common:hover{border-color:var(--c-common);box-shadow:0 14px 50px rgba(255,250,231,.14)}
-.gc-set.cat-custom:hover{border-color:var(--c-custom);box-shadow:0 14px 50px rgba(248,80,42,.28)}
-.gc-set.cat-publico:hover{border-color:var(--c-publico);box-shadow:0 14px 50px rgba(0,194,168,.24)}
+/* (Color por categoría removido por decisión de diseño 2026-05-25) */
+.gc-set{position:relative}
 
 /* ── FICHA HOVER OVERLAY (estilo E. CLEO, centrado, sin huérfanos) ── */
 .gc-set-ficha{
@@ -775,12 +763,8 @@ input[type=file]{display:none}
   text-transform:uppercase;margin-bottom:8px;
 }
 .ficha-line{
-  width:60px;height:1px;background:currentColor;margin:0 auto 22px;
+  width:60px;height:1px;background:rgba(240,236,226,.35);margin:0 auto 22px;
 }
-.gc-set.cat-jam .ficha-line{background:var(--c-jam)}
-.gc-set.cat-common .ficha-line{background:var(--c-common)}
-.gc-set.cat-custom .ficha-line{background:var(--c-custom)}
-.gc-set.cat-publico .ficha-line{background:var(--c-publico)}
 .ficha-data{
   display:flex;flex-direction:column;gap:9px;
   margin-bottom:24px;
@@ -804,26 +788,29 @@ input[type=file]{display:none}
 }
 .ficha-btn{
   font-family:'IBM Plex Mono',monospace;
-  font-size:9px;letter-spacing:.26em;font-weight:700;
+  font-size:9px;letter-spacing:.26em;font-weight:400;
   text-transform:uppercase;
-  padding:11px 14px;
-  background:transparent;color:var(--w);
-  border:1px solid rgba(240,236,226,.22);
+  padding:10px 14px;
+  background:transparent;
+  color:rgba(240,236,226,.78);
+  border:1px solid rgba(240,236,226,.18);
   cursor:pointer;
-  transition:all .3s cubic-bezier(.16,1,.3,1);
+  transition:color .35s cubic-bezier(.16,1,.3,1),border-color .35s cubic-bezier(.16,1,.3,1),background-color .35s cubic-bezier(.16,1,.3,1);
 }
 .ficha-btn:hover{
-  background:var(--w);color:var(--k);
-  border-color:var(--w);
-  letter-spacing:.32em;
+  color:var(--w);
+  border-color:rgba(240,236,226,.45);
+  background:rgba(240,236,226,.04);
 }
 .ficha-btn-primary{
-  background:var(--c-jam);border-color:var(--c-jam);
+  color:var(--w);
+  border-color:rgba(240,236,226,.32);
 }
-.gc-set.cat-common .ficha-btn-primary{background:var(--c-common);border-color:var(--c-common);color:var(--k)}
-.gc-set.cat-custom .ficha-btn-primary{background:var(--c-custom);border-color:var(--c-custom)}
-.gc-set.cat-publico .ficha-btn-primary{background:var(--c-publico);border-color:var(--c-publico);color:var(--k)}
-.ficha-btn-primary:hover{background:var(--w);color:var(--k);border-color:var(--w)}
+.ficha-btn-primary:hover{
+  color:var(--w);
+  border-color:rgba(240,236,226,.62);
+  background:rgba(240,236,226,.06);
+}
 
 /* Mobile: ficha SIEMPRE visible (sin hover en touch) */
 @media (hover:none) and (pointer:coarse){
@@ -910,15 +897,24 @@ input[type=file]{display:none}
 .gc-set-fecha{font-size:10px;letter-spacing:1px;color:rgba(240,236,226,.3)}
 /* Jerarquía visual: separador estado + fecha */
 .gc-set-status-date{display:flex;justify-content:space-between;font-size:0.75rem;opacity:.8;margin-top:5px;border-top:1px solid rgba(255,255,255,.1);padding-top:5px}
-/* Grilla 2 cols desktop, 1 col mobile */
+/* Grilla 3 cols desktop, 2 cols tablet, 1 col mobile */
 .jgrid-sets{
   display:grid;
-  grid-template-columns:1fr 1fr;
+  grid-template-columns:repeat(3,1fr);
   gap:2px;
   background:#111;
   margin-top:8px;
 }
+@media(max-width:1100px){.jgrid-sets{grid-template-columns:1fr 1fr}}
 @media(max-width:700px){.jgrid-sets{grid-template-columns:1fr}}
+/* También aplicar a .jgrid (Archivo Público) */
+#grid-public.jgrid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:2px;
+}
+@media(max-width:1100px){#grid-public.jgrid{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){#grid-public.jgrid{grid-template-columns:1fr}}
 .slink{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;background:#080808;border:1px solid #1a1a1a;color:#ece4e2;text-decoration:none;font-size:10px;letter-spacing:.1em;margin:3px 3px 3px 0;transition:border-color .15s}
 .slink:hover{border-color:rgba(27,0,230,.5)}
 
@@ -1660,10 +1656,6 @@ input[type=file]{display:none}
       <!-- SUB: PUBLIC LIVESETS -->
       <div id="sub-public" class="subpg">
         <div class="jsec">
-          <div class="jh" style="margin-bottom:10px">
-            <div class="jtit" style="font-size:13px;letter-spacing:.1em">Don Gato Edition</div>
-            <div class="jdate">Public Liveset · Exteriores · Buenos Aires</div>
-          </div>
           <div class="jgrid" id="grid-public"></div>
         </div>
       </div>
@@ -2469,6 +2461,22 @@ Archivo Secreto del Lab 👁️‍🗨️`;
 // ═══════════════════════════════════════════════
 // SUPABASE CONFIG
 // ═══════════════════════════════════════════════
+// ── IntersectionObserver global para revelar cards al scrollear ──
+// Las cards entran con .reveal-pending (invisibles), y al entrar al viewport
+// se les agrega .reveal-in para que aparezcan suavemente. Stagger sutil de 40ms
+// entre cards que entran al viewport al mismo tiempo.
+window._revealObs = new IntersectionObserver(function(entries){
+  var visible = entries.filter(function(e){ return e.isIntersecting; });
+  visible.forEach(function(entry, idx){
+    var el = entry.target;
+    setTimeout(function(){
+      el.classList.remove('reveal-pending');
+      el.classList.add('reveal-in');
+    }, idx * 40);
+    window._revealObs.unobserve(el);
+  });
+}, { rootMargin: '0px 0px -60px 0px', threshold: 0.05 });
+
 const SUPA_URL = 'https://mpitudvbhvymedzkxwvp.supabase.co';
 const SUPA_KEY = 'sb_publishable_77y9OkI7HG3O5nCx3agPdQ_FnpGKQZi';
 const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
@@ -5823,9 +5831,12 @@ function smBuildCard(s, delay){
   else if(s.tipo === 'CUSTOM') catClass = 'cat-custom';
   else if(s.tipo === 'ARCHIVO_PUBLICO') catClass = 'cat-publico';
   var card = document.createElement('div');
-  card.className = 'gc-set no-cover ' + catClass + (isPendCard ? ' pend-card' : '');
-  card.style.animationDelay = delay + 's';
+  card.className = 'gc-set no-cover reveal-pending ' + catClass + (isPendCard ? ' pend-card' : '');
   card.dataset.smid = s.id;
+  // Observador para revelar al hacer scroll (con stagger sutil por índice global)
+  if(window._revealObs){
+    window._revealObs.observe(card);
+  }
   card.addEventListener('click', function(e){
     // No abrir ficha si el click vino de un botón de la ficha-overlay
     if(e.target.closest('.ficha-btn')) return;
