@@ -738,13 +738,16 @@ input[type=file]{display:none}
 /* (Color por categoría removido por decisión de diseño 2026-05-25) */
 .gc-set{position:relative}
 
-/* ── HOVER: borde azul glow + imagen blurry ── */
+/* ── HOVER: scale + borde azul glow más fuerte + imagen blurry ── */
 .gc-set{
-  transition:border-color .5s cubic-bezier(.16,1,.3,1),box-shadow .5s cubic-bezier(.16,1,.3,1);
+  transition:border-color .5s cubic-bezier(.16,1,.3,1),box-shadow .5s cubic-bezier(.16,1,.3,1),transform .5s cubic-bezier(.16,1,.3,1);
+  will-change:transform;
 }
 .gc-set:hover{
   border-color:var(--b);
-  box-shadow:0 0 0 1px var(--b),0 0 22px rgba(27,0,230,.55),0 8px 32px rgba(27,0,230,.28);
+  box-shadow:0 0 0 1px var(--b),0 0 30px rgba(27,0,230,.75),0 16px 52px rgba(27,0,230,.45);
+  transform:scale(1.05);
+  z-index:10;
 }
 .gc-set .gc-set-img{
   transition:filter .55s cubic-bezier(.16,1,.3,1);
