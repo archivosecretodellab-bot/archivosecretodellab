@@ -150,6 +150,34 @@
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:100%;height:100%;background:var(--k);color:var(--w);font-family:'IBM Plex Mono',monospace;overflow:hidden;font-size:14px}
+/* Terminal cursor personalizado (parpadeante) — sólo desktop con mouse */
+@media (hover:hover) and (pointer:fine){
+  html,body,a,button,.snt,.nt,.fc,.gc,.logo,.admin-lock,.fb,.chip,.tdbtn,.cta{cursor:none}
+  input,textarea,select,[contenteditable="true"]{cursor:text}
+}
+#term-cursor{
+  position:fixed;top:0;left:0;width:4px;height:18px;
+  background:var(--b);
+  pointer-events:none;z-index:99999;
+  transform:translate(-2px,-9px);
+  box-shadow:0 0 8px rgba(27,0,230,.6);
+  animation:termBlink 1s steps(1) infinite;
+  display:none;
+  mix-blend-mode:exclusion;
+}
+#term-cursor.on{display:block}
+#term-cursor.hover{
+  width:14px;height:14px;
+  background:var(--w);
+  transform:translate(-7px,-7px);
+  animation:none;
+  transition:width .15s ease,height .15s ease,background-color .15s ease;
+  box-shadow:0 0 12px rgba(240,236,226,.5);
+}
+@keyframes termBlink{0%,49%{opacity:1}50%,100%{opacity:0}}
+@media (hover:none) or (pointer:coarse){
+  #term-cursor{display:none !important}
+}
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:var(--b)}
 a{color:inherit;text-decoration:none}
 button{cursor:pointer;background:none;border:none;font-family:'IBM Plex Mono',monospace;color:var(--w)}
@@ -176,16 +204,23 @@ animation:ns .18s steps(1) infinite}
 #scan{position:fixed;inset:0;pointer-events:none;z-index:9050;opacity:.025;
 background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,1) 2px,rgba(0,0,0,1) 4px)}
 
-/* BOOT */
-#boot{position:fixed;inset:0;background:var(--k);z-index:9999;display:flex;flex-direction:column;justify-content:flex-end;padding:56px;pointer-events:none;animation:bootOut .4s 2.3s forwards}
+/* BOOT cinematográfico */
+#boot{position:fixed;inset:0;background:var(--k);z-index:9999;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:0 8vw;pointer-events:none;animation:bootOut .6s 2.7s cubic-bezier(.16,1,.3,1) forwards}
 @keyframes bootOut{to{opacity:0;visibility:hidden}}
-.bl{font-size:12px;letter-spacing:.13em;color:rgba(240,236,226,.3);line-height:2.4;opacity:0}
-.bl.hi{color:var(--b)}
-.bl:nth-child(1){animation:bsh .04s .1s forwards}
-.bl:nth-child(2){animation:bsh .04s .4s forwards}
-.bl:nth-child(3){animation:bsh .04s .75s forwards}
-.bl:nth-child(4){animation:bsh .04s 1.1s forwards}
-@keyframes bsh{to{opacity:1}}
+.bl{font-size:11px;letter-spacing:.26em;color:rgba(240,236,226,.55);line-height:1;margin:8px 0;opacity:0;display:flex;align-items:baseline;gap:14px;text-transform:uppercase}
+.bl-stamp{font-family:'Space Mono',monospace;color:rgba(240,236,226,.3);font-size:10px;letter-spacing:.12em}
+.bl.hi{color:var(--b);font-weight:700}
+.bl.hi .bl-stamp{color:var(--b);opacity:.5}
+.bl:nth-child(1){animation:bootTypeIn .4s .2s cubic-bezier(.16,1,.3,1) forwards}
+.bl:nth-child(2){animation:bootTypeIn .4s .55s cubic-bezier(.16,1,.3,1) forwards}
+.bl:nth-child(3){animation:bootTypeIn .4s .9s cubic-bezier(.16,1,.3,1) forwards}
+.bl:nth-child(4){animation:bootTypeIn .4s 1.25s cubic-bezier(.16,1,.3,1) forwards}
+.bl:nth-child(5){animation:bootTypeIn .4s 1.6s cubic-bezier(.16,1,.3,1) forwards}
+.bl:nth-child(6){animation:bootTypeIn .4s 1.95s cubic-bezier(.16,1,.3,1) forwards}
+@keyframes bootTypeIn{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:translateX(0)}}
+#boot-bar{margin-top:28px;width:380px;max-width:70vw;height:1px;background:rgba(240,236,226,.15);position:relative}
+#boot-bar::after{content:'';position:absolute;top:0;left:0;height:1px;width:0%;background:var(--b);box-shadow:0 0 8px var(--b);animation:bootBarFill 1.8s .7s cubic-bezier(.16,1,.3,1) forwards}
+@keyframes bootBarFill{to{width:100%}}
 
 /* TICKER */
 #ticker{position:fixed;bottom:0;left:0;right:0;height:var(--TK);background:#030303;border-top:1px solid rgba(27,0,230,.38);z-index:7500;display:flex;align-items:center;overflow:hidden}
@@ -280,7 +315,7 @@ background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0
 .h-eye{font-size:10px;letter-spacing:.34em;color:var(--wd);text-transform:uppercase;margin-bottom:15px}
 .h-c{font-family:'Space Mono',monospace;font-weight:700;line-height:.87;letter-spacing:-.04em;margin-bottom:20px}
 .h-w{display:block;font-size:clamp(64px,8.2vw,116px);color:var(--w)}
-.h-n{display:block;font-size:clamp(64px,8.2vw,116px);color:var(--b);text-shadow:0 0 90px var(--bg)}
+.h-n{display:block;font-size:clamp(72px,9.4vw,140px);color:var(--b);text-shadow:0 0 90px var(--bg),0 0 3px rgba(27,0,230,.5);-webkit-text-stroke:.5px var(--b);font-feature-settings:"tnum" 1;letter-spacing:-.05em}
 .h-d{font-size:10px;letter-spacing:.22em;color:rgba(240,236,226,.34);text-transform:uppercase;line-height:2.2;max-width:400px;margin-bottom:28px}
 .cta{display:inline-flex;align-items:center;gap:14px;font-size:10px;letter-spacing:.3em;color:var(--w);text-transform:uppercase;background:var(--b);padding:14px 28px;border:none;cursor:pointer;pointer-events:all;transition:background .2s,gap .28s}
 .cta:hover{background:var(--bd);gap:22px}
@@ -1139,18 +1174,22 @@ input[type=file]{display:none}
 <!-- NOISE + SCANLINES (Windows 98 vibe) -->
 <div id="noise"></div>
 <div id="scan"></div>
+<div id="term-cursor"></div>
 <div aria-hidden="true" style="position:absolute;left:-9999px;font-size:1px;color:transparent;pointer-events:none">
   <h1>Archivo Secreto del Lab — Grabación de DJ Sets en Buenos Aires · Registro Audiovisual de la Escena Electrónica Porteña</h1>
   <h2>Grabá tu DJ set en Buenos Aires · Cabina DJ profesional · Archivo electrónico porteño · +147 sets publicados</h2>
   <p>Donde grabar tu dj set en Buenos Aires. Estudio de grabación para DJs en Argentina. Más de 147 sets grabados. Archivo audiovisual de la escena electrónica porteña. Grabación profesional de DJ sets con producción audiovisual. Booking online disponible. Techno, house, minimal, electrónica underground Buenos Aires. DJ JAM, Common Liveset, Custom Liveset. Hogar de DJs emergentes y consolidados de la escena electrónica de Buenos Aires. Sin géneros, sin límites. Registro audiovisual independiente desde Buenos Aires, Argentina.</p>
 </div>
 
-<!-- BOOT -->
+<!-- BOOT cinematográfico -->
 <div id="boot">
-  <div class="bl">ARCHIVO SECRETO DEL LAB — SISTEMA v4.0</div>
-  <div class="bl" id="boot-counter">CARGANDO BASE DE DATOS... 147 SETS REGISTRADOS</div>
-  <div class="bl">BUENOS AIRES, ARGENTINA — DIGITAL ELECTRONIC ARCHIVE</div>
-  <div class="bl hi">ARCHIVO ABIERTO.</div>
+  <div class="bl"><span class="bl-stamp">[00:00.04]</span>SISTEMA . INICIANDO ARCHIVO v4.0</div>
+  <div class="bl"><span class="bl-stamp">[00:00.27]</span>CONECTANDO NODO . BUENOS AIRES . 34.6°S 58.3°W</div>
+  <div class="bl"><span class="bl-stamp">[00:00.62]</span>RESOLVIENDO BASE DE DATOS . <span id="boot-counter">147 SETS LOCALIZADOS</span></div>
+  <div class="bl"><span class="bl-stamp">[00:01.18]</span>VERIFICANDO INTEGRIDAD . OK</div>
+  <div class="bl"><span class="bl-stamp">[00:01.55]</span>CARGANDO INTERFAZ . 100%</div>
+  <div class="bl hi"><span class="bl-stamp">[00:02.10]</span>ARCHIVO ABIERTO</div>
+  <div id="boot-bar"></div>
 </div>
 
 <!-- TICKER (CNN style) -->
@@ -3843,20 +3882,25 @@ function spawnCard(){
   requestAnimationFrame(tick);
 }
 
-// Counter
+// Counter — animación fluida con cubic ease-out via requestAnimationFrame
 function runCounter(){
   const el=document.getElementById('ctr');
   if(!el) return;
-  TOTAL = getTOTAL(); // recalcular por si cambió
-  let n=0, target=TOTAL;
+  TOTAL = getTOTAL();
+  const target = TOTAL;
+  const duration = 2000; // ms
   el._animating = true;
-  const step=()=>{
-    n=Math.min(n+Math.ceil((target-n)/6),target);
-    el.textContent=String(n).padStart(3,'0');
-    if(n<target){ setTimeout(step,55); }
-    else { el._animating = false; }
-  };
-  setTimeout(step,2600);
+  // arranca inmediatamente; el caller maneja el delay vs boot
+  const startTs = performance.now();
+  function frame(now){
+    const t = Math.min(1, (now - startTs) / duration);
+    const eased = 1 - Math.pow(1 - t, 3);
+    const val = Math.floor(target * eased);
+    el.textContent = String(val).padStart(3,'0');
+    if(t < 1) requestAnimationFrame(frame);
+    else { el.textContent = String(target).padStart(3,'0'); el._animating = false; }
+  }
+  requestAnimationFrame(frame);
 }
 
 // ═══════════════════════════════════════════════════════
@@ -5483,11 +5527,11 @@ async function checkComunidad(nombre){
   if(waReq) waReq.textContent=!existe?'* obligatorio':'';
 }
 
-// INIT
-setTimeout(()=>{
-  initCards();
-  runCounter();
-},2500);
+// INIT — sincronizado con el boot cinematográfico (boot dura 2.7s + 0.6s fade-out)
+// El counter arranca al 2.6s (mientras boot se desvanece) así se ve la animación completa
+setTimeout(() => { runCounter(); }, 2600);
+// Cards floating arrancan recién cuando boot ya casi no se ve (3.0s)
+setTimeout(() => { initCards(); }, 3000);
 
 // Cargar config y disponibilidad desde Supabase
 (async()=>{
@@ -7440,9 +7484,9 @@ async function syncFromSheet(){
 // ── Actualizar TODOS los contadores desde una sola fuente ────────
 function updateAllCounters(){
   var n = typeof getTOTAL === 'function' ? getTOTAL() : TOTAL;
-  // Boot screen
+  // Boot screen (mantener el formato cinematográfico del nuevo boot)
   var bootCtr = document.getElementById('boot-counter');
-  if(bootCtr) bootCtr.textContent = 'CARGANDO BASE DE DATOS... ' + n + ' SETS REGISTRADOS';
+  if(bootCtr) bootCtr.textContent = n + ' SETS LOCALIZADOS';
   // Header (arriba a la derecha)
   var hdrCount = document.getElementById('hdr-count');
   if(hdrCount) hdrCount.textContent = n + ' Sets';
@@ -7614,6 +7658,42 @@ async function syncDjsFromForm(){
     console.error('[FORM] ✗ Error sync:', e);
   }
 }
+
+// ═══════════════════════════════════════════════════════
+// Terminal cursor parpadeante (sólo desktop con mouse)
+// ═══════════════════════════════════════════════════════
+(function(){
+  if(!window.matchMedia || !window.matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  var c = document.getElementById('term-cursor');
+  if(!c) return;
+  c.classList.add('on');
+  var x = 0, y = 0, tx = 0, ty = 0, raf = null;
+  function move(){
+    // pequeña suavización (5-10% lag) para que no se sienta rígido
+    tx += (x - tx) * 0.55;
+    ty += (y - ty) * 0.55;
+    c.style.left = tx + 'px';
+    c.style.top = ty + 'px';
+    raf = requestAnimationFrame(move);
+  }
+  window.addEventListener('mousemove', function(e){ x = e.clientX; y = e.clientY; if(!raf) move(); });
+  // Modo "hover" sobre elementos clickeables
+  document.addEventListener('mouseover', function(e){
+    var t = e.target;
+    if(t.closest('a,button,.nt,.snt,.fc,.gc,.gc-set,.chip,.fb,.tdbtn,.logo,.admin-lock,[onclick]')){
+      c.classList.add('hover');
+    }
+  });
+  document.addEventListener('mouseout', function(e){
+    var t = e.target;
+    if(t.closest('a,button,.nt,.snt,.fc,.gc,.gc-set,.chip,.fb,.tdbtn,.logo,.admin-lock,[onclick]')){
+      c.classList.remove('hover');
+    }
+  });
+  // Ocultar cuando sale de la ventana
+  document.addEventListener('mouseleave', function(){ c.style.opacity = '0'; });
+  document.addEventListener('mouseenter', function(){ c.style.opacity = '1'; });
+})();
 
 window.addEventListener('load', function(){
   // 1. Actualizar inmediatamente con SM hardcodeado (carga instantánea)
