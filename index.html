@@ -738,36 +738,47 @@ input[type=file]{display:none}
 /* (Color por categoría removido por decisión de diseño 2026-05-25) */
 .gc-set{position:relative}
 
-/* ── FICHA HOVER OVERLAY (estilo E. CLEO, centrado, sin huérfanos) ── */
+/* ── HOVER: borde azul glow + imagen blurry ── */
+.gc-set{
+  transition:border-color .5s cubic-bezier(.16,1,.3,1),box-shadow .5s cubic-bezier(.16,1,.3,1);
+}
+.gc-set:hover{
+  border-color:var(--b);
+  box-shadow:0 0 0 1px var(--b),0 0 22px rgba(27,0,230,.55),0 8px 32px rgba(27,0,230,.28);
+}
+.gc-set .gc-set-img{
+  transition:filter .55s cubic-bezier(.16,1,.3,1);
+}
+.gc-set:hover .gc-set-img{
+  filter:blur(8px) saturate(.85) brightness(.7);
+}
+
+/* ── FICHA HOVER OVERLAY (sin línea, info centrada, 1 botón) ── */
 .gc-set-ficha{
   position:absolute;inset:0;z-index:6;
-  background:rgba(6,6,6,.92);
-  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  background:rgba(6,6,6,.55);
   display:flex;align-items:center;justify-content:center;
   opacity:0;visibility:hidden;
-  transition:opacity .35s cubic-bezier(.16,1,.3,1),visibility 0s .35s;
+  transition:opacity .4s cubic-bezier(.16,1,.3,1),visibility 0s .4s;
   padding:24px;
 }
 .gc-set:hover .gc-set-ficha{
   opacity:1;visibility:visible;
-  transition:opacity .35s cubic-bezier(.16,1,.3,1),visibility 0s 0s;
+  transition:opacity .4s cubic-bezier(.16,1,.3,1),visibility 0s 0s;
 }
 .ficha-inner{
-  width:100%;max-width:360px;
+  width:100%;max-width:340px;
   text-align:center;
   font-family:'IBM Plex Mono',monospace;
 }
 .ficha-name{
   font-family:'Space Mono',monospace;font-weight:700;
-  font-size:18px;letter-spacing:.04em;color:var(--w);
-  text-transform:uppercase;margin-bottom:8px;
-}
-.ficha-line{
-  width:60px;height:1px;background:rgba(240,236,226,.35);margin:0 auto 22px;
+  font-size:16px;letter-spacing:.04em;color:var(--w);
+  text-transform:uppercase;margin-bottom:20px;
 }
 .ficha-data{
-  display:flex;flex-direction:column;gap:9px;
-  margin-bottom:24px;
+  display:flex;flex-direction:column;gap:8px;
+  margin-bottom:22px;
 }
 .ficha-row{
   display:grid;grid-template-columns:1fr 1fr;
@@ -775,44 +786,36 @@ input[type=file]{display:none}
 }
 .ficha-row .k{
   font-size:8.5px;letter-spacing:.24em;
-  color:rgba(240,236,226,.42);text-transform:uppercase;
+  color:rgba(240,236,226,.5);text-transform:uppercase;
   text-align:right;
 }
 .ficha-row .v{
   font-family:'Space Mono',monospace;font-weight:700;
-  font-size:11px;letter-spacing:.05em;color:var(--w);
+  font-size:10.5px;letter-spacing:.05em;color:var(--w);
   text-align:left;
 }
 .ficha-actions{
-  display:flex;flex-direction:column;gap:6px;margin-top:8px;
+  display:flex;justify-content:center;margin-top:8px;
 }
-.ficha-btn{
+/* Botón ABRIR REGISTRO: transparente borde azul, hover azul sólido */
+.ficha-btn-archive{
   font-family:'IBM Plex Mono',monospace;
-  font-size:9px;letter-spacing:.26em;font-weight:400;
+  font-size:9.5px;letter-spacing:.28em;font-weight:700;
   text-transform:uppercase;
-  padding:10px 14px;
+  padding:11px 22px;
   background:transparent;
-  color:rgba(240,236,226,.78);
-  border:1px solid rgba(240,236,226,.18);
+  color:var(--w);
+  border:1px solid var(--b);
   cursor:pointer;
-  transition:color .35s cubic-bezier(.16,1,.3,1),border-color .35s cubic-bezier(.16,1,.3,1),background-color .35s cubic-bezier(.16,1,.3,1);
+  transition:background-color .35s cubic-bezier(.16,1,.3,1),color .35s cubic-bezier(.16,1,.3,1),box-shadow .35s cubic-bezier(.16,1,.3,1);
 }
-.ficha-btn:hover{
+.ficha-btn-archive:hover{
+  background:var(--b);
   color:var(--w);
-  border-color:rgba(240,236,226,.45);
-  background:rgba(240,236,226,.04);
-}
-.ficha-btn-primary{
-  color:var(--w);
-  border-color:rgba(240,236,226,.32);
-}
-.ficha-btn-primary:hover{
-  color:var(--w);
-  border-color:rgba(240,236,226,.62);
-  background:rgba(240,236,226,.06);
+  box-shadow:0 0 16px rgba(27,0,230,.55);
 }
 
-/* Mobile: ficha SIEMPRE visible (sin hover en touch) */
+/* Mobile: ficha SIEMPRE visible al tap (sin hover en touch) */
 @media (hover:none) and (pointer:coarse){
   .gc-set-ficha{display:none}
 }
@@ -5916,7 +5919,7 @@ function smBuildCard(s, delay){
     + '<div class="gc-set-fecha">' + smDate(s.fecha) + '</div>';
   card.appendChild(body);
 
-  // ── FICHA HOVER OVERLAY (estilo E. CLEO) ──
+  // ── FICHA HOVER OVERLAY ──
   var djMatch = (typeof DJS !== 'undefined') ? DJS.find(function(d){
     var a = (d.artist || '').toUpperCase();
     var al = (d.alias || '').toUpperCase();
@@ -5924,10 +5927,16 @@ function smBuildCard(s, delay){
     return a === sn || al === sn;
   }) : null;
   var genre = djMatch && djMatch.genre ? djMatch.genre : '';
+  // Fecha en formato 21.MARZO.2026
   var dateStr = '';
   if(s.fecha){
+    var MESES_FULL = ['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
     var dp = s.fecha.split('-');
-    if(dp.length === 3) dateStr = dp[2] + ' . ' + dp[1] + ' . ' + dp[0];
+    if(dp.length === 3){
+      var mesIdx = parseInt(dp[1],10) - 1;
+      var mesName = MESES_FULL[mesIdx] || dp[1];
+      dateStr = parseInt(dp[2],10) + '.' + mesName + '.' + dp[0];
+    }
   }
   var ficha = document.createElement('div');
   ficha.className = 'gc-set-ficha';
@@ -5936,33 +5945,21 @@ function smBuildCard(s, delay){
   rows += '<div class="ficha-row"><span class="k">TYPE</span><span class="v">' + (s.categoria || '') + '</span></div>';
   if(genre) rows += '<div class="ficha-row"><span class="k">G&Eacute;NERO</span><span class="v">' + genre + '</span></div>';
   if(dateStr) rows += '<div class="ficha-row"><span class="k">FECHA</span><span class="v">' + dateStr + '</span></div>';
-  if(hasMulti) rows += '<div class="ficha-row"><span class="k">SET</span><span class="v">' + s.set_num + ' / ' + sibs.length + '</span></div>';
-  var ytBtn = s.url_yt
-    ? '<button class="ficha-btn ficha-btn-primary" data-action="yt" data-yt="' + s.url_yt + '">VER EL SET</button>'
-    : '';
   ficha.innerHTML =
       '<div class="ficha-inner">'
     +   '<div class="ficha-name">' + _displayName + '</div>'
-    +   '<div class="ficha-line"></div>'
     +   '<div class="ficha-data">' + rows + '</div>'
     +   '<div class="ficha-actions">'
-    +     '<button class="ficha-btn" data-action="dj">CONOC&Eacute; AL ARTISTA</button>'
-    +     ytBtn
+    +     '<button class="ficha-btn-archive" data-action="dj">[ ABRIR REGISTRO ]</button>'
     +   '</div>'
     + '</div>';
   card.appendChild(ficha);
-  // Listeners de los botones
-  ficha.querySelectorAll('.ficha-btn').forEach(function(btn){
+  // Listener del botón ABRIR REGISTRO → abre la ficha completa del DJ
+  ficha.querySelectorAll('.ficha-btn-archive').forEach(function(btn){
     btn.addEventListener('click', function(e){
       e.stopPropagation();
-      var action = btn.dataset.action;
-      if(action === 'dj'){
-        fichaFrom = 'djs';
-        openFicha(card.dataset.smid);
-      } else if(action === 'yt'){
-        var url = btn.dataset.yt;
-        if(url) window.open(url, '_blank', 'noopener');
-      }
+      fichaFrom = 'djs';
+      openFicha(card.dataset.smid);
     });
   });
 
@@ -6461,12 +6458,16 @@ function renderJamsInto(c){
     if(!groups[cat]) groups[cat]=[];
     groups[cat].push(s);
   });
+  // Ordenar categorías por número de JAM, newest-first (DJ JAM 013 antes que 012)
   var cats=Object.keys(groups).sort(function(a,b){
-    return parseInt(a.replace(/\D/g,''))||0 > parseInt(b.replace(/\D/g,''))||0 ? 1:-1;
+    var na = parseInt(a.replace(/\D/g,''),10) || 0;
+    var nb = parseInt(b.replace(/\D/g,''),10) || 0;
+    return nb - na;
   });
   c.innerHTML='';
   cats.forEach(function(cat){
-    var sets=groups[cat];
+    // Dentro de cada JAM, sets ordenados newest-first
+    var sets=groups[cat].slice().sort(function(a,b){return a.fecha<b.fecha?1:-1;});
     var sec=document.createElement('div');
     sec.className='jsec';
     var fechas=sets.map(function(s){return s.fecha;}).sort();
@@ -6486,7 +6487,8 @@ function renderCommon(){
   var grid=document.getElementById('grid-common');
   if(!grid) return;
   var _h=smGetHidden();
-  var list=SM.filter(function(s){return s.tipo==='COMMON' && s.estado!=='Oculto' && _h.indexOf(s.id)===-1;});
+  var list=SM.filter(function(s){return s.tipo==='COMMON' && s.estado!=='Oculto' && _h.indexOf(s.id)===-1;})
+    .sort(function(a,b){return a.fecha<b.fecha?1:-1;}); // newest-first
   grid.innerHTML='';
   list.forEach(function(s,i){ grid.appendChild(smBuildCard(s, Math.min(i * 0.05, 1.2).toFixed(2))); });
 }
@@ -6496,7 +6498,8 @@ function renderCustom(){
   var grid=document.getElementById('grid-custom');
   if(!grid) return;
   var _h=smGetHidden();
-  var list=SM.filter(function(s){return s.tipo==='CUSTOM' && s.estado!=='Oculto' && _h.indexOf(s.id)===-1;});
+  var list=SM.filter(function(s){return s.tipo==='CUSTOM' && s.estado!=='Oculto' && _h.indexOf(s.id)===-1;})
+    .sort(function(a,b){return a.fecha<b.fecha?1:-1;}); // newest-first
   grid.innerHTML='';
   list.forEach(function(s,i){ grid.appendChild(smBuildCard(s, Math.min(i * 0.05, 1.2).toFixed(2))); });
 }
@@ -6506,7 +6509,8 @@ function renderPublic(){
   var grid=document.getElementById('grid-public');
   if(!grid) return;
   var _h=smGetHidden();
-  var list=SM.filter(function(s){return s.tipo==='ARCHIVO_PUBLICO' && s.estado!=='Oculto' && _h.indexOf(s.id)===-1;});
+  var list=SM.filter(function(s){return s.tipo==='ARCHIVO_PUBLICO' && s.estado!=='Oculto' && _h.indexOf(s.id)===-1;})
+    .sort(function(a,b){return a.fecha<b.fecha?1:-1;}); // newest-first
   grid.innerHTML='';
   list.forEach(function(s,i){ grid.appendChild(smBuildCard(s, Math.min(i * 0.05, 1.2).toFixed(2))); });
 }
