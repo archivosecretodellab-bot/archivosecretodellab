@@ -151,6 +151,11 @@
   --c-common:#FFFAE7;    /* Ivory Mist - Common Liveset */
   --c-custom:#F8502A;    /* Blazing Flame - Custom Liveset */
   --c-publico:#00C2A8;   /* Teal - Archivo Público (NUEVO, podés cambiarlo) */
+  /* ── Aliases paleta oficial ASDL (para nueva página Graba tu Set) ── */
+  --ultrasonic:#0809E7;  /* Ultrasonic Blue */
+  --prussian:#000030;    /* Prussian Blue */
+  --ivory:#FFFAE7;       /* Ivory Mist */
+  --orange:#F8502A;      /* Blazing Flame */
   --TH:66px; --NH:44px; --TK:36px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
@@ -259,8 +264,11 @@ background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0
 @keyframes bootBarFill{to{width:100%}}
 
 /* TICKER */
-#ticker{position:fixed;bottom:0;left:0;right:0;height:var(--TK);background:#030303;border-top:1px solid rgba(27,0,230,.38);z-index:7500;display:flex;align-items:center;overflow:hidden}
-.tk-tag{flex-shrink:0;background:var(--b);font-size:9px;letter-spacing:.32em;color:var(--w);padding:0 16px;height:100%;display:flex;align-items:center;text-transform:uppercase;white-space:nowrap;font-weight:700}
+#ticker{position:fixed;bottom:0;left:0;right:0;height:var(--TK);background:#030303;border-top:1px solid rgba(27,0,230,.38);z-index:7500;display:flex;align-items:center;overflow:hidden;transition:transform .35s cubic-bezier(.2,.8,.2,1), opacity .35s ease}
+#ticker.hidden{transform:translateY(110%);opacity:0;pointer-events:none}
+.tk-tag{flex-shrink:0;background:var(--b);font-size:9px;letter-spacing:.32em;color:var(--w);padding:0 16px;height:100%;display:flex;align-items:center;text-transform:uppercase;white-space:nowrap;font-weight:700;cursor:pointer;transition:background .2s,letter-spacing .2s;outline:none}
+.tk-tag:hover{background:#1f10f7;letter-spacing:.38em}
+.tk-tag:focus-visible{box-shadow:inset 0 0 0 2px rgba(255,255,255,.5)}
 .tk-track{flex:1;overflow:hidden}
 .tk-inner{display:inline-flex;align-items:center;white-space:nowrap;animation:tkScroll 36s linear infinite}
 .tk-inner span{font-size:10px;letter-spacing:.2em;color:rgba(240,236,226,.75);text-transform:uppercase;padding:0 18px}
@@ -1303,6 +1311,894 @@ input[type=file]{display:none}
   .fc-a{ font-size:13px; }
   .pzone{ height:170px; }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   GRABA TU SET — REDISEÑO v2 (overrides + nuevos componentes)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════
+   ELIMINACIÓN DEFENSIVA DE LA FRANJA AZUL
+   (cualquier border/background residual entre form y connect-text)
+   ═══════════════════════════════════════════════════════════════ */
+#pg-agenda .ag-section,
+#pg-agenda .ag-section > *,
+#pg-agenda .ag-form,
+#pg-agenda .ag-left{
+  background:transparent !important;
+  border-top:none !important;
+  border-bottom:none !important;
+}
+#pg-agenda .ag-section::before,
+#pg-agenda .ag-section::after,
+#pg-agenda .ag-form::before,
+#pg-agenda .ag-form::after,
+#pg-agenda .ag-left::after{
+  display:none !important;
+}
+/* Restaurar el bg sutil que sí queremos en ag-right (calendario) */
+#pg-agenda .ag-right{ background:rgba(0,0,0,.22) !important; }
+/* Y la border-right vertical entre columnas que sí es deseable en desktop */
+@media(min-width:1024px){
+  #pg-agenda .ag-left{ border-right:1px solid var(--wf) !important; }
+}
+
+/* ── Texto de conexión · STATEMENT editorial con underline fluido ── */
+#pg-agenda .ag-connect-text{
+  max-width:1180px;
+  margin:0 auto;
+  padding:96px clamp(20px,4vw,40px) 88px;
+  text-align:center;
+  position:relative;
+  z-index:2;
+}
+#pg-agenda .ag-connect-text p{
+  font-family:'Space Mono',monospace;
+  font-size:clamp(20px,2.4vw,30px);
+  line-height:1.45;
+  font-weight:400;
+  color:var(--ivory);
+  letter-spacing:-.012em;
+  margin-bottom:28px;
+}
+#pg-agenda .ag-connect-text p:last-child{ margin-bottom:0; }
+
+/* Variante secundaria (texto "Escuchá el registro completo..." — más sutil) */
+#pg-agenda .ag-connect-text:not(.ag-connect-statement){
+  max-width:780px;
+  padding:64px clamp(20px,4vw,40px);
+}
+#pg-agenda .ag-connect-text:not(.ag-connect-statement) p{
+  font-size:clamp(17px,1.8vw,22px);
+  color:rgba(255,250,231,.78);
+  line-height:1.6;
+}
+
+/* Énfasis suave para "forjamos conexiones" (sin animación, solo color) */
+#pg-agenda .em-soft{
+  font-style:normal;
+  color:var(--ivory);
+  font-weight:700;
+  background:linear-gradient(180deg, transparent 70%, rgba(8,9,231,.18) 70%);
+  padding:0 4px;
+}
+
+/* Underline animado fluido para la frase clave */
+#pg-agenda .em-flow{
+  position:relative;
+  display:inline;
+  color:var(--ivory);
+  font-weight:400;
+  padding-bottom:8px;
+  background-image:linear-gradient(90deg,
+    transparent 0%,
+    rgba(8,9,231,.45) 22%,
+    rgba(8,9,231,1) 50%,
+    rgba(8,9,231,.45) 78%,
+    transparent 100%);
+  background-size:55% 2px;
+  background-position:-55% 100%;
+  background-repeat:no-repeat;
+  animation:emFlow 5s linear infinite;
+  -webkit-box-decoration-break:clone;
+  box-decoration-break:clone;
+}
+@keyframes emFlow{
+  0%   { background-position:-55% 100%; }
+  100% { background-position:160% 100%; }
+}
+/* Glow sutil que viaja con el underline */
+#pg-agenda .em-flow::after{
+  content:'';
+  position:absolute;
+  left:0; right:0; bottom:-2px; height:8px;
+  background:linear-gradient(90deg,
+    transparent 0%,
+    rgba(8,9,231,.18) 50%,
+    transparent 100%);
+  background-size:55% 100%;
+  background-position:-55% 50%;
+  background-repeat:no-repeat;
+  animation:emFlow 5s linear infinite;
+  pointer-events:none;
+  filter:blur(4px);
+}
+@media(prefers-reduced-motion:reduce){
+  #pg-agenda .em-flow,
+  #pg-agenda .em-flow::after{
+    animation:none !important;
+    background-size:100% 2px;
+    background-position:0 100%;
+    background-image:linear-gradient(90deg, rgba(8,9,231,.6), rgba(8,9,231,.6));
+  }
+}
+
+/* ── Carrusel: ancho de los botones de contacto (1280px) con fade lateral ── */
+#pg-agenda .caru-wrap{
+  max-width:1280px; margin:0 auto;
+  padding:8px clamp(20px,4vw,40px) 16px;
+  background:transparent;
+}
+#pg-agenda .caru-wrap-primary{ padding:8px clamp(20px,4vw,40px) 24px; }
+#pg-agenda .caru-track-outer{
+  overflow-x:auto; overflow-y:hidden;
+  scrollbar-width:none; -ms-overflow-style:none;
+  cursor:grab;
+  scroll-behavior:auto;
+  /* Fade lateral a negro — destaca el centro */
+  mask-image:linear-gradient(to right, transparent 0%, #000 12%, #000 88%, transparent 100%);
+  -webkit-mask-image:linear-gradient(to right, transparent 0%, #000 12%, #000 88%, transparent 100%);
+}
+#pg-agenda .caru-track-outer::-webkit-scrollbar{ display:none; }
+#pg-agenda .caru-track-outer.dragging{ cursor:grabbing; }
+#pg-agenda .caru-track-outer.dragging .caru-img{ pointer-events:none; }
+#pg-agenda .caru-track{ gap:4px; animation:none !important; transform:none !important; }
+/* Fotos: dimensionadas para que ~3 queden claras al centro del fade */
+#pg-agenda .caru-img{
+  height:clamp(160px,13vw,200px) !important;
+  width:calc(clamp(160px,13vw,200px) * 16 / 9) !important;
+  aspect-ratio:16/9 !important;
+  object-fit:cover;
+  object-position:center center !important;
+  background:var(--prussian);
+  filter:brightness(.86) contrast(1.05) saturate(.95);
+  transition:filter .35s ease, transform .35s ease;
+  user-select:none; -webkit-user-drag:none;
+}
+#pg-agenda .caru-img:hover{
+  filter:brightness(1.10) contrast(1.06) saturate(1.05);
+  transform:scale(1.03);
+  z-index:2; position:relative;
+}
+#pg-agenda .caru-label{
+  text-align:center;
+  padding:24px 0 18px;
+  letter-spacing:.32em;
+}
+
+/* ── WhatsApp zone full-width (mismo grosor que el calendario) ── */
+#pg-agenda .ag-wa-zone{
+  margin-top:24px; padding-top:20px;
+  border-top:1px solid var(--wf);
+}
+#pg-agenda .ag-wa-lbl{
+  font-size:9px; letter-spacing:.22em; color:var(--wd);
+  text-transform:uppercase; margin-bottom:12px;
+}
+#pg-agenda .ag-wa-full{
+  display:flex; align-items:center; justify-content:center; gap:12px;
+  width:100%; box-sizing:border-box;
+  background:#128C7E; padding:14px 22px; color:#fff;
+  font-size:10px; letter-spacing:.24em; text-transform:uppercase;
+  text-decoration:none;
+  box-shadow:0 6px 20px -4px rgba(18,140,126,.45), inset 0 1px 0 rgba(255,255,255,.18);
+  transition:all .25s cubic-bezier(.2,.8,.2,1);
+}
+#pg-agenda .ag-wa-full:hover{
+  background:#0e7268; transform:translateY(-2px);
+  box-shadow:0 10px 26px -4px rgba(18,140,126,.6), inset 0 1px 0 rgba(255,255,255,.22);
+}
+
+/* ── Franja picker (aparece debajo del calendario al seleccionar fecha) ── */
+#pg-agenda .ag-franjas{
+  display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px;
+  margin-top:14px;
+}
+#pg-agenda .ag-franja{
+  position:relative; padding:14px 10px;
+  border:1px solid var(--wf); background:rgba(255,255,255,.018);
+  cursor:pointer; transition:all .25s cubic-bezier(.2,.8,.2,1);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+  text-align:center; display:flex; flex-direction:column; gap:4px;
+  font-family:'IBM Plex Mono',monospace;
+}
+#pg-agenda .ag-franja:hover{ border-color:rgba(8,9,231,.4); transform:translateY(-2px); }
+#pg-agenda .ag-franja.on{
+  border-color:var(--ultrasonic); background:rgba(8,9,231,.08);
+  box-shadow:0 8px 20px -6px rgba(8,9,231,.4), inset 0 1px 0 rgba(255,255,255,.08);
+}
+#pg-agenda .ag-franja-icon{ font-size:16px; }
+#pg-agenda .ag-franja-t{ font-family:'Space Mono',monospace; font-size:11px; font-weight:700; color:var(--ivory); letter-spacing:.04em; }
+#pg-agenda .ag-franja-h{ font-size:9px; letter-spacing:.14em; color:var(--wd); text-transform:uppercase; }
+#pg-agenda .ag-franja-d-text{
+  font-size:8px; letter-spacing:.14em; color:var(--ultrasonic);
+  text-transform:uppercase; padding:14px 0 8px; text-align:left;
+  display:flex; align-items:center; gap:8px;
+}
+#pg-agenda .ag-franja-d-text::before{ content:''; width:14px; height:1px; background:var(--ultrasonic); }
+#pg-agenda .ag-sel-date{
+  margin-top:12px; padding:12px 14px;
+  background:rgba(8,9,231,.06); border:1px solid rgba(8,9,231,.3);
+  font-size:10.5px; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--ivory);
+}
+#pg-agenda .ag-sel-date strong{ color:var(--ultrasonic); font-weight:700; }
+
+/* Página agenda: un solo glow ambiental sutil arriba (sin bandas) */
+#pg-agenda{ position:relative; overflow:hidden; background:var(--k); }
+/* La transición carrusel → contactos debe ser casi invisible */
+#pg-agenda .contact-row{ border-top:none !important; }
+#pg-agenda::before{
+  content:''; position:absolute; top:120px; left:8%; width:420px; height:420px;
+  background:radial-gradient(circle, rgba(8,9,231,.10) 0%, rgba(8,9,231,.03) 35%, transparent 60%);
+  pointer-events:none; z-index:0; filter:blur(60px);
+  animation:glowDriftA 28s ease-in-out infinite;
+  mix-blend-mode:screen; will-change:transform,opacity;
+}
+#pg-agenda > *{ position:relative; z-index:1; }
+
+/* Constraint horizontal: contenido más concentrado en pantallas grandes */
+#pg-agenda .ag-layout{ max-width:1280px; margin:0 auto; }
+#pg-agenda .contact-row{ max-width:1280px; margin:0 auto; }
+
+/* ── HERO ── */
+#pg-agenda .ag-hero{ padding:72px clamp(24px,5vw,72px) 48px; }
+#pg-agenda .ag-hero-inner{ max-width:980px; }
+
+/* ── STEPPER ── */
+#pg-agenda .ag-stepper{
+  display:grid; grid-template-columns:1fr 1fr 1fr; gap:2px;
+  border-top:1px solid var(--wf); border-bottom:1px solid var(--wf);
+  background:var(--wf);
+  margin:0 0 0 0;
+}
+#pg-agenda .ag-step{
+  background:rgba(0,0,0,.22);
+  padding:40px clamp(20px,3vw,36px) 48px;
+  display:flex; flex-direction:column;
+  min-height:560px;
+  position:relative;
+  transition:background .25s ease;
+}
+#pg-agenda .ag-step + .ag-step{ /* divisor visual entre steps */ }
+#pg-agenda .ag-step:hover{ background:rgba(0,0,0,.32); }
+#pg-agenda .ag-step.complete{ background:rgba(8,9,231,.04); }
+#pg-agenda .ag-step.active::after{
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:var(--ultrasonic); box-shadow:0 0 12px var(--ultrasonic);
+}
+#pg-agenda .ag-step-h{
+  display:flex; align-items:flex-start; gap:14px;
+  padding-bottom:18px; margin-bottom:24px;
+  border-bottom:1px solid var(--wf);
+}
+#pg-agenda .ag-step-num{
+  font-family:'Space Mono',monospace; font-size:32px; font-weight:700;
+  color:var(--ultrasonic); line-height:1; letter-spacing:-.04em;
+  min-width:40px;
+}
+#pg-agenda .ag-step.complete .ag-step-num::before{
+  content:'✓ '; color:var(--green);
+}
+#pg-agenda .ag-step-meta{ flex:1; padding-top:4px; }
+#pg-agenda .ag-step-t{
+  font-family:'Space Mono',monospace; font-size:14px; font-weight:700;
+  color:var(--ivory); letter-spacing:.02em; text-transform:uppercase;
+}
+#pg-agenda .ag-step-d{
+  font-size:10.5px; letter-spacing:.18em; color:var(--wd);
+  text-transform:uppercase; margin-top:4px;
+}
+#pg-agenda .ag-step-body{ flex:1; display:flex; flex-direction:column; }
+
+/* ── Pricing dentro del step ── */
+#pg-agenda .ag-step .ag-pricing{
+  display:flex; flex-direction:column; gap:10px; margin-bottom:0;
+}
+
+/* ── WhatsApp fallback ── */
+#pg-agenda .ag-wa-fallback{
+  margin-top:28px; padding-top:20px;
+  border-top:1px solid var(--wf);
+}
+#pg-agenda .ag-wa-lbl{
+  font-size:9px; letter-spacing:.22em; color:var(--wd);
+  text-transform:uppercase; margin-bottom:10px;
+}
+#pg-agenda .ag-wa-btn{
+  display:inline-flex; align-items:center; gap:12px;
+  background:#128C7E; padding:13px 22px; color:#fff;
+  font-size:10px; letter-spacing:.22em; text-transform:uppercase;
+  text-decoration:none;
+  box-shadow:0 6px 20px -4px rgba(18,140,126,.45), inset 0 1px 0 rgba(255,255,255,.18);
+  transition:all .25s cubic-bezier(.2,.8,.2,1);
+}
+#pg-agenda .ag-wa-btn:hover{
+  background:#0e7268; transform:translateY(-2px);
+  box-shadow:0 10px 26px -4px rgba(18,140,126,.6), inset 0 1px 0 rgba(255,255,255,.22);
+}
+
+/* ── Sticky CTA mobile ── */
+#pg-agenda .ag-mobile-cta{
+  display:none; position:sticky; bottom:0; z-index:50;
+  padding:14px 20px; background:rgba(6,6,6,.92);
+  border-top:1px solid rgba(8,9,231,.4);
+  backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+}
+@keyframes glowDriftA{
+  0%   { transform:translate(0,0) scale(1);     opacity:.7 }
+  25%  { transform:translate(60px,40px) scale(1.08); opacity:.95 }
+  50%  { transform:translate(120px,-30px) scale(1.15); opacity:.8 }
+  75%  { transform:translate(40px,80px) scale(1.05); opacity:1 }
+  100% { transform:translate(0,0) scale(1);     opacity:.7 }
+}
+@keyframes glowDriftB{
+  0%   { transform:translate(0,0) scale(1);      opacity:.55 }
+  30%  { transform:translate(-80px,-50px) scale(1.12); opacity:.85 }
+  60%  { transform:translate(60px,-90px) scale(1.2);  opacity:.7 }
+  100% { transform:translate(0,0) scale(1);      opacity:.55 }
+}
+
+/* Layout y columnas */
+#pg-agenda .ag-layout{
+  display:grid; grid-template-columns:1fr 380px;
+  min-height:760px; position:relative; z-index:2;
+}
+#pg-agenda .ag-left{ padding:80px clamp(24px,5vw,72px) 56px; border-right:1px solid var(--wf); position:relative; }
+#pg-agenda .ag-right{ padding:80px clamp(20px,3vw,40px) 56px; background:rgba(0,0,0,.22); position:relative; }
+
+/* Número de sección gigante semi-transparente */
+#pg-agenda .sec-num{
+  position:absolute; font-family:'Space Mono',monospace;
+  font-size:clamp(180px,22vw,340px); font-weight:700;
+  color:rgba(8,9,231,.05); letter-spacing:-.05em; line-height:.8;
+  pointer-events:none; user-select:none; z-index:0;
+  top:-60px; right:-20px;
+}
+
+/* Eyebrow */
+#pg-agenda .ag-eye{
+  font-size:9px; letter-spacing:.32em; color:var(--ultrasonic);
+  text-transform:uppercase; margin-bottom:14px;
+  display:flex; align-items:center; gap:10px; position:relative; z-index:3;
+}
+#pg-agenda .ag-eye::before{ content:''; width:18px; height:1px; background:var(--ultrasonic); box-shadow:0 0 6px var(--ultrasonic); }
+
+/* Título mixto */
+#pg-agenda .ag-title{
+  font-family:'Space Mono',monospace;
+  font-size:clamp(46px,5.6vw,76px); font-weight:700; line-height:.96;
+  letter-spacing:-.035em; color:var(--ivory); margin-bottom:14px;
+  position:relative; z-index:3;
+}
+#pg-agenda .ag-title .soft{
+  font-family:'IBM Plex Mono',monospace;
+  font-weight:400; letter-spacing:-.01em;
+  color:rgba(255,250,231,.92); margin-left:.15em;
+}
+
+/* Waveform decorativo */
+#pg-agenda .ag-wave{ display:flex; align-items:flex-end; gap:3px; height:22px; margin-bottom:24px; position:relative; z-index:3; }
+#pg-agenda .ag-wave i{ display:block; width:2px; background:var(--ultrasonic); opacity:.5; animation:agWave 1.4s ease-in-out infinite; }
+@keyframes agWave{ 0%,100%{height:20%} 50%{height:100%} }
+
+/* Descripción */
+#pg-agenda .ag-desc{
+  font-size:13px; letter-spacing:.04em; color:var(--wd); line-height:1.95;
+  margin-bottom:30px; max-width:520px; position:relative; z-index:3;
+}
+
+/* Trust strip */
+#pg-agenda .ag-trust{
+  display:grid; grid-template-columns:.9fr .9fr .9fr 2.4fr; gap:0; margin-bottom:40px;
+  border:1px solid var(--wf); background:rgba(0,0,0,.3);
+  position:relative; z-index:3;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+}
+#pg-agenda .ag-trust-item{
+  padding:16px 18px; border-right:1px solid var(--wf);
+  display:flex; flex-direction:column; gap:4px; justify-content:center;
+}
+#pg-agenda .ag-trust-item:last-child{ border-right:none; }
+#pg-agenda .ag-trust-n{
+  font-family:'Space Mono',monospace; font-size:22px; font-weight:700;
+  color:var(--ivory); letter-spacing:-.02em; line-height:1;
+}
+#pg-agenda .ag-trust-n .acc{ color:var(--ultrasonic); }
+#pg-agenda .ag-trust-l{ font-size:8px; letter-spacing:.22em; color:var(--wd); text-transform:uppercase; }
+#pg-agenda .ag-trust-item.wide{ padding:16px 22px; }
+#pg-agenda .ag-trust-item.wide .ag-trust-l{ font-size:10.5px; letter-spacing:.04em; line-height:1.65; color:var(--wd); text-transform:none; }
+
+/* Sección titles */
+#pg-agenda .ag-sec-title{
+  font-size:9px; letter-spacing:.32em; color:var(--ultrasonic);
+  text-transform:uppercase; margin-bottom:18px;
+  padding-bottom:9px; border-bottom:1px solid var(--wf);
+  position:relative; z-index:3; display:flex; align-items:center; gap:10px;
+}
+#pg-agenda .ag-sec-title::before{ content:'›'; color:var(--ultrasonic); font-size:14px; }
+
+/* Pricing tiles · 3 columnas */
+#pg-agenda .ag-pricing{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:8px; position:relative; z-index:3; }
+#pg-agenda .ag-tier{
+  position:relative; padding:18px 18px 16px;
+  border:1px solid var(--wf); background:rgba(255,255,255,.015);
+  cursor:pointer; transition:all .25s cubic-bezier(.2,.8,.2,1);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04), inset 0 -1px 0 rgba(0,0,0,.3);
+  overflow:hidden; display:block;
+}
+#pg-agenda .ag-tier::before{
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(circle at top left, rgba(8,9,231,.18), transparent 70%);
+  opacity:0; transition:opacity .3s; pointer-events:none;
+}
+#pg-agenda .ag-tier:hover{ border-color:rgba(8,9,231,.4); transform:translateY(-2px); }
+#pg-agenda .ag-tier:hover::before{ opacity:.6; }
+#pg-agenda .ag-tier.on{
+  border-color:var(--ultrasonic); background:rgba(8,9,231,.06);
+  transform:translateY(-3px);
+  box-shadow:0 12px 32px -8px rgba(8,9,231,.5), inset 0 1px 0 rgba(255,255,255,.08);
+}
+#pg-agenda .ag-tier.on::before{ opacity:1; }
+#pg-agenda .ag-tier-h{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px; }
+#pg-agenda .ag-tier-n{ font-family:'Space Mono',monospace; font-size:14px; font-weight:700; color:var(--ivory); letter-spacing:.04em; }
+#pg-agenda .ag-tier-p{ font-family:'Space Mono',monospace; font-size:18px; font-weight:700; color:var(--ultrasonic); }
+#pg-agenda .ag-tier ul{ list-style:none; font-size:10.5px; color:var(--wd); letter-spacing:.04em; line-height:1.75; padding:0; margin:0; }
+#pg-agenda .ag-tier ul li{ padding-left:14px; position:relative; }
+#pg-agenda .ag-tier ul li::before{ content:'+'; position:absolute; left:0; color:var(--ultrasonic); }
+#pg-agenda .ag-tier-check{
+  position:absolute; top:14px; right:14px; width:14px; height:14px;
+  border:1px solid var(--wm); border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  transition:all .2s;
+}
+#pg-agenda .ag-tier.on .ag-tier-check{ border-color:var(--ultrasonic); background:var(--ultrasonic); box-shadow:0 0 10px rgba(8,9,231,.7); }
+#pg-agenda .ag-tier.on .ag-tier-check::after{ content:''; width:5px; height:5px; border-radius:50%; background:#fff; }
+
+/* Form refinado */
+#pg-agenda .ag-field{ margin-bottom:18px; position:relative; z-index:3; }
+#pg-agenda .ag-lbl{ font-size:8.5px; letter-spacing:.24em; color:var(--wd); text-transform:uppercase; margin-bottom:7px; display:flex; justify-content:space-between; align-items:center; }
+#pg-agenda .ag-lbl .stat{ font-size:7.5px; color:rgba(255,250,231,.35); letter-spacing:.3em; }
+#pg-agenda .ag-inp-wrap{ position:relative; }
+#pg-agenda .ag-inp{
+  width:100%; background:rgba(255,255,255,.025);
+  border:none; border-bottom:1px solid var(--wm);
+  color:var(--ivory); font-size:13px; padding:10px 0; outline:none;
+  font-family:'IBM Plex Mono',monospace;
+}
+#pg-agenda .ag-inp::placeholder{ color:rgba(255,250,231,.22); }
+#pg-agenda .ag-inp-wrap::after{
+  content:''; position:absolute; bottom:0; left:0; right:0; height:1px;
+  background:var(--ultrasonic); box-shadow:0 0 8px var(--ultrasonic);
+  transform:scaleX(0); transform-origin:left;
+  transition:transform .35s cubic-bezier(.2,.8,.2,1);
+}
+#pg-agenda .ag-inp-wrap:focus-within::after{ transform:scaleX(1); }
+#pg-agenda .ag-ta{
+  width:100%; background:rgba(255,255,255,.025);
+  border:1px solid var(--wm); color:var(--ivory); font-size:12px;
+  padding:12px; outline:none; resize:vertical; min-height:90px;
+  font-family:'IBM Plex Mono',monospace;
+  transition:border-color .2s, box-shadow .2s;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.03);
+}
+#pg-agenda .ag-ta:focus{ border-color:var(--ultrasonic); box-shadow:0 0 0 1px var(--ultrasonic), 0 0 20px rgba(8,9,231,.3), inset 0 1px 0 rgba(255,255,255,.04); }
+
+/* Submit */
+#pg-agenda .ag-submit{
+  position:relative; display:inline-flex; align-items:center; gap:14px;
+  font-size:10.5px; letter-spacing:.32em; text-transform:uppercase;
+  background:var(--ultrasonic); color:#fff; padding:18px 32px; border:none; cursor:pointer;
+  font-family:'IBM Plex Mono',monospace; margin-top:8px;
+  box-shadow:0 8px 24px -6px rgba(8,9,231,.6), inset 0 1px 0 rgba(255,255,255,.2);
+  transition:all .25s cubic-bezier(.2,.8,.2,1);
+  overflow:hidden;
+}
+#pg-agenda .ag-submit::before{
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(120deg, transparent 30%, rgba(255,255,255,.25) 50%, transparent 70%);
+  transform:translateX(-100%); transition:transform .8s;
+}
+#pg-agenda .ag-submit:hover{ transform:translateY(-2px); box-shadow:0 14px 36px -6px rgba(8,9,231,.8), inset 0 1px 0 rgba(255,255,255,.25); background:#1f10f7; }
+#pg-agenda .ag-submit:hover::before{ transform:translateX(100%); }
+
+/* Sidebar calendario */
+#pg-agenda .cal-steps{
+  margin-bottom:24px; padding:14px;
+  background:rgba(0,0,0,.35); border:1px solid var(--wf);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.03);
+  font-family:'Space Mono',monospace; font-size:9px; letter-spacing:.18em;
+  text-transform:uppercase; color:var(--wd);
+}
+#pg-agenda .cal-steps div{ padding:3px 0; display:flex; gap:8px; }
+#pg-agenda .cal-steps .ok{ color:var(--green); }
+#pg-agenda .cal-steps .pend{ color:var(--ultrasonic); }
+#pg-agenda .cal-steps .wait{ color:rgba(255,250,231,.3); }
+#pg-agenda .ag-cal-title{ font-family:'Space Mono',monospace; font-size:18px; font-weight:700; color:var(--ivory); margin-bottom:6px; letter-spacing:-.01em; }
+#pg-agenda .ag-cal-sub{ font-size:9px; letter-spacing:.2em; color:var(--wd); text-transform:uppercase; margin-bottom:22px; }
+
+/* Sección contactos */
+#pg-agenda .contact-row{
+  position:relative; padding:72px clamp(24px,5vw,72px) 56px;
+  overflow:hidden; border-top:1px solid var(--wf);
+}
+#pg-agenda .contact-row::after{
+  content:''; position:absolute; top:20%; left:60%; width:420px; height:420px;
+  background:radial-gradient(circle, rgba(8,9,231,.14) 0%, transparent 65%);
+  pointer-events:none; z-index:0; filter:blur(60px);
+  animation:glowDriftA 32s ease-in-out infinite reverse;
+  mix-blend-mode:screen;
+}
+#pg-agenda .cr-label{
+  font-size:10px; letter-spacing:.34em; color:var(--ultrasonic);
+  text-transform:uppercase; margin-bottom:28px;
+  display:flex; align-items:center; gap:14px; position:relative; z-index:2;
+}
+#pg-agenda .cr-label::before{ content:''; width:24px; height:1px; background:var(--ultrasonic); box-shadow:0 0 6px var(--ultrasonic); }
+#pg-agenda .cr-label::after{ content:''; flex:1; height:1px; background:var(--wf); }
+#pg-agenda .cr-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:6px; position:relative; z-index:2; }
+#pg-agenda .cr-card{
+  position:relative; display:flex; flex-direction:column; gap:14px;
+  padding:28px 26px;
+  border:1px solid var(--wf); background:rgba(255,255,255,.018);
+  text-decoration:none; color:var(--ivory);
+  transition:all .3s cubic-bezier(.2,.8,.2,1);
+  min-height:210px; justify-content:space-between;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04), inset 0 -1px 0 rgba(0,0,0,.3);
+  overflow:hidden;
+}
+#pg-agenda .cr-card::before{
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(circle at top right, var(--accent, var(--ultrasonic)) 0%, transparent 60%);
+  opacity:0; transition:opacity .35s; pointer-events:none; mix-blend-mode:screen;
+}
+#pg-agenda .cr-card:hover{
+  transform:translateY(-4px);
+  border-color:var(--accent, var(--ultrasonic));
+  box-shadow:0 18px 40px -10px var(--accent-shadow, rgba(8,9,231,.4)), inset 0 1px 0 rgba(255,255,255,.08), inset 0 -1px 0 rgba(0,0,0,.3);
+}
+#pg-agenda .cr-card:hover::before{ opacity:.22; }
+#pg-agenda .cr-card.yt{ --accent:#FF0033; --accent-shadow:rgba(255,0,51,.35); }
+#pg-agenda .cr-card.ig{ --accent:#E1306C; --accent-shadow:rgba(225,48,108,.35); }
+#pg-agenda .cr-card.em{ --accent:var(--orange); --accent-shadow:rgba(248,80,42,.45); }
+#pg-agenda .cr-head{ display:flex; justify-content:space-between; align-items:flex-start; }
+#pg-agenda .cr-icon{ opacity:.7; color:var(--accent, var(--ultrasonic)); transition:opacity .3s, transform .3s; }
+#pg-agenda .cr-card:hover .cr-icon{ opacity:1; transform:scale(1.05); }
+#pg-agenda .cr-id{ font-family:'Space Mono',monospace; font-size:8px; letter-spacing:.28em; color:rgba(255,250,231,.3); text-transform:uppercase; }
+#pg-agenda .cr-main{ font-family:'Space Mono',monospace; font-size:16px; font-weight:700; letter-spacing:.02em; color:var(--ivory); line-height:1.3; }
+#pg-agenda .cr-handle{ font-size:11px; letter-spacing:.12em; color:var(--accent, var(--ultrasonic)); margin-top:2px; font-family:'IBM Plex Mono',monospace; }
+#pg-agenda .cr-sub{ font-size:10.5px; letter-spacing:.1em; color:var(--wd); line-height:1.7; margin-top:6px; }
+#pg-agenda .cr-stat{ display:flex; gap:14px; font-size:8px; letter-spacing:.22em; color:rgba(255,250,231,.5); text-transform:uppercase; padding-top:12px; border-top:1px solid var(--wf); }
+#pg-agenda .cr-stat strong{ color:var(--ivory); font-weight:700; font-family:'Space Mono',monospace; }
+
+/* Tablet (1024px) — calendario pasa abajo en lugar de sidebar */
+@media(max-width:1023px){
+  #pg-agenda .ag-layout{ grid-template-columns:1fr; min-height:0; }
+  #pg-agenda .ag-left{ border-right:none; border-bottom:1px solid var(--wf); padding:60px clamp(20px,4vw,40px) 40px; }
+  #pg-agenda .ag-right{ padding:48px clamp(20px,4vw,40px); }
+  #pg-agenda .cr-grid{ grid-template-columns:1fr 1fr; gap:6px; }
+}
+/* Mobile (700px) */
+@media(max-width:700px){
+  #pg-agenda .ag-left{ padding:48px 20px 32px; }
+  #pg-agenda .ag-right{ padding:36px 20px; }
+  #pg-agenda .ag-pricing{ grid-template-columns:1fr; }
+  #pg-agenda .ag-trust{ grid-template-columns:1fr 1fr; }
+  #pg-agenda .ag-trust-item.wide{ grid-column:1/3; }
+  #pg-agenda .cr-grid{ grid-template-columns:1fr; gap:8px; }
+  #pg-agenda .cr-card{ min-height:0; padding:24px 22px; }
+  #pg-agenda .contact-row{ padding:48px 20px 32px; }
+  #pg-agenda .caru-wrap{ padding:32px 0 24px; }
+  #pg-agenda .caru-wrap-primary{ padding:40px 0 32px; }
+  #pg-agenda .caru-img{
+    height:clamp(220px,52vw,360px) !important;
+    width:calc(clamp(220px,52vw,360px) * 16 / 9) !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HOME (#pg-home) — Más profundidad y glows tipo vidrio
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Glows ambientales detrás del hero */
+#pg-home::before{
+  content:''; position:absolute; top:20%; left:15%; width:600px; height:600px;
+  background:radial-gradient(circle, rgba(8,9,231,.18) 0%, rgba(8,9,231,.06) 35%, transparent 65%);
+  pointer-events:none; z-index:1; filter:blur(50px);
+  animation:glowDriftA 26s ease-in-out infinite;
+  mix-blend-mode:screen; will-change:transform,opacity;
+}
+#pg-home::after{
+  content:''; position:absolute; bottom:-10%; right:5%; width:500px; height:500px;
+  background:radial-gradient(circle, rgba(85,51,255,.16) 0%, rgba(85,51,255,.04) 40%, transparent 70%);
+  pointer-events:none; z-index:1; filter:blur(60px);
+  animation:glowDriftB 32s ease-in-out infinite;
+  mix-blend-mode:screen; will-change:transform,opacity;
+}
+
+/* Asegurar que el hero queda por encima de los glows */
+#pg-home .hero{ z-index:30; }
+#pg-home .vline, #pg-home #cl{ z-index:5; }
+
+/* Halo sutil del número hero — solo bloom ambiental, sin saturación */
+#pg-home .h-n{
+  text-shadow:0 0 80px rgba(8,9,231,.22);
+}
+
+/* CTA Inicio: tratamiento elevado con shimmer */
+#pg-home .cta,
+.cta{
+  position:relative; pointer-events:auto;
+  background:var(--b); padding:16px 32px;
+  box-shadow:
+    0 8px 24px -6px rgba(8,9,231,.6),
+    inset 0 1px 0 rgba(255,255,255,.2);
+  transition:all .3s cubic-bezier(.2,.8,.2,1);
+  overflow:hidden;
+}
+#pg-home .cta::before,
+.cta::before{
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(120deg, transparent 30%, rgba(255,255,255,.25) 50%, transparent 70%);
+  transform:translateX(-120%); transition:transform .8s; pointer-events:none;
+}
+#pg-home .cta:hover,
+.cta:hover{
+  transform:translateY(-2px);
+  background:#1f10f7;
+  box-shadow:
+    0 14px 36px -6px rgba(8,9,231,.85),
+    inset 0 1px 0 rgba(255,255,255,.28);
+  gap:22px;
+}
+#pg-home .cta:hover::before,
+.cta:hover::before{ transform:translateX(120%); }
+
+/* ═══════════════════════════════════════════════════════════════
+   ARCHIVO (#pg-archivo) — Profundidad + normalización tipográfica
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Sección con glows tipo vidrio */
+#pg-archivo{ position:relative; overflow:hidden; }
+#pg-archivo .hero-archivo{ position:relative; background:#060606; }
+#pg-archivo .hero-archivo::before{
+  content:''; position:absolute; top:5%; left:50%; transform:translateX(-50%);
+  width:760px; height:600px;
+  background:radial-gradient(ellipse at center, rgba(8,9,231,.18) 0%, rgba(8,9,231,.05) 40%, transparent 70%);
+  pointer-events:none; z-index:0; filter:blur(50px);
+  animation:glowDriftA 28s ease-in-out infinite;
+  mix-blend-mode:screen;
+}
+#pg-archivo .hero-archivo::after{
+  content:''; position:absolute; bottom:0; left:20%;
+  width:560px; height:560px;
+  background:radial-gradient(circle, rgba(85,51,255,.14) 0%, transparent 65%);
+  pointer-events:none; z-index:0; filter:blur(70px);
+  animation:glowDriftB 36s ease-in-out infinite reverse;
+  mix-blend-mode:screen;
+}
+#pg-archivo .texto-archivo{ position:relative; z-index:2; max-width:760px !important; }
+#pg-archivo .hero-archivo{ max-width:1280px; margin:0 auto; width:100%; }
+#pg-renta .rpg{ max-width:1280px; margin:0 auto; }
+
+/* ── NORMALIZACIÓN TIPOGRÁFICA DEL MANIFIESTO ── */
+#pg-archivo .texto-archivo .arc-m-kicker{
+  font-size:10px !important;
+  letter-spacing:.34em !important;
+  margin-bottom:14px !important;
+  color:var(--ultrasonic) !important;
+}
+#pg-archivo .texto-archivo .arc-m-headline{
+  font-size:clamp(28px,3.6vw,48px) !important;
+  line-height:1.18 !important;
+  margin-bottom:36px !important;
+  color:var(--ivory);
+  letter-spacing:-.02em;
+}
+#pg-archivo .texto-archivo p{
+  font-size:15px !important;
+  line-height:1.85 !important;
+  letter-spacing:.02em !important;
+  color:rgba(255,250,231,.78) !important;
+  margin-bottom:22px !important;
+}
+#pg-archivo .texto-archivo p strong{
+  color:var(--ivory);
+  font-weight:600;
+}
+
+/* Quote: más presencia y luz */
+#pg-archivo .texto-archivo .arc-quote{
+  position:relative;
+  font-size:clamp(15px,2vw,20px) !important;
+  line-height:1.55 !important;
+  padding:22px 28px !important;
+  margin-top:42px !important;
+  background:rgba(8,9,231,.08) !important;
+  border-left:3px solid var(--ultrasonic) !important;
+  box-shadow:
+    -3px 0 24px -6px rgba(8,9,231,.4),
+    inset 0 1px 0 rgba(255,255,255,.05);
+}
+#pg-archivo .texto-archivo .arc-quote::after{
+  content:''; position:absolute; top:50%; left:0; width:60%; height:1px;
+  background:linear-gradient(to right, rgba(8,9,231,.4), transparent);
+  transform:translateY(-50%); pointer-events:none;
+}
+
+/* Stats cards: elevación + hover */
+#pg-archivo .texto-archivo .arc-stats{
+  margin-top:52px !important; gap:3px !important;
+}
+#pg-archivo .arc-stat{
+  position:relative; padding:24px 18px !important;
+  background:rgba(255,255,255,.025) !important;
+  border:1px solid var(--wf) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.04),
+    inset 0 -1px 0 rgba(0,0,0,.3);
+  transition:all .3s cubic-bezier(.2,.8,.2,1);
+  overflow:hidden;
+}
+#pg-archivo .arc-stat::before{
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(circle at top, rgba(8,9,231,.15), transparent 70%);
+  opacity:0; transition:opacity .35s; pointer-events:none;
+}
+#pg-archivo .arc-stat:hover{
+  transform:translateY(-2px);
+  border-color:rgba(8,9,231,.35) !important;
+  box-shadow:
+    0 14px 30px -10px rgba(8,9,231,.4),
+    inset 0 1px 0 rgba(255,255,255,.08);
+}
+#pg-archivo .arc-stat:hover::before{ opacity:1; }
+#pg-archivo .arc-stat-n{
+  font-size:clamp(28px,3.4vw,44px) !important;
+  color:var(--ultrasonic) !important;
+  margin-bottom:6px !important;
+}
+#pg-archivo .arc-stat-l{
+  font-size:9px !important;
+  letter-spacing:.22em !important;
+  color:var(--wd) !important;
+  line-height:1.5;
+}
+
+/* Red-link cards: elevación */
+#pg-archivo .red-link{
+  position:relative;
+  background:rgba(255,255,255,.025) !important;
+  border:1px solid var(--wf) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+  transition:all .25s cubic-bezier(.2,.8,.2,1) !important;
+  overflow:hidden;
+}
+#pg-archivo .red-link:hover{
+  transform:translateY(-2px);
+  border-color:rgba(8,9,231,.4) !important;
+  box-shadow:
+    0 12px 28px -10px rgba(8,9,231,.4),
+    inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+/* Botón "Ver el archivo completo" — tratamiento agenda submit */
+#pg-archivo .arc-enter-btn{
+  position:relative;
+  padding:18px 38px !important;
+  box-shadow:
+    0 10px 26px -6px rgba(8,9,231,.6),
+    inset 0 1px 0 rgba(255,255,255,.2);
+  transition:all .3s cubic-bezier(.2,.8,.2,1) !important;
+  overflow:hidden;
+}
+#pg-archivo .arc-enter-btn::before{
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(120deg, transparent 30%, rgba(255,255,255,.25) 50%, transparent 70%);
+  transform:translateX(-120%); transition:transform .8s; pointer-events:none;
+}
+#pg-archivo .arc-enter-btn:hover{
+  transform:translateY(-2px);
+  background:#1f10f7 !important;
+  box-shadow:
+    0 16px 38px -6px rgba(8,9,231,.85),
+    inset 0 1px 0 rgba(255,255,255,.28);
+}
+#pg-archivo .arc-enter-btn:hover::before{ transform:translateX(120%); }
+
+#pg-archivo .enter-row{
+  padding-top:36px !important;
+  border-top:1px solid var(--wf) !important;
+}
+
+/* Mobile: mantener legibilidad */
+@media(max-width:700px){
+  #pg-archivo .texto-archivo p{ font-size:14.5px !important; line-height:1.8 !important; }
+  #pg-archivo .texto-archivo .arc-m-headline{ font-size:clamp(24px,7vw,34px) !important; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MOBILE POLISH GLOBAL
+   ═══════════════════════════════════════════════════════════════ */
+/* Home: hero más compacto en mobile, números escalan limpio */
+@media(max-width:700px){
+  #pg-home .hero{ left:20px; right:20px; bottom:80px; }
+  #pg-home .h-eye{ font-size:9px; letter-spacing:.24em; }
+  #pg-home .h-d{ font-size:9px; letter-spacing:.18em; max-width:none; }
+  #pg-home .cta{ padding:14px 24px; font-size:9.5px; }
+  /* Reducir intensidad de glows ambientales en mobile */
+  #pg-home::before{ width:340px; height:340px; opacity:.55; }
+  #pg-home::after{ width:280px; height:280px; opacity:.5; }
+}
+
+/* Archivo: stats 2x3 → 1x6 acordeón fluido en mobile chico */
+@media(max-width:560px){
+  #pg-archivo .texto-archivo .arc-stats{ grid-template-columns:1fr 1fr !important; }
+  #pg-archivo .arc-stat{ padding:18px 14px !important; }
+  #pg-archivo .arc-stat-n{ font-size:clamp(22px,7vw,30px) !important; }
+}
+
+/* Ticker más compacto en mobile, mantener legibilidad ASDL tap */
+@media(max-width:560px){
+  .tk-tag{ padding:0 12px; font-size:8px; letter-spacing:.22em; }
+  .tk-inner span{ font-size:8.5px; letter-spacing:.16em; padding:0 12px; }
+}
+
+/* Reduced motion: respetar preferencia del usuario */
+@media(prefers-reduced-motion:reduce){
+  #pg-home::before, #pg-home::after,
+  #pg-agenda::before, #pg-agenda::after,
+  #pg-archivo .hero-archivo::before, #pg-archivo .hero-archivo::after,
+  #pg-renta::before{
+    animation:none !important;
+  }
+  #pg-agenda .ag-wave i{ animation:none !important; height:60% !important; }
+  .live-pill .dot{ animation:none !important; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DJ SETS (#pg-djsets) — atmósfera de grilla técnica
+   ═══════════════════════════════════════════════════════════════ */
+#pg-djsets{ position:relative; }
+#pg-djsets::before{
+  content:''; position:absolute; inset:0; pointer-events:none; z-index:0;
+  background-image:
+    linear-gradient(rgba(8,9,231,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(8,9,231,.035) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 80% 70% at center, #000 0%, rgba(0,0,0,.4) 60%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at center, #000 0%, rgba(0,0,0,.4) 60%, transparent 100%);
+}
+#pg-djsets > *{ position:relative; z-index:1; }
+
+/* ═══════════════════════════════════════════════════════════════
+   RENTA (#pg-renta) — identidad industrial · acento Blazing Flame
+   ═══════════════════════════════════════════════════════════════ */
+#pg-renta{ position:relative; overflow:hidden; }
+#pg-renta::before{
+  content:''; position:absolute; top:20%; right:-100px; width:520px; height:520px;
+  background:radial-gradient(circle, rgba(248,80,42,.10) 0%, rgba(248,80,42,.03) 40%, transparent 70%);
+  pointer-events:none; z-index:0; filter:blur(60px);
+  animation:glowDriftB 38s ease-in-out infinite;
+  mix-blend-mode:screen;
+}
+#pg-renta::after{
+  content:''; position:absolute; inset:0; pointer-events:none; z-index:0;
+  background-image:
+    repeating-linear-gradient(45deg,
+      transparent 0, transparent 80px,
+      rgba(255,250,231,.012) 80px, rgba(255,250,231,.012) 81px);
+}
+#pg-renta > *{ position:relative; z-index:1; }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
@@ -1333,7 +2229,7 @@ input[type=file]{display:none}
 
 <!-- TICKER (CNN style) -->
 <div id="ticker">
-  <div class="tk-tag">ASDL</div>
+  <div class="tk-tag" onclick="goHome && goHome()" role="link" tabindex="0" title="Volver al inicio" aria-label="Volver al inicio" onkeydown="if(event.key==='Enter'){goHome && goHome();}">ASDL</div>
   <div class="tk-track">
     <div class="tk-inner">
       <span class="hl">PRÓXIMA DJ JAM</span><span class="sep">·</span>
@@ -1374,7 +2270,6 @@ input[type=file]{display:none}
     <div class="nt" data-pg="djsets" onclick="navTo('djsets',this)">Dj Sets</div>
     <div class="nt" data-pg="agenda" onclick="navTo('agenda',this)">Graba tu Set</div>
     <div class="nt" data-pg="renta" onclick="navTo('renta',this)">Renta de Equipos</div>
-    <div class="nt" data-pg="contacto" onclick="navTo('contacto',this)">Contáctanos</div>
   </div>
 
   <div id="content">
@@ -1505,21 +2400,32 @@ input[type=file]{display:none}
 
           <p>Sabemos que la escena local a menudo está partida por géneros o nichos que no se hablan entre sí. El Archivo funciona como un punto de encuentro donde esos muros se caen. Unimos a artistas que quizás nunca se hubieran conocido por tocar estilos distintos, fomentando la camaradería y el respeto mutuo. <strong>Techno, House, Drum &amp; Bass, Hip Hop, Salsa, Dembow y Funk: en nuestra biblioteca todos tienen un lugar.</strong></p>
 
-          <p>En el Archivo no solo grabamos sets; forjamos conexiones. Porque entendemos que la música es, ante todo, una construcción colectiva.</p>
-
-          <p>Nuestro propósito es uno: <strong>democratizar el DJ set haciéndolo accesible y funcional para todos</strong>, por eso grabar en el archivo no es como en cualquier otra cabina de la ciudad.</p>
-
           <div class="arc-quote">Quien entra al Archivo, lo entiende.<br>No cualquiera entra.</div>
 
-          <!-- Stats -->
+          <!-- Stats — 6 métricas curadas en 2 filas × 3 cards -->
           <div class="arc-stats">
             <div class="arc-stat">
               <div class="arc-stat-n" id="arc-stat-sets">—</div>
               <div class="arc-stat-l">Artistas en el archivo</div>
             </div>
             <div class="arc-stat">
+              <div class="arc-stat-n" id="yt-stat-subs">—</div>
+              <div class="arc-stat-l">Suscriptores YouTube</div>
+            </div>
+            <div class="arc-stat">
+              <div class="arc-stat-n" id="ig-stat-followers">1.391</div>
+              <div class="arc-stat-l">Seguidores Instagram</div>
+            </div>
+          </div>
+
+          <div class="arc-stats" style="margin-top:3px">
+            <div class="arc-stat">
               <div class="arc-stat-n">13</div>
               <div class="arc-stat-l">DJ Jams realizadas</div>
+            </div>
+            <div class="arc-stat">
+              <div class="arc-stat-n" id="yt-stat-views">—</div>
+              <div class="arc-stat-l">Visualizaciones YouTube</div>
             </div>
             <div class="arc-stat">
               <div class="arc-stat-n">2025</div>
@@ -1527,37 +2433,10 @@ input[type=file]{display:none}
             </div>
           </div>
 
-          <!-- Stats YouTube — se actualizan automáticamente desde la API -->
-          <div class="arc-stats" style="margin-top:2px">
-            <div class="arc-stat">
-              <div class="arc-stat-n" id="yt-stat-subs">—</div>
-              <div class="arc-stat-l">Suscriptores YouTube</div>
-            </div>
-            <div class="arc-stat">
-              <div class="arc-stat-n" id="yt-stat-videos">—</div>
-              <div class="arc-stat-l">Videos en el canal</div>
-            </div>
-            <div class="arc-stat">
-              <div class="arc-stat-n" id="yt-stat-views">—</div>
-              <div class="arc-stat-l">Visualizaciones totales</div>
-            </div>
-          </div>
-
-          <!-- Stats Instagram — actualizado manualmente (última actualización: 24/05/2026) -->
-          <div class="arc-stats" style="margin-top:2px">
-            <div class="arc-stat">
-              <div class="arc-stat-n" id="ig-stat-followers">1.391</div>
-              <div class="arc-stat-l">Seguidores Instagram</div>
-            </div>
-            <div class="arc-stat">
-              <div class="arc-stat-n" id="ig-stat-views">369.970</div>
-              <div class="arc-stat-l">Vistas Instagram (90d)</div>
-            </div>
-            <div class="arc-stat">
-              <div class="arc-stat-n" id="ig-stat-posts">306</div>
-              <div class="arc-stat-l">Posts publicados</div>
-            </div>
-          </div>
+          <!-- Stats ocultas (mantenidas para no romper otros readers) -->
+          <span id="yt-stat-videos" style="display:none">—</span>
+          <span id="ig-stat-views" style="display:none">369.970</span>
+          <span id="ig-stat-posts" style="display:none">306</span>
 
           <div class="enter-row">
             <button class="arc-enter-btn" onclick="navTo('djsets',document.querySelector('[data-pg=djsets]'))">
@@ -1670,130 +2549,226 @@ input[type=file]{display:none}
 
     </div>
 
-    <!-- AGENDA — Graba tu Set -->
+    <!-- AGENDA — Graba tu Set (layout 2 columnas + carrusel al final) -->
     <div id="pg-agenda" class="pg">
-      <div class="ag-layout">
 
-        <!-- LEFT: Info + Formulario -->
-        <div class="ag-left">
-          <div class="ag-hero">
+      <!-- GRABA TU SET (form + calendario) -->
+      <section class="ag-section">
+        <div class="ag-layout">
+
+          <!-- LEFT -->
+          <div class="ag-left">
+            <div class="sec-num">02</div>
             <div class="ag-eye">Archivo Secreto del Lab · Buenos Aires</div>
-            <div class="ag-title">Graba<br>tu Set</div>
-            <div class="ag-desc">Grabamos <strong>de lunes a domingo</strong>. Seleccioná una fecha disponible, completá el formulario y el equipo confirma tu reserva. Solo necesitás tu <strong>USB y tus ganas</strong>.</div>
-          </div>
+            <h1 class="ag-title">Graba tu Set <span class="soft">en el Archivo</span></h1>
+            <div class="ag-wave">
+              <i style="animation-delay:0s"></i><i style="animation-delay:.1s"></i><i style="animation-delay:.2s"></i><i style="animation-delay:.3s"></i><i style="animation-delay:.4s"></i><i style="animation-delay:.5s"></i><i style="animation-delay:.6s"></i><i style="animation-delay:.7s"></i><i style="animation-delay:.8s"></i><i style="animation-delay:.9s"></i><i style="animation-delay:1s"></i><i style="animation-delay:1.1s"></i><i style="animation-delay:1.2s"></i><i style="animation-delay:1.3s"></i><i style="animation-delay:0s"></i><i style="animation-delay:.15s"></i><i style="animation-delay:.3s"></i><i style="animation-delay:.45s"></i><i style="animation-delay:.6s"></i><i style="animation-delay:.75s"></i>
+            </div>
+            <div class="ag-desc">Grabamos <strong>de lunes a domingo</strong>. Seleccioná una fecha disponible, completá el formulario y el equipo confirma tu reserva en <strong>menos de 24hs</strong>. Solo necesitás tu <strong>USB y tus ganas</strong>.</div>
 
-          <div class="ag-form" id="ag-form">
-            <div class="ag-sec-title">Tu sesión</div>
-            <div class="ag-field">
-              <div class="ag-lbl">Tipo de sesión</div>
-              <div class="ag-radio-row">
-                <label class="ag-radio"><input type="radio" name="ag-tipo" value="Solo" checked> Solo — $<span id="precio-solo">60.000</span></label>
-                <label class="ag-radio"><input type="radio" name="ag-tipo" value="B2B"> B2B — $<span id="precio-b2b">80.000</span></label>
+            <!-- Trust strip -->
+            <div class="ag-trust">
+              <div class="ag-trust-item">
+                <div class="ag-trust-n"><span class="acc">+140</span></div>
+                <div class="ag-trust-l">Sets publicados</div>
+              </div>
+              <div class="ag-trust-item">
+                <div class="ag-trust-n"><span class="acc">OPEN</span></div>
+                <div class="ag-trust-l">format</div>
+              </div>
+              <div class="ag-trust-item">
+                <div class="ag-trust-n">7<span class="acc">/7</span></div>
+                <div class="ag-trust-l">Lun a Dom</div>
+              </div>
+              <div class="ag-trust-item wide">
+                <div class="ag-trust-l">Llevate <strong style="color:var(--ivory)">1 DJ set a dos cámaras</strong>, <strong style="color:var(--ivory)">15 fotografías profesionales</strong> para tu presskit, clips de la jornada — un registro real.</div>
               </div>
             </div>
-            <div class="ag-sec-title" style="margin-top:24px">Tu información</div>
-            <div class="ag-field">
-              <div class="ag-lbl">Nombre artístico *</div>
-              <input class="ag-inp" id="ag-artist" placeholder="Tu nombre de Dj o proyecto" oninput="checkComunidadDebounce(this.value)">
-            </div>
-            <div id="ag-comunidad-badge" style="display:none;margin-bottom:14px;padding:10px 14px;background:rgba(27,0,230,.15);border:1px solid rgba(27,0,230,.4);font-size:10px;letter-spacing:.14em;color:var(--b);text-transform:uppercase">🔵 Artista de la comunidad — 10% OFF aplicado</div>
-            <div class="ag-field">
-              <div class="ag-lbl">Email de contacto *</div>
-              <input class="ag-inp" id="ag-email" type="email" placeholder="tu@email.com">
-            </div>
-            <div class="ag-field">
-              <div class="ag-lbl">WhatsApp <span id="ag-wa-req" style="color:var(--red);font-size:8px"></span></div>
-              <input class="ag-inp" id="ag-whatsapp" placeholder="+54 9 11 ...">
-            </div>
-            <div class="ag-field">
-              <div class="ag-lbl">Género musical</div>
-              <input class="ag-inp" id="ag-genre" placeholder="House, Techno, DnB, Riddim...">
-            </div>
-            <div class="ag-field">
-              <div class="ag-lbl">Redes sociales y links</div>
-              <input class="ag-inp" id="ag-links" placeholder="Instagram, SoundCloud, YouTube...">
-            </div>
-            <div class="ag-field">
-              <div class="ag-lbl">¿Ya completaste el formulario de registro del Archivo?</div>
-              <div class="ag-radio-row">
-                <label class="ag-radio"><input type="radio" name="ag-reg" value="si"> Sí, ya me registré</label>
-                <label class="ag-radio"><input type="radio" name="ag-reg" value="no" checked> Todavía no</label>
+
+            <div class="ag-form" id="ag-form">
+              <div class="ag-sec-title">Tu sesión</div>
+
+              <!-- Pricing tiles · 3 columnas: Common / B2B / Custom -->
+              <div class="ag-pricing">
+                <label class="ag-tier on" id="tier-solo">
+                  <input type="radio" name="ag-tipo" value="Solo" checked hidden>
+                  <div class="ag-tier-check"></div>
+                  <div class="ag-tier-h">
+                    <div class="ag-tier-n">SET COMMON</div>
+                    <div class="ag-tier-p">$<span id="precio-solo">70.000</span></div>
+                  </div>
+                  <ul>
+                    <li>1 hora de grabación</li>
+                    <li>2 cámaras + audio masterizado</li>
+                    <li>Edición y publicación incluida</li>
+                    <li>Contenido 360°</li>
+                  </ul>
+                </label>
+                <label class="ag-tier" id="tier-b2b">
+                  <input type="radio" name="ag-tipo" value="B2B" hidden>
+                  <div class="ag-tier-check"></div>
+                  <div class="ag-tier-h">
+                    <div class="ag-tier-n">SET B2B</div>
+                    <div class="ag-tier-p">$<span id="precio-b2b">90.000</span></div>
+                  </div>
+                  <ul>
+                    <li>90 minutos de grabación</li>
+                    <li>2 cámaras + audio masterizado</li>
+                    <li>Edición y publicación incluida</li>
+                    <li>Contenido 360°</li>
+                  </ul>
+                </label>
+                <label class="ag-tier" id="tier-custom">
+                  <input type="radio" name="ag-tipo" value="Custom" hidden>
+                  <div class="ag-tier-check"></div>
+                  <div class="ag-tier-h">
+                    <div class="ag-tier-n">SET CUSTOM</div>
+                    <div class="ag-tier-p">desde $<span id="precio-custom">120.000</span></div>
+                  </div>
+                  <ul>
+                    <li>100% personalizado</li>
+                    <li>Tu set, tus reglas</li>
+                    <li>Producción a medida</li>
+                    <li>Cotizamos por WhatsApp</li>
+                  </ul>
+                </label>
               </div>
-            </div>
-            <div class="ag-field">
-              <div class="ag-lbl">Mensaje adicional</div>
-              <textarea class="ag-ta" id="ag-msg" placeholder="Contanos sobre tu proyecto, si es B2B con quién..."></textarea>
-            </div>
-            <button class="ag-submit" onclick="submitAgenda()">Confirmar reserva →</button>
-            <div id="ag-status" style="font-size:11px;letter-spacing:.1em;color:var(--wd);margin-top:14px;min-height:18px;line-height:1.8"></div>
-          </div>
-        </div>
 
-        <!-- RIGHT: Calendario de disponibilidad -->
-        <div class="ag-right">
-          <div class="ag-cal-title">Disponibilidad</div>
-          <div class="ag-cal-sub" id="cal-subtitle">Próximos 30 días · Seleccioná fecha y horario</div>
-          <div class="cal30" id="cal30-public"></div>
-          <div id="slots-public" style="margin-top:4px"></div>
-          <div class="cal-legend">
-            <div class="leg-item"><div class="leg-dot" style="background:rgba(27,0,230,.5)"></div>Disponible</div>
-            <div class="leg-item"><div class="leg-dot" style="background:rgba(255,59,59,.4)"></div>No disponible</div>
-            <div class="leg-item"><div class="leg-dot" style="background:rgba(0,201,103,.4)"></div>Ocupado</div>
-            <div class="leg-item"><div class="leg-dot" style="box-shadow:inset 0 0 0 1px var(--b)"></div>Hoy</div>
-          </div>
-          <div style="margin-top:24px;padding-top:18px;border-top:1px solid var(--wf)">
-            <div style="font-size:9px;letter-spacing:.22em;color:var(--wd);text-transform:uppercase;margin-bottom:10px">¿Preferís hablar primero?</div>
-            <a href="https://wa.link/n7wg41" target="_blank" style="display:inline-flex;align-items:center;gap:12px;background:#128C7E;padding:12px 20px;color:#fff;font-size:10px;letter-spacing:.2em;text-transform:uppercase;text-decoration:none;transition:background .2s" onmouseover="this.style.background='#0e7268'" onmouseout="this.style.background='#128C7E'">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-              Consultar por WhatsApp →
-            </a>
-          </div>
-        </div>
+              <div class="ag-sec-title" style="margin-top:32px">Tu información</div>
 
+              <div class="ag-field">
+                <div class="ag-lbl"><span>Nombre artístico *</span><span class="stat">REQ</span></div>
+                <div class="ag-inp-wrap"><input class="ag-inp" id="ag-artist" placeholder="Tu nombre de DJ o proyecto" oninput="checkComunidadDebounce(this.value)"></div>
+              </div>
+
+              <div id="ag-comunidad-badge" style="display:none;margin-bottom:14px;padding:10px 14px;background:rgba(8,9,231,.15);border:1px solid rgba(8,9,231,.4);font-size:10px;letter-spacing:.14em;color:var(--ultrasonic);text-transform:uppercase">🔵 Artista de la comunidad — 10% OFF aplicado</div>
+
+              <div class="ag-field">
+                <div class="ag-lbl"><span>Email de contacto *</span><span class="stat">REQ</span></div>
+                <div class="ag-inp-wrap"><input class="ag-inp" id="ag-email" type="email" placeholder="tu@email.com"></div>
+              </div>
+
+              <div class="ag-field">
+                <div class="ag-lbl"><span>WhatsApp *</span><span class="stat" id="ag-wa-req">REQ</span></div>
+                <div class="ag-inp-wrap"><input class="ag-inp" id="ag-whatsapp" placeholder="+54 9 11 ..."></div>
+              </div>
+
+              <div class="ag-field">
+                <div class="ag-lbl"><span>Mensaje adicional</span><span class="stat">OPT</span></div>
+                <textarea class="ag-ta" id="ag-msg" placeholder="Género, B2B con quién, referencias de sonido..."></textarea>
+              </div>
+
+              <!-- Campos legacy ocultos (mantenidos para submitAgenda) -->
+              <input type="hidden" id="ag-genre" value="">
+              <input type="hidden" id="ag-links" value="">
+              <input type="radio" name="ag-reg" value="no" checked hidden>
+
+              <button class="ag-submit" onclick="submitAgenda()">Solicitar fecha →</button>
+              <div style="font-size:10px;letter-spacing:.14em;color:rgba(255,250,231,.4);margin-top:14px">// Te confirmamos por WhatsApp en menos de 24hs</div>
+              <div id="ag-status" style="font-size:11px;letter-spacing:.1em;color:var(--wd);margin-top:14px;min-height:18px;line-height:1.8"></div>
+            </div>
+          </div>
+
+          <!-- RIGHT: Calendario + Franjas + WhatsApp full-width -->
+          <div class="ag-right">
+            <div class="ag-cal-title">Disponibilidad</div>
+            <div class="ag-cal-sub" id="cal-subtitle">Pedí cualquier fecha — confirmamos en 24hs</div>
+            <div class="cal30" id="cal30-public"></div>
+            <div id="slots-public" style="margin-top:4px"></div>
+
+            <!-- WhatsApp full-width (mismo grosor que el calendario) -->
+            <div class="ag-wa-zone">
+              <div class="ag-wa-lbl">¿Preferís hablar primero?</div>
+              <a class="ag-wa-full" href="https://wa.link/n7wg41" target="_blank" rel="noopener">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                Consultar por WhatsApp →
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- TEXTO DE CONEXIÓN: statement editorial con underline animado -->
+      <div class="ag-connect-text ag-connect-statement">
+        <p>En el Archivo no solo grabamos sets; <em class="em-soft">forjamos conexiones</em>. Porque entendemos que la música es, ante todo, una construcción colectiva.</p>
+        <p>Nuestro propósito es uno: democratizar el DJ set haciéndolo accesible y funcional para todos, por eso <span class="em-flow">grabar en el archivo no es como en cualquier otra cabina de la ciudad</span>.</p>
       </div>
-    </div>
 
-    <!-- CONTÁCTANOS -->
-    <div id="pg-contacto" class="pg">
-      <!-- ── CARRUSEL GALERÍA ── -->
-      <div class="caru-wrap" id="caru-wrap">
-        <div class="caru-label">SÉ <span>PARTE</span> DEL ARCHIVO</div>
+      <!-- CARRUSEL DE DESCUBRIMIENTO (constreñido al ancho del texto + fade lateral) -->
+      <section class="caru-wrap caru-wrap-primary" aria-label="Galería de artistas del archivo">
+        <div class="caru-label">SÉ <span>PARTE</span> DEL ARCHIVO · ARRASTRÁ PARA EXPLORAR</div>
         <div class="caru-track-outer">
           <div class="caru-track" id="caru-track">
-            <!-- Las imágenes se inyectan por JS desde fotosContacto -->
             <div class="caru-placeholder">Cargando galería…</div>
           </div>
         </div>
+      </section>
+
+      <!-- TEXTO DE CONEXIÓN: de la galería a las redes -->
+      <div class="ag-connect-text">
+        <p>Escuchá el registro completo, conectá con una comunidad de artistas genuinos, contactanos y hagamos algo que te identifique.</p>
       </div>
 
-      <div class="cpg">
-        <div class="csec">
-          <div class="clbl">Redes y plataformas</div>
-          <a class="clink" href="https://www.youtube.com/@ArchivoSecretodelLab/videos" target="_blank">
-            <svg class="clink-icon" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M22.54 6.42a2.78 2.78 0 00-1.95-1.97C18.88 4 12 4 12 4s-6.88 0-8.59.45A2.78 2.78 0 001.46 6.42 29 29 0 001 12a29 29 0 00.46 5.58 2.78 2.78 0 001.95 1.97C5.12 20 12 20 12 20s6.88 0 8.59-.45a2.78 2.78 0 001.95-1.97A29 29 0 0023 12a29 29 0 00-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="currentColor" stroke="none"/></svg>
+      <!-- CONTACTOS HORIZONTALES (después de las fotos) -->
+      <section class="contact-row">
+        <div class="cr-label">Seguinos · Redes y plataformas</div>
+        <div class="cr-grid">
+
+          <a class="cr-card yt" href="https://www.youtube.com/@ArchivoSecretodelLab/videos" target="_blank" rel="noopener">
+            <div class="cr-head">
+              <svg class="cr-icon" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.4" viewBox="0 0 24 24"><path d="M22.54 6.42a2.78 2.78 0 00-1.95-1.97C18.88 4 12 4 12 4s-6.88 0-8.59.45A2.78 2.78 0 001.46 6.42 29 29 0 001 12a29 29 0 00.46 5.58 2.78 2.78 0 001.95 1.97C5.12 20 12 20 12 20s6.88 0 8.59-.45a2.78 2.78 0 001.95-1.97A29 29 0 0023 12a29 29 0 00-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="currentColor" stroke="none"/></svg>
+              <div class="cr-id">YT_01</div>
+            </div>
             <div>
-              <div class="clink-main">YouTube — @ArchivoSecretodelLab</div>
-              <div class="clink-sub">Sets completos, jornadas y archivo audiovisual</div>
+              <div class="cr-main">YouTube</div>
+              <div class="cr-handle">@ArchivoSecretodelLab</div>
+              <div class="cr-sub">Sets completos, jornadas y archivo audiovisual</div>
+            </div>
+            <div class="cr-stat">
+              <div>SUSCRIBITE</div>
+              <div style="margin-left:auto;color:var(--accent)">VER →</div>
             </div>
           </a>
-          <a class="clink" href="https://www.instagram.com/archivosecretodellab" target="_blank">
-            <svg class="clink-icon" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>
+
+          <a class="cr-card ig" href="https://www.instagram.com/archivosecretodellab" target="_blank" rel="noopener">
+            <div class="cr-head">
+              <svg class="cr-icon" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.4" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>
+              <div class="cr-id">IG_02</div>
+            </div>
             <div>
-              <div class="clink-main">Instagram — @archivosecretodellab</div>
-              <div class="clink-sub">Novedades, convocatorias y detrás de cámara</div>
+              <div class="cr-main">Instagram</div>
+              <div class="cr-handle">@archivosecretodellab</div>
+              <div class="cr-sub">Novedades, convocatorias y detrás de cámara</div>
+            </div>
+            <div class="cr-stat">
+              <div>SEGUINOS</div>
+              <div style="margin-left:auto;color:var(--accent)">SEGUIR →</div>
             </div>
           </a>
-          <a class="clink" href="mailto:produccion@archivosecretodellab.com" target="_blank">
-            <svg class="clink-icon" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>
+
+          <a class="cr-card em" href="mailto:produccion@archivosecretodellab.com">
+            <div class="cr-head">
+              <svg class="cr-icon" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.4" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>
+              <div class="cr-id">EM_03</div>
+            </div>
             <div>
-              <div class="clink-main">produccion@archivosecretodellab.com</div>
-              <div class="clink-sub">Consultas, booking y producción</div>
+              <div class="cr-main">Email</div>
+              <div class="cr-handle">produccion@archivosecretodellab.com</div>
+              <div class="cr-sub">Consultas, booking y producción</div>
+            </div>
+            <div class="cr-stat">
+              <div>RESP &lt;24H</div>
+              <div style="margin-left:auto;color:var(--accent)">ESCRIBIR →</div>
             </div>
           </a>
+
         </div>
+      </section>
 
-      </div>
     </div>
+
+    <!-- CONTÁCTANOS — ELIMINADO · funcionalidad unificada en #pg-agenda -->
     <div id="pg-renta" class="pg">
       <div class="rpg">
         <div class="rtit">Tu visión,<br>nuestra infraestructura.</div>
@@ -2488,9 +3463,11 @@ const SUPA_KEY = 'sb_publishable_77y9OkI7HG3O5nCx3agPdQ_FnpGKQZi';
 const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
 
 // Config global (precios, textos) — se carga desde Supabase
+// Estos valores son DEFAULTS. La fuente de verdad es la tabla `config` de Supabase.
+// Si querés cambiar el precio en producción → UPDATE config SET value='70000' WHERE key='precio_solo';
 let CFG = {
-  precio_solo: 60000,
-  precio_b2b: 80000,
+  precio_solo: 70000,   // Set Common
+  precio_b2b:  80000,   // Set B2B
   senia: 15000,
   descuento_comunidad: 10,
   horario_inicio: 11,
@@ -3165,13 +4142,30 @@ function navTo(pg, el){
     if(activeSub) subnavTo(activeSub.dataset.sub, activeSub);
     else subnavTo('djs', document.querySelector('.snt'));
   }
-  if(pg==='contacto'){
+  if(pg==='agenda'){
+    initCalendar();
+    // Galería de rostros (carrusel horizontal — ahora al final como descubrimiento)
     if(typeof loadFotosContacto === 'function' && !window._galeriaLoaded){
       window._galeriaLoaded = true;
       loadFotosContacto();
     }
+    // Toggle de pricing tiles (Common/B2B) + estado del stepper
+    if(!window._tiersBound){
+      window._tiersBound = true;
+      document.querySelectorAll('#pg-agenda .ag-tier').forEach(function(t){
+        t.addEventListener('click', function(){
+          document.querySelectorAll('#pg-agenda .ag-tier').forEach(function(x){x.classList.remove('on');});
+          t.classList.add('on');
+          var input = t.querySelector('input[type=radio]');
+          if(input){ input.checked = true; }
+          updateStepperStates();
+        });
+      });
+      // Poll ligero para detectar fecha/slot seleccionados (calendar es un sub-sistema)
+      setInterval(updateStepperStates, 900);
+      updateStepperStates();
+    }
   }
-  if(pg==='agenda') initCalendar();
   if(pg==='archivo'){
     const v = document.getElementById('vid-hero');
     if(v){ v.muted=true; v.play().catch(()=>{}); }
@@ -3297,11 +4291,15 @@ function renderCal30(container, mode='public'){
     let dot = '';
     let onclick = '';
 
+    // Modelo "Solicitud abierta": en public mode TODAS las fechas futuras
+    // no bloqueadas son solicitables, sin dependencia de availability[].
+    const publicAvail = (mode==='public') && !isPast && !isBeyond && !isBlocked;
+
     if(isPast || isBeyond){
-      cls += ' past'; // gris — no disponible por fecha
+      cls += ' past';
     } else if(isBlocked){
-      cls += ' blocked'; // rojo — bloqueado manualmente por el equipo
-    } else if(hasAvail){
+      cls += ' blocked';
+    } else if(publicAvail || hasAvail){
       cls += isSelected ? ' sel' : ' avail';
       onclick = mode==='public'
         ? `onclick="selectDate30('${dateStr}')"`
@@ -3312,11 +4310,10 @@ function renderCal30(container, mode='public'){
       cls += ' gcal';
       dot = `<div class="cal30-dot green"></div>`;
     } else if(mode==='admin'){
-      // En admin los días sin habilitar son clickeables para activarlos
       cls += ' inactive';
       onclick = `onclick="adminSelectDate('${dateStr}',event)"`;
     } else {
-      cls += ' past'; // público: sin habilitar = gris
+      cls += ' past';
     }
     if(isToday) cls += ' today';
     if(mode==='admin' && multiSelected && multiSelected.has(dateStr)) cls += ' multi-sel';
@@ -3350,6 +4347,8 @@ function selectDate30(date){
   renderPublicSlots();
 }
 
+// Modelo "Solicitud abierta": en lugar de slots discretos, mostramos 3 franjas.
+// El equipo confirma el horario exacto por WhatsApp.
 function renderPublicSlots(){
   const c = document.getElementById('slots-public');
   if(!c) return;
@@ -3357,42 +4356,37 @@ function renderPublicSlots(){
     c.innerHTML='';return;
   }
 
-  const availHours = availability[selectedDate] || [];
-  if(!availHours.length){
-    c.innerHTML=`<div style="font-size:10px;color:var(--wd);padding:10px 0">Sin horarios disponibles para esta fecha.</div>`;
-    return;
-  }
-
-  const taken = takenSlots[selectedDate] || [];
-  const gcalTaken = gcalEvents
-    .filter(e=>{ const d=new Date(e.start.dateTime||e.start.date); return formatDateISO(d)===selectedDate; })
-    .map(e=>{ const d=new Date(e.start.dateTime); return `${String(d.getHours()).padStart(2,'0')}:00`; });
+  const FRANJAS = [
+    {key:'Mañana', icon:'🌅', horas:'10 — 13 hs'},
+    {key:'Tarde',  icon:'☀️', horas:'13 — 18 hs'},
+    {key:'Noche',  icon:'🌙', horas:'18 — 22 hs'}
+  ];
 
   c.innerHTML = `
-    <div style="font-size:9px;letter-spacing:.2em;color:var(--b);text-transform:uppercase;margin-bottom:8px;margin-top:8px">${formatFecha(selectedDate)} — Elegí un horario</div>
-    <div class="slots-grid">
-      ${availHours.map(slot=>{
-        const isTaken = taken.includes(slot);
-        const isGcal = gcalTaken.includes(slot);
-        const isSel = selectedSlot === slot;
-        let cls = 'slot-btn';
-        let label = slot+'hs';
-        let onclick = '';
-        if(isTaken){ cls+=' taken'; label+=' · Ocupado'; }
-        else if(isGcal){ cls+=' gcal-taken'; label+=' · Reservado'; }
-        else if(isSel){ cls+=' sel'; onclick=`onclick="selectSlot30('${slot}')"` }
-        else { onclick=`onclick="selectSlot30('${slot}')"` }
-        return `<button class="${cls}" ${onclick}>${label}</button>`;
+    <div class="ag-sel-date">✓ Fecha: <strong>${formatFecha(selectedDate)}</strong></div>
+    <div class="ag-franja-d-text">Elegí franja preferida</div>
+    <div class="ag-franjas">
+      ${FRANJAS.map(f=>{
+        const isSel = selectedSlot === f.key;
+        return `
+          <button class="ag-franja${isSel?' on':''}" onclick="selectSlot30('${f.key}')" type="button">
+            <div class="ag-franja-icon">${f.icon}</div>
+            <div class="ag-franja-t">${f.key}</div>
+            <div class="ag-franja-h">${f.horas}</div>
+          </button>`;
       }).join('')}
     </div>
-    <div style="font-size:8.5px;letter-spacing:.1em;color:rgba(255,255,255,.3);margin-top:10px">Entre sets hay 10 min de buffer. Llegá 10 min antes de tu horario.</div>
   `;
 }
 
 function selectSlot30(slot){
   selectedSlot = slot;
   const inp = document.getElementById('ag-pref');
-  if(inp&&selectedDate) inp.value = `${formatFecha(selectedDate)} — ${slot}hs`;
+  if(inp&&selectedDate){
+    // Si es franja (Mañana/Tarde/Noche) no agregamos 'hs', si no, sí
+    const isFranja = ['Mañana','Tarde','Noche'].indexOf(slot) > -1;
+    inp.value = `${formatFecha(selectedDate)} — ${isFranja ? slot : slot+'hs'}`;
+  }
   renderPublicSlots();
 }
 
@@ -5400,65 +6394,173 @@ function getGaleriaLocal(){
 function setGaleriaLocal(arr){
   try{ localStorage.setItem('asdl_galeria_contacto', JSON.stringify(arr)); }catch(e){}
 }
+// Fisher-Yates shuffle (in-place)
+function shuffleArr(arr){
+  for(var i = arr.length - 1; i > 0; i--){
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+  }
+  return arr;
+}
+
 async function loadFotosContacto(){
   var localFotos = getGaleriaLocal();
   if(localFotos.length){
-    fotosContacto = localFotos;
+    fotosContacto = shuffleArr(localFotos.slice());
     renderCarousel();
     return;
   }
-  // Generar array dinámico 1.jpg → 120.jpg
-  var githubFotos = Array.from({length: 120}, function(_, i){
-    return IMG_BASE + '/img/contacto/' + (i + 1) + '.jpg';
+  // ── CARPETA DEL CARRUSEL ──
+  // Apunta a /img/galeria-horizontal/ con 225 imágenes horizontales.
+  // Si querés volver a las viejas (verticales), cambiá USE_NEW_FOLDER a false.
+  var USE_NEW_FOLDER = true;
+  var folder = USE_NEW_FOLDER ? 'galeria-horizontal' : 'contacto';
+  var count  = USE_NEW_FOLDER ? 225 : 120;
+  var githubFotos = Array.from({length: count}, function(_, i){
+    return IMG_BASE + '/img/' + folder + '/' + (i + 1) + '.jpg';
   });
-  fotosContacto = githubFotos;
+  // Orden aleatorio en cada carga
+  fotosContacto = shuffleArr(githubFotos);
   renderCarousel();
 }
 
 function renderCarousel(){
   var track = document.getElementById('caru-track');
   if(!track) return;
+  var outer = track.parentElement; // .caru-track-outer
   var valid = Array.isArray(fotosContacto)
     ? fotosContacto.filter(function(u){ return typeof u==='string' && u.trim().length>0; })
     : [];
   if(!valid.length){
     track.innerHTML = '<div class="caru-placeholder">Sin imágenes configuradas</div>';
-    track.style.animation = 'none';
     return;
   }
   track.innerHTML = '';
   // Duplicar para scroll infinito continuo
   var set = valid.concat(valid);
-  set.forEach(function(url, i){
+  set.forEach(function(url){
     var el = document.createElement('img');
     el.className = 'caru-img';
     el.alt = 'Archivo Secreto del Lab';
     el.loading = 'lazy';
     el.decoding = 'async';
-    el.style.objectFit = 'cover';
-    el.style.objectPosition = 'center center';
+    el.draggable = false;
     el.onerror = function(){ this.style.display='none'; };
     el.src = url;
     track.appendChild(el);
   });
-  // Velocidad: ~4s por imagen, mínimo 30s, máximo 120s
-  var dur = Math.min(120, Math.max(30, valid.length * 4));
-  track.style.animationDuration = dur + 's';
-  track.style.animationPlayState = 'running';
+  // Iniciar (o reiniciar) auto-scroll híbrido
+  if(typeof initCarouselScroller === 'function') initCarouselScroller(outer);
 }
 
-// Disparar carga cuando la página de contacto se activa
+// ── CARRUSEL HÍBRIDO ──
+// Auto-scroll lento + pausa en hover + drag manual con momentum
+function initCarouselScroller(outer){
+  if(!outer) outer = document.querySelector('#pg-agenda .caru-track-outer');
+  if(!outer) return;
+  // Cleanup previo si ya está corriendo
+  if(outer._scrollerCleanup) outer._scrollerCleanup();
+
+  var SPEED_PX_PER_FRAME = 1.08; // 1.2× más rápido (~65 px/s) — contemplativo pero ágil
+  var paused = false;
+  var dragging = false;
+  var startX = 0, startScroll = 0, lastX = 0, velocity = 0, lastT = 0;
+  var rafId = null;
+
+  function tick(){
+    if(!paused && !dragging){
+      outer.scrollLeft += SPEED_PX_PER_FRAME;
+      // Loop sin salto: cuando llegamos a la mitad (segunda copia), volvemos al inicio
+      var half = outer.scrollWidth / 2;
+      if(half > 0 && outer.scrollLeft >= half){
+        outer.scrollLeft -= half;
+      }
+    } else if(dragging){
+      // Mantener velocity para momentum al soltar
+    }
+    rafId = requestAnimationFrame(tick);
+  }
+
+  function onPointerEnter(){ paused = true; }
+  function onPointerLeave(){ if(!dragging) paused = false; }
+
+  function onPointerDown(e){
+    dragging = true;
+    paused = true;
+    startX = e.clientX || (e.touches && e.touches[0].clientX) || 0;
+    lastX = startX;
+    startScroll = outer.scrollLeft;
+    lastT = performance.now();
+    velocity = 0;
+    outer.classList.add('dragging');
+    outer.setPointerCapture && e.pointerId != null && outer.setPointerCapture(e.pointerId);
+    e.preventDefault();
+  }
+  function onPointerMove(e){
+    if(!dragging) return;
+    var x = e.clientX || (e.touches && e.touches[0].clientX) || 0;
+    var dx = x - lastX;
+    var now = performance.now();
+    var dt = Math.max(1, now - lastT);
+    velocity = dx / dt; // px/ms
+    outer.scrollLeft = startScroll - (x - startX);
+    lastX = x; lastT = now;
+  }
+  function onPointerUp(){
+    if(!dragging) return;
+    dragging = false;
+    outer.classList.remove('dragging');
+    // Momentum: aplicar inercia decreciente durante ~400ms
+    var v = velocity * 16; // px por frame aprox
+    var decay = 0.94;
+    function momentum(){
+      if(Math.abs(v) < 0.4){ paused = false; return; }
+      outer.scrollLeft -= v;
+      v *= decay;
+      requestAnimationFrame(momentum);
+    }
+    momentum();
+  }
+
+  outer.addEventListener('mouseenter', onPointerEnter);
+  outer.addEventListener('mouseleave', onPointerLeave);
+  outer.addEventListener('pointerdown', onPointerDown);
+  window.addEventListener('pointermove', onPointerMove, {passive:false});
+  window.addEventListener('pointerup', onPointerUp);
+  window.addEventListener('pointercancel', onPointerUp);
+
+  // Pausar si la pestaña va a background — ahorra batería
+  document.addEventListener('visibilitychange', function(){
+    paused = document.hidden;
+  });
+
+  rafId = requestAnimationFrame(tick);
+
+  outer._scrollerCleanup = function(){
+    if(rafId) cancelAnimationFrame(rafId);
+    outer.removeEventListener('mouseenter', onPointerEnter);
+    outer.removeEventListener('mouseleave', onPointerLeave);
+    outer.removeEventListener('pointerdown', onPointerDown);
+    window.removeEventListener('pointermove', onPointerMove);
+    window.removeEventListener('pointerup', onPointerUp);
+    window.removeEventListener('pointercancel', onPointerUp);
+  };
+}
+
+// Disparar carga cuando la página de agenda se activa (red de seguridad
+// — navTo() también dispara la carga; este observer cubre cualquier
+// activación directa por clase sin pasar por navTo).
 (function(){
-  var pgC = document.getElementById('pg-contacto');
-  if(!pgC) return;
+  var pgA = document.getElementById('pg-agenda');
+  if(!pgA) return;
   var loaded = false;
   var obs = new MutationObserver(function(){
-    if(pgC.classList.contains('on') && !loaded){
+    if(pgA.classList.contains('on') && !loaded){
       loaded = true;
       loadFotosContacto();
     }
   });
-  obs.observe(pgC, {attributes:true, attributeFilter:['class']});
+  obs.observe(pgA, {attributes:true, attributeFilter:['class']});
 })();
 
 // ── Panel admin: Gestión de Galería de Contacto ──────────────────
@@ -7717,44 +8819,67 @@ function updateAllCounters(){
 const YT_API_KEY = 'AIzaSyDI6lHs8gLJGVIyk0ss5TQwISFC2WgSKY4';
 const YT_HANDLE = 'ArchivoSecretodelLab';
 
-async function fetchYouTubeStats(){
-  const setText = function(id, val){ var el = document.getElementById(id); if(el) el.textContent = val; };
-  const setAllError = function(msg){ setText('yt-stat-subs', msg); setText('yt-stat-videos', msg); setText('yt-stat-views', msg); };
+// Fallback baseline — última actualización manual conocida (24/05/2026)
+const YT_FALLBACK = { subscribers: 4200, videos: 147, views: 16396 };
+const YT_CACHE_KEY = 'asdl_yt_stats_v1';
+const YT_CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24h
+
+function _ytFmt(n){ return Number(n).toLocaleString('es-AR'); }
+function _ytApply(s){
+  var setText = function(id, val){ var el = document.getElementById(id); if(el) el.textContent = val; };
+  setText('yt-stat-subs',   _ytFmt(s.subscribers));
+  setText('yt-stat-videos', _ytFmt(s.videos));
+  setText('yt-stat-views',  _ytFmt(s.views));
+}
+function _ytReadCache(){
   try{
-    const url = 'https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&forHandle=' + YT_HANDLE + '&key=' + YT_API_KEY;
-    console.log('[YT] → Llamando API:', url);
-    const res = await fetch(url);
-    console.log('[YT] ← Status HTTP:', res.status);
-    const data = await res.json();
-    console.log('[YT] ← Respuesta completa:', data);
+    var raw = localStorage.getItem(YT_CACHE_KEY);
+    if(!raw) return null;
+    var c = JSON.parse(raw);
+    if(!c || !c.ts || !c.data) return null;
+    return c;
+  }catch(e){ return null; }
+}
+function _ytWriteCache(data){
+  try{ localStorage.setItem(YT_CACHE_KEY, JSON.stringify({ts: Date.now(), data: data})); }catch(e){}
+}
+
+async function fetchYouTubeStats(){
+  // 1) Pintar inmediato lo mejor que tengamos (cache o fallback) — nunca "Err"
+  var cached = _ytReadCache();
+  if(cached){
+    _ytApply(cached.data);
+    window._ytStats = cached.data;
+    // Si el cache es fresco (<24h), no refrescamos
+    if(Date.now() - cached.ts < YT_CACHE_TTL_MS) return;
+  } else {
+    _ytApply(YT_FALLBACK);
+    window._ytStats = YT_FALLBACK;
+  }
+  // 2) Intentar refresh contra el API en background
+  try{
+    var url = 'https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&forHandle=' + YT_HANDLE + '&key=' + YT_API_KEY;
+    var res = await fetch(url);
+    var data = await res.json();
     if(data.error){
-      console.error('[YT] ✗ Error de API:', data.error.message, '(código', data.error.code + ')');
-      console.error('[YT] Detalle:', data.error.errors);
-      setAllError('Err ' + data.error.code);
+      console.warn('[YT] API error', data.error.code, '— manteniendo valores cacheados/fallback');
       return;
     }
-    if(!data.items || !data.items[0]){
-      console.warn('[YT] ✗ Canal no encontrado para handle:', YT_HANDLE);
-      setAllError('N/A');
-      return;
-    }
-    const ch = data.items[0];
-    const stats = ch.statistics || {};
-    window._ytStats = {
+    if(!data.items || !data.items[0]) return;
+    var ch = data.items[0];
+    var stats = ch.statistics || {};
+    var fresh = {
       channelId: ch.id,
       title: (ch.snippet && ch.snippet.title) || '',
       subscribers: parseInt(stats.subscriberCount || 0),
       videos: parseInt(stats.videoCount || 0),
       views: parseInt(stats.viewCount || 0)
     };
-    const fmt = function(n){ return n.toLocaleString('es-AR'); };
-    setText('yt-stat-subs', fmt(window._ytStats.subscribers));
-    setText('yt-stat-videos', fmt(window._ytStats.videos));
-    setText('yt-stat-views', fmt(window._ytStats.views));
-    console.log('[YT] ✓ Stats cargadas — channelId:', window._ytStats.channelId, '· subs:', window._ytStats.subscribers, '· videos:', window._ytStats.videos, '· views:', window._ytStats.views);
+    window._ytStats = fresh;
+    _ytWriteCache(fresh);
+    _ytApply(fresh);
   }catch(e){
-    console.error('[YT] ✗ Error de red/parseo:', e);
-    setAllError('Sin red');
+    console.warn('[YT] Red caída — manteniendo cache/fallback');
   }
 }
 
@@ -8031,6 +9156,60 @@ function adminDeleteDJ(djId){
         if(typeof renderDjs === 'function') renderDjs();
       });
   }
+})();
+
+// ═══════════════════════════════════════════════════════
+// STEPPER · reflejo del progreso del usuario en Graba tu Set
+// ═══════════════════════════════════════════════════════
+function updateStepperStates(){
+  var s1 = document.getElementById('step-1');
+  var s2 = document.getElementById('step-2');
+  var s3 = document.getElementById('step-3');
+  if(!s1 || !s2 || !s3) return;
+  var hasTier = !!document.querySelector('input[name="ag-tipo"]:checked');
+  // selectedDate y selectedSlot viven como vars globales del módulo calendario
+  var hasDate = (typeof selectedDate !== 'undefined' && !!selectedDate) &&
+                (typeof selectedSlot !== 'undefined' && !!selectedSlot);
+  s1.classList.toggle('complete', hasTier);
+  s1.classList.toggle('active', !hasTier);
+  s2.classList.toggle('complete', hasDate);
+  s2.classList.toggle('active', hasTier && !hasDate);
+  s3.classList.toggle('active', hasTier && hasDate);
+}
+
+// ═══════════════════════════════════════════════════════
+// TICKER · hide-on-scroll-down + show-on-scroll-up
+// Listener pasivo + debounce con requestAnimationFrame
+// ═══════════════════════════════════════════════════════
+(function(){
+  var ticker = document.getElementById('ticker');
+  if(!ticker) return;
+  var lastY = 0;
+  var ticking = false;
+  var threshold = 60; // px mínimos antes de empezar a ocultar
+
+  function evaluate(){
+    // El contenedor que scrollea en este SPA es #content, no window
+    var content = document.getElementById('content');
+    var y = content ? content.scrollTop : (window.scrollY || document.documentElement.scrollTop || 0);
+    var dy = y - lastY;
+    if(y > threshold && dy > 4){
+      ticker.classList.add('hidden');
+    } else if(dy < -4 || y <= threshold){
+      ticker.classList.remove('hidden');
+    }
+    lastY = y;
+    ticking = false;
+  }
+  function onScroll(){
+    if(!ticking){
+      ticking = true;
+      requestAnimationFrame(evaluate);
+    }
+  }
+  var content = document.getElementById('content');
+  if(content) content.addEventListener('scroll', onScroll, {passive:true});
+  window.addEventListener('scroll', onScroll, {passive:true});
 })();
 
 </script>
