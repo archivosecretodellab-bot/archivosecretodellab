@@ -1341,6 +1341,9 @@ input[type=file]{display:none}
 @media(min-width:1024px){
   #pg-agenda .ag-left{ border-right:1px solid var(--wf) !important; }
 }
+/* Sin scroll horizontal (solo scroll vertical) */
+html, body{ overflow-x:clip; }
+#pg-agenda{ overflow-x:clip; max-width:100%; }
 
 /* ── Texto de conexión · STATEMENT editorial con underline fluido ── */
 #pg-agenda .ag-connect-text{
@@ -1364,13 +1367,17 @@ input[type=file]{display:none}
 
 /* Variante secundaria (texto "Escuchá el registro completo..." — más sutil) */
 #pg-agenda .ag-connect-text:not(.ag-connect-statement){
-  max-width:780px;
-  padding:64px clamp(20px,4vw,40px);
+  max-width:1180px;
+  padding:40px clamp(20px,4vw,40px) 72px;
+  text-align:left;
 }
 #pg-agenda .ag-connect-text:not(.ag-connect-statement) p{
-  font-size:clamp(17px,1.8vw,22px);
-  color:rgba(255,250,231,.78);
-  line-height:1.6;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:13px;
+  line-height:1.75;
+  letter-spacing:0;
+  color:rgba(240,236,226,.55);
+  max-width:400px;
 }
 
 /* Énfasis suave para "forjamos conexiones" (sin animación, solo color) */
@@ -1699,24 +1706,18 @@ input[type=file]{display:none}
 
 /* Trust strip */
 #pg-agenda .ag-trust{
-  display:grid; grid-template-columns:.9fr .9fr .9fr 2.4fr; gap:0; margin-bottom:40px;
-  border:1px solid var(--wf); background:rgba(0,0,0,.3);
-  position:relative; z-index:3;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+  display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(20px,4vw,56px);
+  margin:10px 0 52px; position:relative; z-index:3;
 }
 #pg-agenda .ag-trust-item{
-  padding:16px 18px; border-right:1px solid var(--wf);
-  display:flex; flex-direction:column; gap:4px; justify-content:center;
+  padding:0; display:flex; flex-direction:column; gap:9px; justify-content:flex-start;
 }
-#pg-agenda .ag-trust-item:last-child{ border-right:none; }
 #pg-agenda .ag-trust-n{
-  font-family:'Space Mono',monospace; font-size:22px; font-weight:700;
+  font-family:'Space Mono',monospace; font-size:clamp(26px,2.4vw,32px); font-weight:700;
   color:var(--ivory); letter-spacing:-.02em; line-height:1;
 }
 #pg-agenda .ag-trust-n .acc{ color:var(--ultrasonic); }
-#pg-agenda .ag-trust-l{ font-size:8px; letter-spacing:.22em; color:var(--wd); text-transform:uppercase; }
-#pg-agenda .ag-trust-item.wide{ padding:16px 22px; }
-#pg-agenda .ag-trust-item.wide .ag-trust-l{ font-size:10.5px; letter-spacing:.04em; line-height:1.65; color:var(--wd); text-transform:none; }
+#pg-agenda .ag-trust-l{ font-size:9px; letter-spacing:.22em; color:var(--ivory); text-transform:uppercase; line-height:1.5; }
 
 /* Sección titles */
 #pg-agenda .ag-sec-title{
@@ -1892,7 +1893,7 @@ input[type=file]{display:none}
   #pg-agenda .ag-left{ padding:48px 20px 32px; }
   #pg-agenda .ag-right{ padding:36px 20px; }
   #pg-agenda .ag-pricing{ grid-template-columns:1fr; }
-  #pg-agenda .ag-trust{ grid-template-columns:1fr 1fr; }
+  #pg-agenda .ag-trust{ grid-template-columns:repeat(3,1fr); gap:clamp(14px,4vw,28px); }
   #pg-agenda .ag-trust-item.wide{ grid-column:1/3; }
   #pg-agenda .cr-grid{ grid-template-columns:1fr; gap:8px; }
   #pg-agenda .cr-card{ min-height:0; padding:24px 22px; }
@@ -2564,12 +2565,12 @@ input[type=file]{display:none}
             <div class="ag-wave">
               <i style="animation-delay:0s"></i><i style="animation-delay:.1s"></i><i style="animation-delay:.2s"></i><i style="animation-delay:.3s"></i><i style="animation-delay:.4s"></i><i style="animation-delay:.5s"></i><i style="animation-delay:.6s"></i><i style="animation-delay:.7s"></i><i style="animation-delay:.8s"></i><i style="animation-delay:.9s"></i><i style="animation-delay:1s"></i><i style="animation-delay:1.1s"></i><i style="animation-delay:1.2s"></i><i style="animation-delay:1.3s"></i><i style="animation-delay:0s"></i><i style="animation-delay:.15s"></i><i style="animation-delay:.3s"></i><i style="animation-delay:.45s"></i><i style="animation-delay:.6s"></i><i style="animation-delay:.75s"></i>
             </div>
-            <div class="ag-desc">Grabamos <strong>de lunes a domingo</strong>. Seleccioná una fecha disponible, completá el formulario y el equipo confirma tu reserva en <strong>menos de 24hs</strong>. Solo necesitás tu <strong>USB y tus ganas</strong>.</div>
+            <div class="ag-desc">Descubrí el <strong>primer laboratorio creativo creado por y para DJs</strong> en Buenos Aires, conectá con una comunidad en constante evolución y generá el material que te va a llevar a donde querés estar. El registro es fundamental, <strong>nosotros lo hacemos real y cercano</strong>.</div>
 
             <!-- Trust strip -->
             <div class="ag-trust">
               <div class="ag-trust-item">
-                <div class="ag-trust-n"><span class="acc">+140</span></div>
+                <div class="ag-trust-n"><span class="acc" id="trust-sets-count">147</span></div>
                 <div class="ag-trust-l">Sets publicados</div>
               </div>
               <div class="ag-trust-item">
@@ -2577,11 +2578,8 @@ input[type=file]{display:none}
                 <div class="ag-trust-l">format</div>
               </div>
               <div class="ag-trust-item">
-                <div class="ag-trust-n">7<span class="acc">/7</span></div>
+                <div class="ag-trust-n"><span class="acc">11–21hs</span></div>
                 <div class="ag-trust-l">Lun a Dom</div>
-              </div>
-              <div class="ag-trust-item wide">
-                <div class="ag-trust-l">Llevate <strong style="color:var(--ivory)">1 DJ set a dos cámaras</strong>, <strong style="color:var(--ivory)">15 fotografías profesionales</strong> para tu presskit, clips de la jornada — un registro real.</div>
               </div>
             </div>
 
@@ -2664,7 +2662,7 @@ input[type=file]{display:none}
               <input type="radio" name="ag-reg" value="no" checked hidden>
 
               <button class="ag-submit" onclick="submitAgenda()">Solicitar fecha →</button>
-              <div style="font-size:10px;letter-spacing:.14em;color:rgba(255,250,231,.4);margin-top:14px">// Te confirmamos por WhatsApp en menos de 24hs</div>
+              <div style="font-size:10px;letter-spacing:.14em;color:rgba(255,250,231,.4);margin-top:14px">// En menos de 24hs, el equipo del Archivo confirma tu reserva</div>
               <div id="ag-status" style="font-size:11px;letter-spacing:.1em;color:var(--wd);margin-top:14px;min-height:18px;line-height:1.8"></div>
             </div>
           </div>
@@ -2689,10 +2687,26 @@ input[type=file]{display:none}
         </div>
       </section>
 
-      <!-- TEXTO DE CONEXIÓN: statement editorial con underline animado -->
-      <div class="ag-connect-text ag-connect-statement">
-        <p>En el Archivo no solo grabamos sets; <em class="em-soft">forjamos conexiones</em>. Porque entendemos que la música es, ante todo, una construcción colectiva.</p>
-        <p>Nuestro propósito es uno: democratizar el DJ set haciéndolo accesible y funcional para todos, por eso <span class="em-flow">grabar en el archivo no es como en cualquier otra cabina de la ciudad</span>.</p>
+      <!-- MANIFIESTO — El número del archivo como protagonista (Opción 3) -->
+      <style>
+      .ag-mft{position:relative;overflow:hidden;padding:clamp(40px,6vw,64px) 2px clamp(56px,8vw,88px);min-height:clamp(420px,54vw,520px)}
+      .ag-mft-num{position:absolute;right:clamp(-6px,0vw,0px);bottom:clamp(-16px,-1.4vw,-6px);font-family:'Space Mono',monospace;font-weight:700;font-size:clamp(170px,32vw,330px);line-height:.72;letter-spacing:-.05em;color:transparent;-webkit-text-stroke:3px #1B00E6;pointer-events:none;user-select:none;z-index:0}
+      .ag-mft-body{position:relative;z-index:1;max-width:460px}
+      .ag-mft-kicker{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:rgba(240,236,226,.4);margin-bottom:18px}
+      .ag-mft-title{font-family:'Space Mono',monospace;font-weight:700;font-size:clamp(30px,5vw,52px);line-height:1.05;letter-spacing:-.02em;color:var(--ivory);margin:0 0 18px}
+      .ag-mft-title span{color:#1B00E6}
+      .ag-mft-copy{font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.75;color:rgba(240,236,226,.55);max-width:400px;margin:0 0 24px}
+      .ag-mft-cta{display:inline-block;background:#1B00E6;color:#F0ECE2;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.18em;text-transform:uppercase;padding:14px 22px;cursor:pointer;text-decoration:none;transition:transform .2s}
+      .ag-mft-cta:hover{transform:translateY(-2px)}
+      </style>
+      <div class="ag-mft">
+        <div class="ag-mft-num" id="manifiesto-count" aria-hidden="true">147</div>
+        <div class="ag-mft-body">
+          <div class="ag-mft-kicker">Registros en el archivo</div>
+          <h2 class="ag-mft-title">Sos el próximo<br>en el <span>archivo</span>.</h2>
+          <p class="ag-mft-copy">No solo grabamos sets — forjamos conexiones. Grabar acá no se parece a ningún otro lugar de la ciudad.</p>
+          <a class="ag-mft-cta" onclick="document.getElementById('ag-form').scrollIntoView({behavior:'smooth',block:'start'})">Reservá tu fecha ahora →</a>
+        </div>
       </div>
 
       <!-- CARRUSEL DE DESCUBRIMIENTO (constreñido al ancho del texto + fade lateral) -->
@@ -2852,8 +2866,8 @@ input[type=file]{display:none}
     <div class="ltit">Panel del equipo</div>
     <div class="lsub">Archivo Secreto del Lab · Acceso interno</div>
     <div class="lfield">
-      <div class="llbl">Usuario</div>
-      <input class="linp" id="l-user" autocomplete="off" placeholder="G / I / D" autocomplete="username">
+      <div class="llbl">Email</div>
+      <input class="linp" id="l-user" autocomplete="off" type="email" placeholder="tu-email@gmail.com" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()">
     </div>
     <div class="lfield">
       <div class="llbl">Contraseña</div>
@@ -3471,7 +3485,7 @@ let CFG = {
   senia: 15000,
   descuento_comunidad: 10,
   horario_inicio: 11,
-  horario_fin: 19,
+  horario_fin: 21,
   texto_confirmacion: 'AGENDADO. 🌀 Prepará tu USB, nos vemos pronto en el Archivo.',
 };
 
@@ -3491,10 +3505,8 @@ async function loadConfig(){
     if(CFG.ticker_text && CFG.ticker_text.toString().trim()){
       if(typeof applyTickerText === 'function') applyTickerText(CFG.ticker_text);
     }
-    // Aplicar brevo config desde Supabase
-    if(CFG.brevo_key)    window._brevoKey    = CFG.brevo_key;
-    if(CFG.brevo_from)   window._brevoFrom   = CFG.brevo_from;
-    if(CFG.brevo_sender) window._brevoSender  = CFG.brevo_sender;
+    // El envío de emails se hace server-side (Edge Function + webhook de Supabase).
+    // Ya NO se cargan keys de Brevo en el navegador.
   } catch(e){ console.warn('Config fallback a defaults'); }
 }
 
@@ -3513,7 +3525,7 @@ async function loadDisponibilidad(){
 // Buscar DJ por nombre artístico — devuelve {existe, esComunidad, datos}
 async function buscarDJ(nombre){
   try {
-    const {data} = await sb.from('djs')
+    const {data} = await sb.from('djs_publicos')
       .select('*')
       .ilike('nombre_artistico', nombre.trim())
       .limit(1);
@@ -3531,44 +3543,16 @@ async function guardarReserva(reserva){
   try {
     const {error} = await sb.from('reservas').insert([reserva]);
     if(error) throw error;
-    // Notificar al equipo por email
-    await notificarEquipo(reserva);
+    // El aviso por email lo dispara una Edge Function de Supabase (webhook on INSERT).
     return {ok: true};
   } catch(e){
     return {ok: false, error: e.message};
   }
 }
 
-async function notificarEquipo(r){
-  if(!window._brevoKey || !window._brevoFrom) return;
-  const tipo = r.es_comunidad ? '🔵 Comunidad (10% OFF)' : '🟢 Nuevo artista';
-  const precio = r.tipo === 'B2B' ? CFG.precio_b2b : CFG.precio_solo;
-  const final = r.es_comunidad ? Math.round(precio * 0.9) : precio;
-  const body = `Nueva reserva en el Archivo:\n\n` +
-    `Artista: ${r.nombre_artistico}\n` +
-    `Tipo: ${r.tipo}\n` +
-    `Fecha: ${r.fecha} — ${r.horario}hs\n` +
-    `Email: ${r.email}\n` +
-    `WhatsApp: ${r.whatsapp || '—'}\n` +
-    `Género: ${r.genero || '—'}\n` +
-    `Estado: ${tipo}\n` +
-    `Precio: $${final.toLocaleString('es-AR')}\n` +
-    `Seña: $${CFG.senia.toLocaleString('es-AR')}\n` +
-    `Ya registrado: ${r.ya_registrado ? 'Sí' : 'No'}\n` +
-    `${r.mensaje ? 'Mensaje: '+r.mensaje : ''}`;
-  try {
-    await fetch('https://api.brevo.com/v3/smtp/email', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json','api-key': window._brevoKey},
-      body: JSON.stringify({
-        sender: {name:'ASDL Reservas', email: window._brevoFrom},
-        to: [{email: window._brevoFrom}],
-        subject: `[Reserva] ${r.nombre_artistico} — ${r.fecha} ${r.horario}hs`,
-        textContent: body
-      })
-    });
-  } catch(e){}
-}
+// notificarEquipo() se eliminó: el aviso por email ahora lo manda una
+// Edge Function de Supabase, disparada por un webhook al insertar la reserva.
+// La API key de Brevo vive como secreto del servidor, nunca en el navegador.
 // ═══════════════════════════════════════════════════════
 // DATA
 // ═══════════════════════════════════════════════════════
@@ -4211,10 +4195,10 @@ let blockedDates = {}; // {'2026-03-15': true} día completo bloqueado
 let blockedSlots = {}; // {'2026-03-15': ['11:00','13:00']} slots bloqueados
 let takenSlots = {}; // slots ya reservados (de Supabase)
 
-// Genera todos los slots del día (11:00 a 19:00, mínimo 10min entre sets = slots de 1h10)
+// Genera todos los slots del día (11:00 a 20:00 — último turno 20-21, mínimo 10min entre sets)
 function generateDaySlots(){
   const slots = [];
-  for(let h=11; h<=19; h++) slots.push(`${String(h).padStart(2,'0')}:00`);
+  for(let h=11; h<=20; h++) slots.push(`${String(h).padStart(2,'0')}:00`);
   return slots;
 }
 
@@ -4234,7 +4218,7 @@ async function renderCal30Public(){
 
   // Cargar reservas tomadas
   try{
-    const {data} = await sb.from('reservas')
+    const {data} = await sb.from('reservas_publicas')
       .select('fecha,horario,estado')
       .neq('estado','Cancelada')
       .gte('fecha', new Date().toISOString().split('T')[0]);
@@ -4357,9 +4341,9 @@ function renderPublicSlots(){
   }
 
   const FRANJAS = [
-    {key:'Mañana', icon:'🌅', horas:'10 — 13 hs'},
+    {key:'Mañana', icon:'🌅', horas:'11 — 13 hs'},
     {key:'Tarde',  icon:'☀️', horas:'13 — 18 hs'},
-    {key:'Noche',  icon:'🌙', horas:'18 — 22 hs'}
+    {key:'Noche',  icon:'🌙', horas:'18 — 21 hs'}
   ];
 
   c.innerHTML = `
@@ -5334,7 +5318,7 @@ window.openFicha = async function openFicha(id){
   // Si no está en el array local, buscar en Supabase
   if(!dj){
     try{
-      const {data} = await sb.from('djs').select('*').eq('id', id).single();
+      const {data} = await sb.from('djs_publicos').select('*').eq('id', id).single();
       if(data){
         dj = {
           i: data.id,
@@ -5714,15 +5698,8 @@ function applyPhotoResult(id, dataUrl){
 // Credenciales: hash SHA-256 — la contraseña en texto plano no vive en el source.
 // Para cambiar: ejecutar en consola: crypto.subtle.digest('SHA-256', new TextEncoder().encode('nueva_pass'))
 //   .then(b => [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join(''))
-const USERS_HASH={
-  G:'ea92fab39873b339697d6d836ca8871f019b95467e297a9c12b77c2822cc4e1e',
-  I:'ea92fab39873b339697d6d836ca8871f019b95467e297a9c12b77c2822cc4e1e',
-  D:'ea92fab39873b339697d6d836ca8871f019b95467e297a9c12b77c2822cc4e1e'
-};
-async function hashPass(pass){
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pass));
-  return [...new Uint8Array(buf)].map(x=>x.toString(16).padStart(2,'0')).join('');
-}
+// Login real vía Supabase Auth (los usuarios viven en Authentication → Users).
+// Ya no hay credenciales en el cliente: la sesión la valida y firma Supabase.
 let currentUser=null;
 
 function showLogin(){
@@ -5736,20 +5713,28 @@ function closeLogin(){
   setTimeout(()=>l.style.display='none',280);
 }
 async function doLogin(){
-  const u=document.getElementById('l-user').value.trim().toUpperCase();
+  const email=document.getElementById('l-user').value.trim().toLowerCase();
   const p=document.getElementById('l-pass').value;
   const err=document.getElementById('l-err');
   const btn=document.getElementById('l-submit');
+  if(!email || !p){ err.textContent='Completá email y contraseña.'; err.classList.add('on'); return; }
   if(btn) btn.disabled=true;
-  const h = await hashPass(p);
-  if(btn) btn.disabled=false;
-  if(USERS_HASH[u] && USERS_HASH[u]===h){
-    currentUser=u; err.classList.remove('on');
+  err.classList.remove('on');
+  try{
+    const {data, error}=await sb.auth.signInWithPassword({email, password:p});
+    if(error || !data || !data.user){ throw error || new Error('sin sesión'); }
+    currentUser=(data.user.email||email).split('@')[0];
     closeLogin();
     setTimeout(()=>openAdmin(),320);
-  } else { err.classList.add('on'); }
+  }catch(e){
+    err.textContent='Email o contraseña incorrectos.';
+    err.classList.add('on');
+  }finally{
+    if(btn) btn.disabled=false;
+  }
 }
-function doLogout(){
+async function doLogout(){
+  try{ await sb.auth.signOut(); }catch(e){}
   currentUser=null;
   const a=document.getElementById('admin');
   a.classList.remove('show');
@@ -8504,7 +8489,7 @@ async function saveFichaAdmin(id){
 // Cargar estado de DJs desde Supabase al inicio (fuente de verdad compartida)
 (function loadDjEditsFromSupabase(){
   if(typeof sb === 'undefined') return;
-  sb.from('djs').select('nombre_artistico,estado,release_date,yt_link')
+  sb.from('djs_publicos').select('nombre_artistico,estado,release_date,yt_link')
     .then(function(res){
       if(res.error || !res.data || !res.data.length) return;
       var updated = false;
@@ -8809,6 +8794,12 @@ function updateAllCounters(){
   // Contador del hero (el grande animado)
   var ctr = document.getElementById('ctr');
   if(ctr && !ctr._animating) ctr.textContent = String(n).padStart(3,'0');
+  // Manifiesto — número gigante (Opción 3), siempre en vivo
+  var mft = document.getElementById('manifiesto-count');
+  if(mft) mft.textContent = n;
+  // Trust strip — "Sets publicados" en vivo (sin estimación)
+  var tsc = document.getElementById('trust-sets-count');
+  if(tsc) tsc.textContent = n;
 }
 
 // ═══════════════════════════════════════════════════════
