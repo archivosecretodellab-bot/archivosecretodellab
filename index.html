@@ -1729,13 +1729,13 @@ html, body{ overflow-x:clip; }
 #pg-agenda .ag-sec-title::before{ content:'›'; color:var(--ultrasonic); font-size:14px; }
 
 /* Pricing tiles · 3 columnas */
-#pg-agenda .ag-pricing{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:8px; position:relative; z-index:3; }
+#pg-agenda .ag-pricing{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:8px; position:relative; z-index:3; }
 #pg-agenda .ag-tier{
   position:relative; padding:18px 18px 16px;
   border:1px solid var(--wf); background:rgba(255,255,255,.015);
   cursor:pointer; transition:all .25s cubic-bezier(.2,.8,.2,1);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.04), inset 0 -1px 0 rgba(0,0,0,.3);
-  overflow:hidden; display:block;
+  overflow:hidden; display:flex; flex-direction:column;
 }
 #pg-agenda .ag-tier::before{
   content:''; position:absolute; inset:0;
@@ -1751,9 +1751,9 @@ html, body{ overflow-x:clip; }
 }
 #pg-agenda .ag-tier.on::before{ opacity:1; }
 #pg-agenda .ag-tier-h{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px; }
-#pg-agenda .ag-tier-n{ font-family:'Space Mono',monospace; font-size:14px; font-weight:700; color:var(--ivory); letter-spacing:.04em; }
-#pg-agenda .ag-tier-p{ font-family:'Space Mono',monospace; font-size:18px; font-weight:700; color:var(--ultrasonic); }
-#pg-agenda .ag-tier ul{ list-style:none; font-size:10.5px; color:var(--wd); letter-spacing:.04em; line-height:1.75; padding:0; margin:0; }
+#pg-agenda .ag-tier-n{ font-family:'Space Mono',monospace; font-size:14px; font-weight:700; color:var(--ivory); letter-spacing:.04em; margin-bottom:12px; }
+#pg-agenda .ag-tier-p{ font-family:'Space Mono',monospace; font-size:18px; font-weight:700; color:var(--ultrasonic); margin-top:auto; padding-top:8px; }
+#pg-agenda .ag-tier ul{ list-style:none; font-size:10.5px; color:var(--wd); letter-spacing:.04em; line-height:1.75; padding:0; margin:0 0 14px; }
 #pg-agenda .ag-tier ul li{ padding-left:14px; position:relative; }
 #pg-agenda .ag-tier ul li::before{ content:'+'; position:absolute; left:0; color:var(--ultrasonic); }
 #pg-agenda .ag-tier-check{
@@ -2588,47 +2588,55 @@ html, body{ overflow-x:clip; }
 
               <!-- Pricing tiles · 3 columnas: Common / B2B / Custom -->
               <div class="ag-pricing">
-                <label class="ag-tier on" id="tier-solo">
-                  <input type="radio" name="ag-tipo" value="Solo" checked hidden>
+                <label class="ag-tier" id="tier-basico">
+                  <input type="radio" name="ag-tipo" value="Basico" hidden>
                   <div class="ag-tier-check"></div>
-                  <div class="ag-tier-h">
-                    <div class="ag-tier-n">SET COMMON</div>
-                    <div class="ag-tier-p">$<span id="precio-solo">70.000</span></div>
-                  </div>
+                  <div class="ag-tier-n">SET BÁSICO</div>
+                  <ul>
+                    <li>1 hora de grabación</li>
+                    <li>1 cámara + audio masterizado</li>
+                    <li>Edición y publicación incluida</li>
+                    <li>10 fotos profesionales y 5 clips verticales</li>
+                  </ul>
+                  <div class="ag-tier-p">$<span id="precio-basico">35.000</span></div>
+                </label>
+                <label class="ag-tier on" id="tier-solo">
+                  <input type="radio" name="ag-tipo" value="Common" checked hidden>
+                  <div class="ag-tier-check"></div>
+                  <div class="ag-tier-n">SET COMMON</div>
                   <ul>
                     <li>1 hora de grabación</li>
                     <li>2 cámaras + audio masterizado</li>
                     <li>Edición y publicación incluida</li>
+                    <li>15 fotos profesionales y 7 clips verticales</li>
                     <li>Contenido 360°</li>
                   </ul>
+                  <div class="ag-tier-p">$<span id="precio-solo">70.000</span></div>
                 </label>
                 <label class="ag-tier" id="tier-b2b">
                   <input type="radio" name="ag-tipo" value="B2B" hidden>
                   <div class="ag-tier-check"></div>
-                  <div class="ag-tier-h">
-                    <div class="ag-tier-n">SET B2B</div>
-                    <div class="ag-tier-p">$<span id="precio-b2b">90.000</span></div>
-                  </div>
+                  <div class="ag-tier-n">SET B2B</div>
                   <ul>
                     <li>90 minutos de grabación</li>
                     <li>2 cámaras + audio masterizado</li>
                     <li>Edición y publicación incluida</li>
+                    <li>20 fotos profesionales y 10 clips verticales</li>
                     <li>Contenido 360°</li>
                   </ul>
+                  <div class="ag-tier-p">$<span id="precio-b2b">90.000</span></div>
                 </label>
                 <label class="ag-tier" id="tier-custom">
                   <input type="radio" name="ag-tipo" value="Custom" hidden>
                   <div class="ag-tier-check"></div>
-                  <div class="ag-tier-h">
-                    <div class="ag-tier-n">SET CUSTOM</div>
-                    <div class="ag-tier-p">desde $<span id="precio-custom">120.000</span></div>
-                  </div>
+                  <div class="ag-tier-n">SET CUSTOM</div>
                   <ul>
                     <li>100% personalizado</li>
-                    <li>Tu set, tus reglas</li>
-                    <li>Producción a medida</li>
-                    <li>Cotizamos por WhatsApp</li>
+                    <li>Un set hecho a tu medida</li>
+                    <li>Con 1, 2 o hasta 3 cámaras</li>
+                    <li>25 fotos profesionales y 12 clips verticales</li>
                   </ul>
+                  <div class="ag-tier-p">desde $<span id="precio-custom">120.000</span></div>
                 </label>
               </div>
 
@@ -2656,10 +2664,25 @@ html, body{ overflow-x:clip; }
                 <textarea class="ag-ta" id="ag-msg" placeholder="Género, B2B con quién, referencias de sonido..."></textarea>
               </div>
 
+              <!-- ¿Ya grabaste antes? (informativo, no cambia el precio) -->
+              <style>
+              #pg-agenda .ag-reg-toggle{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+              #pg-agenda .ag-reg-opt{ position:relative; padding:13px 14px; border:1px solid var(--wf); background:rgba(255,255,255,.015); cursor:pointer; font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:.04em; color:var(--wd); text-align:center; transition:all .2s; }
+              #pg-agenda .ag-reg-opt input{ position:absolute; opacity:0; pointer-events:none; }
+              #pg-agenda .ag-reg-opt:hover{ border-color:rgba(8,9,231,.4); }
+              #pg-agenda .ag-reg-opt:has(input:checked){ border-color:var(--ultrasonic); background:rgba(8,9,231,.08); color:var(--ivory); }
+              </style>
+              <div class="ag-field">
+                <div class="ag-lbl"><span>¿Ya grabaste en el Archivo?</span><span class="stat">REQ</span></div>
+                <div class="ag-reg-toggle">
+                  <label class="ag-reg-opt"><input type="radio" name="ag-reg" value="no" checked>No, primera vez</label>
+                  <label class="ag-reg-opt"><input type="radio" name="ag-reg" value="si">Sí, ya grabé acá</label>
+                </div>
+              </div>
+
               <!-- Campos legacy ocultos (mantenidos para submitAgenda) -->
               <input type="hidden" id="ag-genre" value="">
               <input type="hidden" id="ag-links" value="">
-              <input type="radio" name="ag-reg" value="no" checked hidden>
 
               <button class="ag-submit" onclick="submitAgenda()">Solicitar fecha →</button>
               <div style="font-size:10px;letter-spacing:.14em;color:rgba(255,250,231,.4);margin-top:14px">// En menos de 24hs, el equipo del Archivo confirma tu reserva</div>
@@ -3480,8 +3503,10 @@ const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
 // Estos valores son DEFAULTS. La fuente de verdad es la tabla `config` de Supabase.
 // Si querés cambiar el precio en producción → UPDATE config SET value='70000' WHERE key='precio_solo';
 let CFG = {
+  precio_basico: 35000, // Set Básico
   precio_solo: 70000,   // Set Common
-  precio_b2b:  80000,   // Set B2B
+  precio_b2b:  90000,   // Set B2B
+  precio_custom: 120000,// Set Custom (desde — a confirmar)
   senia: 15000,
   descuento_comunidad: 10,
   horario_inicio: 11,
@@ -4721,7 +4746,8 @@ async function submitAgenda(){
 
   // Verificar si ya existe en la base
   const {existe, esComunidad, datos} = await buscarDJ(artist);
-  const precio = tipo==='B2B' ? CFG.precio_b2b : CFG.precio_solo;
+  const _precios = {Basico:CFG.precio_basico, Common:CFG.precio_solo, B2B:CFG.precio_b2b, Custom:CFG.precio_custom};
+  const precio = _precios[tipo] ?? CFG.precio_solo;
   const precioFinal = esComunidad ? Math.round(precio * (1 - CFG.descuento_comunidad/100)) : precio;
 
   // Si no existe, necesitamos whatsapp obligatorio
@@ -6777,8 +6803,12 @@ setTimeout(() => { initCards(); }, 3000);
   // Actualizar precios en el formulario
   const ps=document.getElementById('precio-solo');
   const pb=document.getElementById('precio-b2b');
+  const pbas=document.getElementById('precio-basico');
+  const pcus=document.getElementById('precio-custom');
   if(ps) ps.textContent=Number(CFG.precio_solo).toLocaleString('es-AR');
   if(pb) pb.textContent=Number(CFG.precio_b2b).toLocaleString('es-AR');
+  if(pbas && CFG.precio_basico) pbas.textContent=Number(CFG.precio_basico).toLocaleString('es-AR');
+  if(pcus && CFG.precio_custom) pcus.textContent=Number(CFG.precio_custom).toLocaleString('es-AR');
   // Init Google Calendar API — reintentar hasta que gapi esté disponible
   const initGcalWhenReady = (tries=0) => {
     if(typeof gapi !== 'undefined'){
