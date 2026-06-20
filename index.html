@@ -269,6 +269,10 @@ background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0
 .tk-tag{flex-shrink:0;background:var(--b);font-size:9px;letter-spacing:.32em;color:var(--w);padding:0 16px;height:100%;display:flex;align-items:center;text-transform:uppercase;white-space:nowrap;font-weight:700;cursor:pointer;transition:background .2s,letter-spacing .2s;outline:none}
 .tk-tag:hover{background:#1f10f7;letter-spacing:.38em}
 .tk-tag:focus-visible{box-shadow:inset 0 0 0 2px rgba(255,255,255,.5)}
+/* Estado "volver al inicio": visible cuando el usuario está en una vista interna */
+.tk-tag.is-back{background:#1f10f7;letter-spacing:.28em;box-shadow:inset 0 0 0 1px rgba(255,255,255,.35);animation:tkBackPulse 2.2s ease-in-out infinite}
+.tk-tag.is-back:hover{background:#1B00E6;letter-spacing:.34em}
+@keyframes tkBackPulse{0%,100%{box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}50%{box-shadow:inset 0 0 0 1px rgba(255,255,255,.7)}}
 .tk-track{flex:1;overflow:hidden}
 .tk-inner{display:inline-flex;align-items:center;white-space:nowrap;animation:tkScroll 36s linear infinite}
 .tk-inner span{font-size:10px;letter-spacing:.2em;color:rgba(240,236,226,.75);text-transform:uppercase;padding:0 18px}
@@ -844,11 +848,18 @@ input[type=file]{display:none}
   flex-direction: column;
   justify-content: flex-end;
 }
+/* no-cover conserva la animación original (blur + ficha + scale/glow).
+   Solo las cards Pendiente (pend-card) quedan estáticas. */
 .gc-set.no-cover:hover{
+  border-color: var(--b);
+}
+.gc-set.pend-card:hover{
   border-color: rgba(27,0,230,.6);
   box-shadow: none;
   transform: none;
 }
+.gc-set.pend-card .gc-set-ficha{ display:none; }
+.gc-set.pend-card:hover .gc-set-img{ filter:none; }
 .gc-set.no-cover .gc-set-overlay{ display: none; }
 .gc-set.no-cover .gc-set-estado{ color: rgba(255,255,255,.7); letter-spacing: .18em; }
 .gc-set.no-cover .gc-set-tipo{ color: rgba(85,51,255,.8); }
@@ -1254,14 +1265,18 @@ input[type=file]{display:none}
 
   /* ── FICHA del DJ ─────────────────────────────────────────── */
   #ficha{ bottom:var(--TK); }
+  /* Apilado vertical por flex: evita que el track `auto` del grid colapse la
+     foto (la .pzone deriva su alto de aspect-ratio y su <img> es absolute, por
+     lo que aporta ~0 al min-content del grid → fright tapaba la foto). */
   .fbody{
-    grid-template-columns:1fr;
-    grid-template-rows:auto 1fr;
+    display:flex;
+    flex-direction:column;
     overflow-y:auto;
   }
   .fleft{
     position:relative;
     height:auto;
+    flex:0 0 auto;
     padding:0 20px 20px;
     flex-direction:column;
     align-items:stretch;
@@ -1283,6 +1298,7 @@ input[type=file]{display:none}
   .fa-genre{ font-size:9px; }
   .fa-foot{ display:none; } /* ocultar en mobile */
   .fright{
+    flex:0 0 auto;
     padding:24px 20px 40px;
     overflow-y:visible;
   }
@@ -2142,11 +2158,16 @@ html, body{ overflow-x:clip; }
    ═══════════════════════════════════════════════════════════════ */
 /* Home: hero más compacto en mobile, números escalan limpio */
 @media(max-width:700px){
-  #pg-home .hero{ left:20px; right:auto; max-width:90%; bottom:34px; }
-  #pg-home .h-w, #pg-home .h-n{ font-size:clamp(30px,8.5vw,46px) !important; }
-  #pg-home .h-eye{ font-size:9px; letter-spacing:.24em; margin-bottom:10px; }
-  #pg-home .h-d{ font-size:9px; letter-spacing:.18em; max-width:none; line-height:1.9; margin-bottom:20px; }
-  #pg-home .cta{ padding:14px 24px; font-size:9.5px; }
+  /* Posición: pegado al margen izquierdo, menos espacio lateral */
+  #pg-home .hero{ left:14px; right:auto; max-width:94%; bottom:30px; }
+  /* Tamaño: escala general menor, ocupa menos altura */
+  #pg-home .h-w, #pg-home .h-n{ font-size:clamp(26px,7.2vw,40px) !important; }
+  #pg-home .h-c{ margin-bottom:12px; }
+  #pg-home .h-eye{ font-size:8.5px; letter-spacing:.22em; margin-bottom:8px; color:var(--w); }
+  #pg-home .h-d{ font-size:8.5px; letter-spacing:.16em; max-width:none; line-height:1.8; margin-bottom:16px; color:var(--w); }
+  /* Color: todo el texto del hero en blanco; el número conserva su azul */
+  #pg-home .h-w{ color:var(--w); }
+  #pg-home .cta{ padding:12px 20px; font-size:9px; }
   /* Reducir intensidad de glows ambientales en mobile */
   #pg-home::before{ width:340px; height:340px; opacity:.55; }
   #pg-home::after{ width:280px; height:280px; opacity:.5; }
@@ -2245,7 +2266,7 @@ html, body{ overflow-x:clip; }
 
 <!-- TICKER (CNN style) -->
 <div id="ticker">
-  <div class="tk-tag" onclick="goHome && goHome()" role="link" tabindex="0" title="Volver al inicio" aria-label="Volver al inicio" onkeydown="if(event.key==='Enter'){goHome && goHome();}">ASDL</div>
+  <div class="tk-tag" id="tk-tag" onclick="tickerTagClick()" role="link" tabindex="0" title="Archivo Secreto del Lab" aria-label="Archivo Secreto del Lab" onkeydown="if(event.key==='Enter'){tickerTagClick();}">ASDL</div>
   <div class="tk-track">
     <div class="tk-inner">
       <span class="hl">PRÓXIMA DJ JAM</span><span class="sep">·</span>
@@ -2581,12 +2602,11 @@ html, body{ overflow-x:clip; }
           <!-- LEFT -->
           <div class="ag-left">
             <div class="sec-num">02</div>
-            <div class="ag-eye">Archivo Secreto del Lab · Buenos Aires</div>
             <h1 class="ag-title">Grabá tu Set<br><span class="soft">en el Archivo</span></h1>
             <div class="ag-wave">
               <i style="animation-delay:0s"></i><i style="animation-delay:.1s"></i><i style="animation-delay:.2s"></i><i style="animation-delay:.3s"></i><i style="animation-delay:.4s"></i><i style="animation-delay:.5s"></i><i style="animation-delay:.6s"></i><i style="animation-delay:.7s"></i><i style="animation-delay:.8s"></i><i style="animation-delay:.9s"></i><i style="animation-delay:1s"></i><i style="animation-delay:1.1s"></i><i style="animation-delay:1.2s"></i><i style="animation-delay:1.3s"></i><i style="animation-delay:0s"></i><i style="animation-delay:.15s"></i><i style="animation-delay:.3s"></i><i style="animation-delay:.45s"></i><i style="animation-delay:.6s"></i><i style="animation-delay:.75s"></i>
             </div>
-            <div class="ag-desc">Descubrí el <strong>primer laboratorio creativo creado por y para DJs</strong> en Buenos Aires, conectá con una comunidad en constante evolución y generá el material que te va a llevar a donde querés estar. El registro es fundamental, <strong>nosotros lo hacemos real y cercano</strong>.</div>
+            <div class="ag-desc">Conectá con una comunidad en constante evolución y generá el material que te va a llevar a donde querés estar. El registro es fundamental, <strong>nosotros lo hacemos real y cercano</strong>.</div>
 
             <!-- Trust strip -->
             <div class="ag-trust">
@@ -2742,9 +2762,11 @@ Para consultar disponibilidad de espacio, ruteo de audio o compatibilidad de otr
               <input type="hidden" id="ag-genre" value="">
               <input type="hidden" id="ag-links" value="">
 
-              <button class="ag-submit" id="ag-submit-btn" onclick="submitAgenda()" disabled>Solicitar fecha →</button>
-              <div style="font-size:10px;letter-spacing:.14em;color:rgba(255,250,231,.4);margin-top:14px">En menos de 24hs, el equipo del Archivo confirma tu reserva</div>
-              <div id="ag-status" style="font-size:11px;letter-spacing:.1em;color:var(--wd);margin-top:14px;min-height:18px;line-height:1.8"></div>
+              <div id="ag-action-block">
+                <button class="ag-submit" id="ag-submit-btn" onclick="submitAgenda()" disabled>Solicitar fecha →</button>
+                <div style="font-size:10px;letter-spacing:.14em;color:rgba(255,250,231,.4);margin-top:14px">En menos de 24hs, el equipo del Archivo confirma tu reserva</div>
+                <div id="ag-status" style="font-size:11px;letter-spacing:.1em;color:var(--wd);margin-top:14px;min-height:18px;line-height:1.8"></div>
+              </div>
             </div>
           </div>
 
@@ -2783,16 +2805,16 @@ Para consultar disponibilidad de espacio, ruteo de audio o compatibilidad de otr
       <div class="ag-mft">
         <div class="ag-mft-num" id="manifiesto-count" aria-hidden="true">147</div>
         <div class="ag-mft-body">
-          <div class="ag-mft-kicker">Registros en el archivo</div>
+          <div class="ag-mft-kicker">Sos el próximo en el Archivo</div>
           <h2 class="ag-mft-title">Sos el próximo<br>en el <span>archivo</span>.</h2>
-          <p class="ag-mft-copy">No solo grabamos sets — forjamos conexiones. Grabar acá no se parece a ningún otro lugar de la ciudad.</p>
+          <p class="ag-mft-copy">No sólo grabamos sets. Acá forjamos conexiones entre colegas y compartimos lo que amamos. Grabar en el Archivo no es como grabar en ningún otro lugar de Buenos Aires.</p>
           <a class="ag-mft-cta" onclick="document.getElementById('ag-form').scrollIntoView({behavior:'smooth',block:'start'})">Reservá tu fecha ahora →</a>
         </div>
       </div>
 
       <!-- CARRUSEL DE DESCUBRIMIENTO (constreñido al ancho del texto + fade lateral) -->
       <section class="caru-wrap caru-wrap-primary" aria-label="Galería de artistas del archivo">
-        <div class="caru-label">Arrastrá la galería para <span>descubrir</span> a los artistas que se han sumado</div>
+        <div class="caru-label">Explorá la galería para <span>descubrir</span> a los artistas que se han sumado</div>
         <div class="caru-track-outer">
           <div class="caru-track" id="caru-track">
             <div class="caru-placeholder">Cargando galería…</div>
@@ -2804,7 +2826,7 @@ Para consultar disponibilidad de espacio, ruteo de audio o compatibilidad de otr
 
       <!-- CONTACTOS HORIZONTALES (después de las fotos) -->
       <section class="contact-row">
-        <div class="cr-label">Cada día, el archivo sigue creciendo. Seguí el progreso de este proyecto en sus canales oficiales ↓</div>
+        <div class="cr-label">Cada día, el archivo sigue creciendo. Seguí la evolución del Archivo en sus canales oficiales ↓</div>
         <div class="cr-grid">
 
           <a class="cr-card yt" href="https://www.youtube.com/@ArchivoSecretodelLab/videos" target="_blank" rel="noopener">
@@ -4202,6 +4224,25 @@ const PUBLIC_IDS = ['072','078','018','035','015','WP']; // Konkor, (b)Eva, Nine
 
 // ═══════════════════════════════════════════════════════
 // NAVIGATION
+// Reflow mobile (≤700px): mueve el bloque "Solicitar fecha" para que aparezca
+// después de las franjas horarias y antes del WhatsApp. En desktop lo restaura
+// al final del formulario (#ag-form). No duplica: reubica el mismo nodo.
+function reflowAgendaActions(){
+  var block = document.getElementById('ag-action-block');
+  var form  = document.getElementById('ag-form');
+  var waZone = document.querySelector('#pg-agenda .ag-wa-zone');
+  if(!block || !form || !waZone) return;
+  if(window.innerWidth <= 700){
+    if(block.parentNode !== waZone.parentNode || block.nextElementSibling !== waZone){
+      waZone.parentNode.insertBefore(block, waZone);
+    }
+  } else {
+    if(block.parentNode !== form){
+      form.appendChild(block);
+    }
+  }
+}
+
 // ═══════════════════════════════════════════════════════
 function navTo(pg, el){
   document.querySelectorAll('.pg').forEach(p=>{p.classList.remove('on');p.style.display='none';});
@@ -4212,6 +4253,7 @@ function navTo(pg, el){
     target.classList.add('on');
   }
   if(el) el.classList.add('on');
+  if(typeof updateTickerTag==='function') updateTickerTag();
   if(pg==='home'){
     if(typeof initCards === 'function' && !window._cardsInited){
       window._cardsInited = true;
@@ -4248,7 +4290,10 @@ function navTo(pg, el){
       // Poll ligero para detectar fecha/slot seleccionados (calendar es un sub-sistema)
       setInterval(updateStepperStates, 900);
       updateStepperStates();
+      // Reflow mobile: el botón "Solicitar fecha" se ubica tras las franjas (ver reflowAgendaActions)
+      window.addEventListener('resize', reflowAgendaActions);
     }
+    reflowAgendaActions();
   }
   if(pg==='archivo'){
     const v = document.getElementById('vid-hero');
@@ -4264,6 +4309,34 @@ async function loadSocialStats(){
 
 function goHome(){
   navTo('home', document.querySelector('[data-pg=home]'));
+}
+
+// Ticker tag: en Home es la etiqueta de marca "ASDL"; en cualquier vista interna
+// (otra página o ficha abierta) se transforma en botón "← VOLVER" al inicio.
+function fichaIsOpen(){
+  var f=document.getElementById('ficha');
+  return !!(f && (f.classList.contains('show') || f.classList.contains('on')));
+}
+function updateTickerTag(){
+  var tag=document.getElementById('tk-tag');
+  if(!tag) return;
+  var home=document.getElementById('pg-home');
+  var onHome = home && home.classList.contains('on') && !fichaIsOpen();
+  if(onHome){
+    tag.classList.remove('is-back');
+    tag.textContent='ASDL';
+    tag.setAttribute('title','Archivo Secreto del Lab');
+    tag.setAttribute('aria-label','Archivo Secreto del Lab');
+  } else {
+    tag.classList.add('is-back');
+    tag.textContent='← VOLVER';
+    tag.setAttribute('title','Volver al inicio');
+    tag.setAttribute('aria-label','Volver al inicio');
+  }
+}
+function tickerTagClick(){
+  if(fichaIsOpen() && typeof closeFicha==='function'){ closeFicha(); }
+  goHome();
 }
 function subnavTo(sub, el){
   document.querySelectorAll('.subpg').forEach(p=>p.classList.remove('on'));
@@ -5601,6 +5674,7 @@ window.openFicha = async function openFicha(id){
   f.style.display='flex';
   f.classList.add('on');
   requestAnimationFrame(()=>f.classList.add('show'));
+  if(typeof updateTickerTag==='function') updateTickerTag();
 
   // (Sistema de puntuación de 5 estrellas removido)
   } catch(err) {
@@ -5691,6 +5765,7 @@ function closeFicha(){
   f.classList.remove('on');
   setTimeout(()=>{f.style.display='none';f.classList.remove('on');},300);
   fichaFrom='djs';
+  if(typeof updateTickerTag==='function') updateTickerTag();
 }
 
 function saveYT(id){
