@@ -4970,7 +4970,8 @@ function resetAgenda(){
 let cardQueue = [], cardActive = new Set(), laneLastSpawn = {};
 
 function initCards(){
-  // Mobile: cards reducidas (solo nombre, centrado), máx 3, en carriles separados (ver CSS + lane system).
+  // Mobile: SIN cards flotantes en el inicio (evita encimarse con el hero). Solo desktop.
+  if(window.innerWidth <= 700){ return; }
   cardQueue = [...DJS].filter(d=>!d.hidden && (!d.isSoon || SOON.includes(d.artist)) && d.session !== 'B2B' && d.artist.indexOf(' B2B ') === -1)
     .map(d=>({...d}));
   for(let i=cardQueue.length-1;i>0;i--){
@@ -4997,6 +4998,7 @@ function initCards(){
 }
 
 function spawnCard(){
+  if(window.innerWidth <= 700) return; // mobile: nunca cards flotantes
   if(!cardQueue.length) return;
   const dj = cardQueue.shift();
   if(cardActive.has(dj.i)) return;
