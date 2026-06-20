@@ -2722,7 +2722,7 @@ Para consultar disponibilidad de espacio, ruteo de audio o compatibilidad de otr
               <input type="hidden" id="ag-links" value="">
 
               <button class="ag-submit" onclick="submitAgenda()">Solicitar fecha →</button>
-              <div style="font-size:10px;letter-spacing:.14em;color:rgba(255,250,231,.4);margin-top:14px">// En menos de 24hs, el equipo del Archivo confirma tu reserva</div>
+              <div style="font-size:10px;letter-spacing:.14em;color:rgba(255,250,231,.4);margin-top:14px">En menos de 24hs, el equipo del Archivo confirma tu reserva</div>
               <div id="ag-status" style="font-size:11px;letter-spacing:.1em;color:var(--wd);margin-top:14px;min-height:18px;line-height:1.8"></div>
             </div>
           </div>
@@ -4931,6 +4931,8 @@ function resetAgenda(){
 let cardQueue = [], cardActive = new Set(), laneLastSpawn = {};
 
 function initCards(){
+  // Mobile: sin cards flotantes (rompían el hero). Hero limpio en vertical.
+  if(window.innerWidth <= 700){ var _clm=document.getElementById('cl'); if(_clm) _clm.style.display='none'; return; }
   cardQueue = [...DJS].filter(d=>!d.hidden && (!d.isSoon || SOON.includes(d.artist)) && d.session !== 'B2B' && d.artist.indexOf(' B2B ') === -1)
     .map(d=>({...d}));
   for(let i=cardQueue.length-1;i>0;i--){
@@ -6840,9 +6842,11 @@ async function checkComunidad(nombre){
 
 // INIT — sincronizado con el boot cinematográfico (boot dura 2.7s + 0.6s fade-out)
 // El counter arranca al 2.6s (mientras boot se desvanece) así se ve la animación completa
-setTimeout(() => { runCounter(); }, 2600);
-// Cards floating arrancan recién cuando boot ya casi no se ve (3.0s)
-setTimeout(() => { initCards(); }, 3000);
+var _asdlSeen=false;
+try{ _asdlSeen=!!localStorage.getItem('asdl_seen'); if(_asdlSeen){ var _bt=document.getElementById('boot'); if(_bt) _bt.style.display='none'; } else { localStorage.setItem('asdl_seen','1'); } }catch(e){}
+setTimeout(() => { runCounter(); }, _asdlSeen ? 100 : 2600);
+// Cards floating arrancan recién cuando boot ya casi no se ve
+setTimeout(() => { initCards(); }, _asdlSeen ? 200 : 3000);
 
 // Cargar config y disponibilidad desde Supabase
 (async()=>{
