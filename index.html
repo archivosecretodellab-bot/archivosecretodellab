@@ -427,6 +427,13 @@ background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0
 
 /* JAMS */
 .jsec{padding:28px 40px;border-bottom:1px solid var(--wf)}
+/* Mobile: el wrapper de Jams iguala EXACTAMENTE a .pgrid (padding lateral 12px
+   y gap 3px — ver override de .pgrid en el bloque mobile), así las cards de
+   sets miden y se espacian idéntico en todas las secciones. */
+@media(max-width:700px){
+  .jsec{ padding-left:12px; padding-right:12px; }
+  .jgrid-sets{ gap:3px; }
+}
 .jh{display:flex;align-items:baseline;gap:18px;margin-bottom:18px;flex-wrap:wrap}
 .jtit{font-family:'Space Mono',monospace;font-size:22px;font-weight:700;letter-spacing:-.02em;color:var(--w)}
 .jdate{font-size:9px;letter-spacing:.24em;color:var(--wd);text-transform:uppercase}
@@ -1282,16 +1289,30 @@ input[type=file]{display:none}
     align-items:stretch;
     gap:12px;
   }
+  /* Foto de perfil: caja 4:5 a PRUEBA DE FALLOS.
+     Causa raíz del "franja delgada": la altura dependía de `aspect-ratio`,
+     y como el <img> es position:absolute aporta 0 al alto intrínseco; si
+     `aspect-ratio` no se aplica (WebView/navegador viejo o el contexto flex
+     no da ancho definido), la caja colapsa a ~0.
+     Solución: alto derivado del ancho con padding-top (compatible en todos
+     los navegadores). El <img> absoluto rellena la caja con object-fit:cover. */
   .pzone{
     width:100%;
-    aspect-ratio:4/5;
-    height:auto;
+    aspect-ratio:auto;
+    height:0;
+    padding-top:125%;        /* 5/4 → retrato 4:5 real y visible */
+    display:block;
     flex-shrink:0;
     margin-bottom:0;
     border:none;
   }
   .pzone img{
-    object-position:center top;
+    position:absolute !important;
+    inset:0 !important;
+    width:100% !important;
+    height:100% !important;
+    object-fit:cover !important;
+    object-position:center top !important;
   }
   .fa-name{ font-size:22px; }
   .fa-alias{ margin-bottom:6px; }
@@ -1335,7 +1356,7 @@ input[type=file]{display:none}
   .nt{ font-size:7px; padding:0 9px; }
   .fc{ width:104px; padding:8px 9px 7px; }
   .fc-a{ font-size:13px; }
-  .pzone{ aspect-ratio:4/5; height:auto; }
+  .pzone{ aspect-ratio:auto; height:0; padding-top:125%; display:block; }
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -2158,13 +2179,16 @@ html, body{ overflow-x:clip; }
    ═══════════════════════════════════════════════════════════════ */
 /* Home: hero más compacto en mobile, números escalan limpio */
 @media(max-width:700px){
-  /* Posición: pegado al margen izquierdo, menos espacio lateral */
-  #pg-home .hero{ left:14px; right:auto; max-width:94%; bottom:30px; }
-  /* Tamaño: escala general menor, ocupa menos altura */
-  #pg-home .h-w, #pg-home .h-n{ font-size:clamp(26px,7.2vw,40px) !important; }
-  #pg-home .h-c{ margin-bottom:12px; }
-  #pg-home .h-eye{ font-size:8.5px; letter-spacing:.22em; margin-bottom:8px; color:var(--w); }
-  #pg-home .h-d{ font-size:8.5px; letter-spacing:.16em; max-width:none; line-height:1.8; margin-bottom:16px; color:var(--w); }
+  /* Posición: borde izquierdo del Hero EXACTAMENTE sobre el "ASDL" del ticker.
+     El tag ASDL arranca su texto en 12px (padding del .tk-tag), así que el
+     contenido del Hero debe empezar también en 12px: left:12px + padding-left:0.
+     Antes quedaba en 34px (left:14 + padding lateral heredado de 20px). */
+  #pg-home .hero{ left:12px; right:auto; max-width:calc(100% - 24px); bottom:26px; padding-left:0; padding-right:14px; }
+  /* Tamaño: escala general menor, ocupa menos altura — no domina la pantalla */
+  #pg-home .h-w, #pg-home .h-n{ font-size:clamp(23px,6.4vw,34px) !important; line-height:.92; }
+  #pg-home .h-c{ margin-bottom:9px; }
+  #pg-home .h-eye{ font-size:8px; letter-spacing:.2em; margin-bottom:6px; color:var(--w); }
+  #pg-home .h-d{ font-size:8px; letter-spacing:.14em; max-width:none; line-height:1.6; margin-bottom:13px; color:var(--w); }
   /* Color: todo el texto del hero en blanco; el número conserva su azul */
   #pg-home .h-w{ color:var(--w); }
   #pg-home .cta{ padding:12px 20px; font-size:9px; }
@@ -2582,10 +2606,11 @@ html, body{ overflow-x:clip; }
       </div>
 
       <!-- SUB: PUBLIC LIVESETS -->
+      <!-- Sin wrapper .jsec: el grid usa .pgrid directo igual que common/custom/djs,
+           para que las cards midan exactamente lo mismo (antes el doble padding
+           jsec+pgrid las achicaba). -->
       <div id="sub-public" class="subpg">
-        <div class="jsec">
-          <div class="pgrid" id="grid-public"></div>
-        </div>
+        <div class="pgrid" id="grid-public"></div>
       </div>
 
       <!-- SUB: POR GÉNERO -->
@@ -4241,6 +4266,25 @@ function reflowAgendaActions(){
       form.appendChild(block);
     }
   }
+  updateActionBlockVisibility();
+}
+
+// El DJ debe conocer la disponibilidad ANTES de poder solicitar una fecha.
+// En mobile el botón "Solicitar fecha" no se muestra hasta que hay
+// fecha + franja horaria seleccionadas (flujo: calendario → día → fecha →
+// franjas → horario → recién entonces el botón → luego WhatsApp).
+// En desktop el calendario es visible en paralelo, así que el botón se
+// mantiene siempre presente.
+function updateActionBlockVisibility(){
+  var block = document.getElementById('ag-action-block');
+  if(!block) return;
+  if(window.innerWidth <= 700){
+    var ready = !!(typeof selectedDate !== 'undefined' && selectedDate &&
+                   typeof selectedSlot !== 'undefined' && selectedSlot);
+    block.style.display = ready ? '' : 'none';
+  } else {
+    block.style.display = '';
+  }
 }
 
 // ═══════════════════════════════════════════════════════
@@ -4503,6 +4547,8 @@ function selectDate30(date){
   if(inp) inp.value = formatFecha(date);
   renderCal30(document.getElementById('cal30-public'),'public');
   renderPublicSlots();
+  // Reset: al cambiar de fecha aún no hay franja → el botón vuelve a ocultarse
+  updateActionBlockVisibility();
 }
 
 // Modelo "Solicitud abierta": en lugar de slots discretos, mostramos 3 franjas.
@@ -4540,6 +4586,8 @@ function renderPublicSlots(){
 function selectSlot30(slot){
   selectedSlot = slot;
   var _sbtn=document.getElementById('ag-submit-btn'); if(_sbtn) _sbtn.disabled = !(selectedDate && selectedSlot);
+  // Recién con fecha + franja aparece el botón "Solicitar fecha" en mobile
+  updateActionBlockVisibility();
   const inp = document.getElementById('ag-pref');
   if(inp&&selectedDate){
     // Si es franja (Mañana/Tarde/Noche) no agregamos 'hs', si no, sí
@@ -5035,6 +5083,8 @@ function resetAgenda(){
   const st=document.getElementById('ag-status');
   if(st){st.textContent='';};
   renderCal30Public();
+  // Sin selección → el botón vuelve a ocultarse en mobile
+  if(typeof updateActionBlockVisibility==='function') updateActionBlockVisibility();
 }
 
 // ═══════════════════════════════════════════════════════
