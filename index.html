@@ -308,7 +308,7 @@ background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0
 #content{overflow-y:auto;height:100%}
 .pg{display:none;min-height:100%}
 .pg.on{display:block}
-#pg-archivo.on{display:block;overflow-y:auto;height:100%;position:absolute;top:0;left:0;right:0;bottom:0}
+#pg-archivo.on{display:block}
 
 /* LANDING */
 #pg-home{position:relative;overflow:hidden;height:100%}
@@ -446,14 +446,18 @@ background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0
 .jc-d{font-size:8px;letter-spacing:.18em;color:rgba(240,236,226,.4);text-transform:uppercase}
 
 /* FICHA */
-#ficha{position:fixed;inset:0;bottom:var(--TK);background:var(--k);z-index:750;display:none;flex-direction:column;opacity:0;transition:opacity .28s}
+/* La ficha arranca DEBAJO del header+nav para que la barra de tabs quede
+   siempre visible y clickeable (el nav no puede subir por z-index porque
+   #shell crea su propio contexto de apilamiento). El top exacto lo ajusta
+   positionFichaBelowNav() por JS (desktop/mobile difieren). */
+#ficha{position:fixed;top:calc(var(--TH) + var(--NH));left:0;right:0;bottom:var(--TK);background:var(--k);z-index:750;display:none;flex-direction:column;opacity:0;transition:opacity .28s}
 #ficha.on{display:flex}#ficha.show{opacity:1}
 .ftop{display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:var(--TH);border-bottom:1px solid var(--wf);flex-shrink:0}
 .back{display:flex;align-items:center;gap:9px;font-size:10px;letter-spacing:.22em;color:var(--wd);text-transform:uppercase;transition:color .2s;cursor:pointer}
 .back:hover{color:var(--w)}
 .fref{font-size:10px;letter-spacing:.22em;color:var(--wm);text-transform:uppercase}
 .fbody{flex:1;overflow-y:auto;display:grid;grid-template-columns:310px 1fr}
-.fleft{background:var(--b);padding:38px 34px;display:flex;flex-direction:column;position:sticky;top:0;height:calc(100vh - var(--TH) - var(--TK));overflow-y:auto}
+.fleft{background:var(--b);padding:38px 34px;display:flex;flex-direction:column;position:sticky;top:0;height:calc(100vh - var(--TH) - var(--TH) - var(--NH) - var(--TK));overflow-y:auto}
 .fleft.soon-l{background:var(--soon);border-right:1px solid var(--soon-br)}
 .pzone{width:100%;aspect-ratio:4/5;background:rgba(0,0,0,.3);margin-bottom:22px;position:relative;overflow:hidden;border:1px solid rgba(240,236,226,.12);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .pzone img{width:100%;height:100%;object-fit:cover;object-position:center top;position:absolute;inset:0}
@@ -2016,7 +2020,7 @@ html, body{ overflow-x:clip; }
    ═══════════════════════════════════════════════════════════════ */
 
 /* Sección con glows tipo vidrio */
-#pg-archivo{ position:relative; overflow:hidden; }
+#pg-archivo{ position:relative; }
 #pg-archivo .hero-archivo{ position:relative; background:#060606; }
 #pg-archivo .hero-archivo::before{
   content:''; position:absolute; top:5%; left:50%; transform:translateX(-50%);
@@ -2260,6 +2264,10 @@ html, body{ overflow-x:clip; }
       rgba(255,250,231,.012) 80px, rgba(255,250,231,.012) 81px);
 }
 #pg-renta > *{ position:relative; z-index:1; }
+/* Aura azul que sigue el cursor (Renta + Manifiesto) — reemplaza los glows estáticos */
+.cursor-aura{ position:fixed; left:0; top:0; width:600px; height:600px; border-radius:50%; background:radial-gradient(circle, rgba(27,0,230,.30) 0%, rgba(27,0,230,.10) 42%, transparent 70%); filter:blur(40px); pointer-events:none; will-change:transform; }
+#pg-renta::before{ display:none; }
+#pg-archivo .hero-archivo::before, #pg-archivo .hero-archivo::after{ display:none; }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
@@ -2447,6 +2455,7 @@ html, body{ overflow-x:clip; }
       </style>
 
       <div class="hero-archivo">
+        <div class="cursor-aura" style="z-index:1" aria-hidden="true"></div>
 
         <!-- TEXTO centrado, sin video -->
         <div class="texto-archivo visible" id="texto-archivo">
@@ -2909,6 +2918,7 @@ Para consultar disponibilidad de espacio, ruteo de audio o compatibilidad de otr
 
     <!-- CONTÁCTANOS — ELIMINADO · funcionalidad unificada en #pg-agenda -->
     <div id="pg-renta" class="pg">
+      <div class="cursor-aura" style="position:fixed;z-index:0" aria-hidden="true"></div>
       <div class="rpg">
         <style>
         #pg-renta .rv-wrap{ position:relative; }
@@ -3255,6 +3265,40 @@ function imgOnError(el, url){
   console.warn('[ASDL] Cover no encontrada: ' + url);
   el.style.display = 'none';
 }
+
+// Fallback global: cualquier imagen .jpg/.jpeg de GitHub que falle se reintenta
+// como .png UNA vez (covers/perfiles subidos en png). Captura en fase de captura
+// y frena el onerror propio del <img> sólo para ese reintento.
+document.addEventListener('error', function(e){
+  var el = e.target;
+  if(el && el.tagName === 'IMG' && el.dataset.pngRetry !== '1'
+     && el.src.indexOf('raw.githubusercontent.com') > -1
+     && /\.jpe?g(\?|#|$)/i.test(el.src)){
+    el.dataset.pngRetry = '1';
+    e.stopImmediatePropagation();
+    el.src = el.src.replace(/\.jpe?g(\?|#|$)/i, '.png$1');
+  }
+}, true);
+
+// Aura azul que sigue el cursor en Renta y Manifiesto (mismo efecto que la confirmación).
+// Los .cursor-aura sólo se ven cuando su página está activa (heredan el display de la pág).
+(function(){
+  var auraRM = window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  var auraHover = window.matchMedia && window.matchMedia('(hover:hover)').matches;
+  var aT = { x:(window.innerWidth||1000)/2, y:(window.innerHeight||700)*0.4 };
+  var aG = { x:aT.x, y:aT.y };
+  var HALF = 300, ang = 0;
+  if(auraHover){ document.addEventListener('pointermove', function(e){ aT.x=e.clientX; aT.y=e.clientY; }); }
+  function apply(){ var a=document.querySelectorAll('.cursor-aura'); for(var i=0;i<a.length;i++){ a[i].style.transform='translate('+(aG.x-HALF)+'px,'+(aG.y-HALF)+'px)'; } }
+  function loop(){
+    if(!auraHover){ ang+=0.008; aT.x=window.innerWidth/2+Math.cos(ang)*window.innerWidth*0.20; aT.y=window.innerHeight/2+Math.sin(ang)*window.innerHeight*0.18; }
+    aG.x += (aT.x-aG.x)*0.07; aG.y += (aT.y-aG.y)*0.07;
+    apply();
+    requestAnimationFrame(loop);
+  }
+  apply();
+  if(!auraRM) requestAnimationFrame(loop);
+})();
 
 // ── PERFILES MAP — nombres exactos en img/perfiles/ ────────────
 var PERFILES_MAP = {
@@ -4289,6 +4333,9 @@ function updateActionBlockVisibility(){
 
 // ═══════════════════════════════════════════════════════
 function navTo(pg, el){
+  // Cerrar la ficha si está abierta para que cualquier tab navegue de inmediato.
+  var _f=document.getElementById('ficha');
+  if(_f){ _f.classList.remove('show'); _f.classList.remove('on'); _f.style.display='none'; }
   document.querySelectorAll('.pg').forEach(p=>{p.classList.remove('on');p.style.display='none';});
   document.querySelectorAll('.nt').forEach(n=>n.classList.remove('on'));
   const target = document.getElementById('pg-'+pg);
@@ -4364,20 +4411,22 @@ function fichaIsOpen(){
 function updateTickerTag(){
   var tag=document.getElementById('tk-tag');
   if(!tag) return;
-  var home=document.getElementById('pg-home');
-  var onHome = home && home.classList.contains('on') && !fichaIsOpen();
-  if(onHome){
-    tag.classList.remove('is-back');
-    tag.textContent='ASDL';
-    tag.setAttribute('title','Archivo Secreto del Lab');
-    tag.setAttribute('aria-label','Archivo Secreto del Lab');
-  } else {
-    tag.classList.add('is-back');
-    tag.textContent='← VOLVER';
-    tag.setAttribute('title','Volver al inicio');
-    tag.setAttribute('aria-label','Volver al inicio');
-  }
+  // REVERTIDO: el tag del ticker es SIEMPRE la marca "ASDL"; ya no se
+  // transforma en "← VOLVER". La navegación se hace con las tabs (que cierran
+  // la ficha) y el cierre de ficha con su propio botón "← Volver" interno.
+  tag.classList.remove('is-back');
+  tag.textContent='ASDL';
+  tag.setAttribute('title','Archivo Secreto del Lab');
+  tag.setAttribute('aria-label','Archivo Secreto del Lab');
 }
+// Posiciona la ficha justo debajo de la barra de tabs (header+nav), para que
+// la barra quede siempre visible y clickeable. Se recalcula en resize porque
+// la altura del header/nav cambia entre desktop y mobile.
+function positionFichaBelowNav(){
+  var f=document.getElementById('ficha'), nav=document.getElementById('nav');
+  if(f && nav){ f.style.top = Math.round(nav.getBoundingClientRect().bottom) + 'px'; }
+}
+window.addEventListener('resize', positionFichaBelowNav);
 function tickerTagClick(){
   if(fichaIsOpen() && typeof closeFicha==='function'){ closeFicha(); }
   goHome();
@@ -4993,86 +5042,188 @@ async function submitAgenda(){
         es_comunidad: false
       }], {onConflict:'nombre_artistico', ignoreDuplicates:true});
     }
-    // EL DESBLOQUEO — efecto visual
-    desbloqueo(esComunidad, precioFinal);
+    // EL DESBLOQUEO — pantalla de pertenencia
+    desbloqueo({
+      artist: artist,
+      tipo: tipo,
+      fecha: selectedDate,
+      horario: selectedSlot,
+      esComunidad: esComunidad,
+      precioBase: precio,
+      precioFinal: precioFinal,
+      existe: existe
+    });
   } else {
     if(st){st.textContent='⚠ Error al guardar. Intentá de nuevo.';st.style.color='var(--red)';}
   }
 }
 
-function desbloqueo(esComunidad, precio){
+function desbloqueo(data){
+  // Compatibilidad: si se llama al estilo viejo desbloqueo(esComunidad, precio)
+  if(typeof data !== 'object' || data === null){
+    data = { esComunidad: arguments[0], precioFinal: arguments[1], precioBase: arguments[1], artist:'', tipo:'Common', fecha:selectedDate, horario:selectedSlot, existe:false };
+  }
+  const rm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const hoverable = window.matchMedia && window.matchMedia('(hover: hover)').matches;
+  const volver = !!data.existe;
+  const esc = s => String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  const fmtFecha = f => {
+    if(!f) return '';
+    const M=['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
+    const p=String(f).split('-'); if(p.length!==3) return String(f).toUpperCase();
+    return parseInt(p[2],10)+'.'+(M[parseInt(p[1],10)-1]||p[1])+'.'+p[0];
+  };
+  const countEl = document.getElementById('manifiesto-count') || document.getElementById('trust-sets-count') || document.getElementById('hdr-count');
+  let baseCount = 0;
+  if(countEl){ baseCount = parseInt(String(countEl.textContent||'').replace(/\D/g,''),10) || 0; }
+  const entryNum = baseCount + 1;
+  const setLabels = {Basico:'BÁSICO LIVESET', Common:'COMMON LIVESET', B2B:'B2B LIVESET', Custom:'CUSTOM'};
+  const setLabel = setLabels[data.tipo] || String(data.tipo||'').toUpperCase();
+  const fechaStr = fmtFecha(data.fecha);
+  const horaStr = String(data.horario||'').toUpperCase();
+  const fechaFull = fechaStr + (horaStr ? ' · ' + horaStr : '');
+  const pf = Number(data.precioFinal)||0, pb = Number(data.precioBase)||0;
+  let valHtml;
+  if(data.esComunidad && pb && pb !== pf){
+    valHtml = `<s style="color:rgba(240,236,226,.4);text-decoration-color:#1B00E6">$${pb.toLocaleString('es-AR')}</s>&nbsp; $${pf.toLocaleString('es-AR')} <span style="font-size:10px;letter-spacing:1px;color:#1B00E6">−10%</span>`;
+  } else if(data.tipo==='Custom'){
+    valHtml = `desde $${pf.toLocaleString('es-AR')}`;
+  } else {
+    valHtml = `$${pf.toLocaleString('es-AR')}`;
+  }
+  const hero  = volver ? 'De vuelta en el Archivo.' : 'Te estábamos esperando.';
+  const sub   = volver ? 'Tu historia sigue escribiéndose.' : 'El registro no estaba completo sin vos.';
+  const seal2 = volver ? 'El registro te recuerda' : 'Este es tu primer paso · Bienvenido al registro';
+  const artistU = esc(String(data.artist||'').toUpperCase() || '—');
+  const versetsLabel = baseCount>0 ? `Ver los ${baseCount} sets &rarr;` : 'Ver el registro &rarr;';
+  const row = (k,v,tb)=>`<div class="agc-row" style="opacity:0;transform:translateY(6px);transition:opacity .45s ease, transform .45s cubic-bezier(.16,1,.3,1);display:flex;justify-content:space-between;gap:14px;padding:6px 0;align-items:flex-start${tb?';border-top:1px solid rgba(240,236,226,.08);margin-top:4px':''}"><span style="font-size:11px;letter-spacing:2px;color:#1B00E6;text-transform:uppercase;flex-shrink:0">${k}</span><span style="font-family:'Space Mono',monospace;font-size:13px;color:#F0ECE2;text-align:right;word-break:break-word">${v}</span></div>`;
+
+  // Slideshow de miniaturas reales (sets publicados con YouTube, clickeables)
+  const ytThumb = u => { const m = String(u||'').match(/(?:v=|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})/); return m ? m[1] : null; };
+  let recentSets = (typeof SM!=='undefined' ? SM : []).filter(s => s.estado==='Publicado' && ytThumb(s.url_yt));
+  recentSets.sort((a,b)=> String(b.fecha||'').localeCompare(String(a.fecha||'')) || String(b.id||'').localeCompare(String(a.id||'')));
+  recentSets = recentSets.slice(0,10);
+  const thumbCard = s => { const yid = ytThumb(s.url_yt); return `<a href="${esc(s.url_yt)}" target="_blank" rel="noopener" title="${esc(s.artista||'')}" style="flex:0 0 auto;width:190px;aspect-ratio:16/9;position:relative;display:block;border:1px solid rgba(240,236,226,.14)"><img src="https://img.youtube.com/vi/${yid}/mqdefault.jpg" alt="${esc(s.artista||'')}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block"><span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center"><span style="width:30px;height:30px;border-radius:50%;background:rgba(27,0,230,.92);display:flex;align-items:center;justify-content:center"><span style="width:0;height:0;border-left:9px solid #F0ECE2;border-top:6px solid transparent;border-bottom:6px solid transparent;margin-left:2px"></span></span></span></a>`; };
+  const thumbsHtml = recentSets.length ? (recentSets.map(thumbCard).join('') + recentSets.map(thumbCard).join('')) : '';
+  const recoInner = thumbsHtml
+    ? `<div class="agc-strip" style="overflow:hidden;margin:0 -24px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 13%,#000 87%,transparent);mask-image:linear-gradient(90deg,transparent,#000 13%,#000 87%,transparent)"><div class="agc-track" style="display:flex;gap:10px;width:max-content;padding:0 24px">${thumbsHtml}</div></div><div style="text-align:center;margin-top:18px"><span id="agc-vertodo" role="button" tabindex="0" style="font-size:11px;letter-spacing:2px;color:#1B00E6;text-transform:uppercase;cursor:pointer">ver todo el registro &rarr;</span></div>`
+    : `<button id="agc-versets" style="width:100%;box-sizing:border-box;background:#1B00E6;border:none;color:#F0ECE2;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;padding:14px;cursor:pointer;transition:background .2s">${versetsLabel}</button>`;
+
+  const prevFocus = document.activeElement;
   const overlay = document.createElement('div');
-  overlay.style.cssText = `position:fixed;inset:0;background:#0000FF;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;transition:opacity 0.4s;padding:32px;text-align:center;overflow-y:auto`;
+  overlay.id = 'ag-confirm-overlay';
+  overlay.setAttribute('role','dialog');
+  overlay.setAttribute('aria-modal','true');
+  overlay.setAttribute('aria-label','Reserva recibida');
+  overlay.tabIndex = -1;
+  overlay.style.cssText = `position:fixed;inset:0;background:#0A0A0A;z-index:9999;opacity:0;transition:opacity .35s ease;overflow-y:auto;overflow-x:hidden;outline:none;font-family:'IBM Plex Mono',monospace`;
   overlay.innerHTML = `
-    <div style="max-width:580px;width:100%">
-
-      <!-- Header -->
-      <div style="font-size:clamp(52px,10vw,100px);line-height:1;margin-bottom:16px">🌀</div>
-      <div style="font-family:'Space Mono',monospace;font-size:clamp(28px,5vw,56px);font-weight:700;color:#fff;letter-spacing:-.02em;margin-bottom:8px;line-height:1">AGENDADO.</div>
-      <div style="font-size:clamp(11px,1.4vw,14px);letter-spacing:.28em;color:rgba(255,255,255,.5);text-transform:uppercase;margin-bottom:32px">Tu sesión está en revisión</div>
-
-      <!-- Info box -->
-      <div style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);padding:24px;margin-bottom:16px;text-align:left">
-        <div style="font-size:9px;letter-spacing:.28em;color:rgba(255,255,255,.5);text-transform:uppercase;margin-bottom:14px">¿Qué pasa ahora?</div>
-        <div style="display:flex;flex-direction:column;gap:12px">
-          <div style="display:flex;gap:12px;align-items:flex-start">
-            <span style="font-size:18px;flex-shrink:0">📩</span>
-            <div style="font-size:clamp(11px,1.3vw,13px);color:rgba(255,255,255,.85);line-height:1.7">Revisamos tu solicitud y te confirmamos por email con todos los detalles de la sesión.</div>
+    <div id="agc-glow" style="position:absolute;left:0;top:0;width:620px;height:620px;border-radius:50%;background:radial-gradient(circle, rgba(27,0,230,.42) 0%, rgba(27,0,230,.14) 40%, transparent 70%);filter:blur(34px);pointer-events:none;z-index:0;will-change:transform"></div>
+    <div style="position:relative;z-index:2;min-height:100%;display:flex;align-items:flex-start;justify-content:center;padding:clamp(20px,5vh,64px) 16px;box-sizing:border-box">
+      <div style="max-width:460px;width:100%;margin:auto;position:relative">
+        <div style="position:absolute;inset:0;transform:translate(24px,24px);background:#070709;border:1px solid rgba(27,0,230,.22)"></div>
+        <div style="position:absolute;inset:0;transform:translate(12px,12px);background:#0B0B10;border:1px solid rgba(27,0,230,.4)"></div>
+        <div style="position:relative;background:#0A0A0A;border:1px solid #1B00E6;padding:30px 24px 24px">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="display:block;margin-bottom:20px" aria-hidden="true"><path d="M3 6.5C3 5.67 3.67 5 4.5 5H9l2 2h8.5c.83 0 1.5.67 1.5 1.5V18c0 .83-.67 1.5-1.5 1.5h-15C3.67 19.5 3 18.83 3 18V6.5Z" stroke="#1B00E6" stroke-width="1.5"/></svg>
+          <div id="agc-hero" style="opacity:0;transition:opacity .5s ease;font-family:'Space Mono',monospace;font-weight:700;font-size:clamp(26px,5.5vw,31px);line-height:1.12;color:#F0ECE2;letter-spacing:-.5px">${hero}</div>
+          <div id="agc-sub" style="opacity:0;transition:opacity .5s ease;font-size:13px;color:rgba(240,236,226,.62);line-height:1.7;margin-top:12px">${sub}</div>
+          <div id="agc-box" style="opacity:0;transform:translateY(22px);transition:opacity .55s ease, transform .55s cubic-bezier(.16,1,.3,1);border:1px solid #1B00E6;margin-top:26px;background:#0C0C12">
+            <div style="background:rgba(27,0,230,.14);padding:9px 16px;border-bottom:1px solid rgba(27,0,230,.5);display:flex;align-items:center;justify-content:space-between;gap:10px">
+              <span id="agc-entry" style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1px;color:#1B00E6;text-transform:uppercase">&nbsp;</span>
+              <span style="font-size:10px;letter-spacing:1.5px;color:#1B00E6;text-transform:uppercase;border:1px solid rgba(27,0,230,.5);padding:2px 7px;white-space:nowrap">En revisión</span>
+            </div>
+            <div style="padding:14px 16px">
+              ${row('Artista', artistU)}
+              ${row('Set', esc(setLabel))}
+              ${row('Fecha', esc(fechaFull))}
+              ${row('Valor', valHtml, true)}
+            </div>
           </div>
-          <div style="display:flex;gap:12px;align-items:flex-start">
-            <span style="font-size:18px;flex-shrink:0">💰</span>
-            <div style="font-size:clamp(11px,1.3vw,13px);color:rgba(255,255,255,.85);line-height:1.7">Una vez confirmado, te enviamos el alias para abonar la seña de <strong style="color:#fff">$${CFG.senia.toLocaleString('es-AR')}</strong>. La seña no es reembolsable.</div>
+          <div id="agc-note" style="opacity:0;transition:opacity .5s ease;margin-top:16px;font-size:11px;color:rgba(240,236,226,.5);line-height:1.65">Te escribimos en breve para coordinar los detalles y la seña que asegura tu lugar.</div>
+          <div id="agc-seal" style="opacity:0;transition:opacity .5s ease;margin-top:24px;text-align:center">
+            <div style="font-family:'Space Mono',monospace;font-size:15px;color:#F0ECE2;letter-spacing:.3px">Quien entra al Archivo, lo entiende.</div>
+            <div style="font-size:11px;letter-spacing:1px;color:rgba(240,236,226,.5);margin-top:8px;text-transform:uppercase">${seal2}</div>
           </div>
-          <div style="display:flex;gap:12px;align-items:flex-start">
-            <span style="font-size:18px;flex-shrink:0">📍</span>
-            <div style="font-size:clamp(11px,1.3vw,13px);color:rgba(255,255,255,.85);line-height:1.7">La dirección del Archivo es confidencial — te la enviamos únicamente con la confirmación.</div>
+          <div id="agc-reco" style="opacity:0;transition:opacity .5s ease;margin-top:30px">
+            <style>@keyframes agcMarquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}#ag-confirm-overlay .agc-track{animation:agcMarquee 40s linear infinite}#ag-confirm-overlay .agc-strip:hover .agc-track{animation-play-state:paused}@media (prefers-reduced-motion:reduce){#ag-confirm-overlay .agc-track{animation:none}}</style>
+            <div style="text-align:center;font-size:13px;color:rgba(240,236,226,.7);letter-spacing:.03em;line-height:1.5;margin-bottom:18px">Descubrí los sets que ya forman parte del registro</div>
+            ${recoInner}
           </div>
-          <div style="display:flex;gap:12px;align-items:flex-start">
-            <span style="font-size:18px;flex-shrink:0">⏱</span>
-            <div style="font-size:clamp(11px,1.3vw,13px);color:rgba(255,255,255,.85);line-height:1.7">Llegá 10 minutos antes. El set no se repite, no se modifica y no se borra.</div>
+          <div id="agc-volver" style="opacity:0;transition:opacity .5s ease;text-align:center;margin-top:16px">
+            <span id="agc-volver-btn" role="button" tabindex="0" style="font-size:11px;letter-spacing:2px;color:rgba(240,236,226,.4);text-transform:uppercase;cursor:pointer">&larr; Volver al Archivo</span>
           </div>
         </div>
-      </div>
-
-      <!-- Precio -->
-      ${esComunidad
-        ? `<div style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);padding:14px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between">
-            <span style="font-size:11px;letter-spacing:.18em;color:#fff;text-transform:uppercase">🔵 Comunidad — 10% OFF</span>
-            <span style="font-family:'Space Mono',monospace;font-size:18px;font-weight:700;color:#fff">$${precio.toLocaleString('es-AR')}</span>
-          </div>`
-        : `<div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);padding:14px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between">
-            <span style="font-size:11px;letter-spacing:.18em;color:rgba(255,255,255,.7);text-transform:uppercase">Total de la sesión</span>
-            <span style="font-family:'Space Mono',monospace;font-size:18px;font-weight:700;color:#fff">$${precio.toLocaleString('es-AR')}</span>
-          </div>`
-      }
-
-      <!-- Reglas rápidas -->
-      <div style="background:rgba(0,0,0,.2);padding:16px 20px;margin-bottom:24px;text-align:left">
-        <div style="font-size:9px;letter-spacing:.28em;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:10px">Recordá siempre</div>
-        <div style="font-size:11px;color:rgba(255,255,255,.65);line-height:2;letter-spacing:.04em">
-          🚫 No vestir negro ni colores oscuros<br>
-          🎧 Solo el DJ entra a la cabina<br>
-          🙌 Máximo 1 acompañante<br>
-          🧼 Lavate las manos antes de tocar los decks<br>
-          📵 Si estás adentro, estás presente
-        </div>
-      </div>
-
-      <!-- Botón -->
-      <button onclick="this.closest('div[style*=fixed]').remove();resetAgenda()"
-        style="font-size:10px;letter-spacing:.3em;text-transform:uppercase;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.4);color:#fff;padding:14px 36px;cursor:pointer;font-family:'IBM Plex Mono',monospace;transition:background .2s;width:100%"
-        onmouseover="this.style.background='rgba(255,255,255,.25)'"
-        onmouseout="this.style.background='rgba(255,255,255,.15)'">
-        ← Volver al Archivo
-      </button>
-
-      <div style="font-size:9px;letter-spacing:.2em;color:rgba(255,255,255,.3);margin-top:16px;text-transform:uppercase">
-        Archivo Secreto del Lab 👁️‍🗨️
       </div>
     </div>
   `;
   document.body.appendChild(overlay);
-  requestAnimationFrame(()=>{ overlay.style.opacity='1'; });
+  overlay.focus();
+
+  const closeConfirm = (go)=>{
+    document.removeEventListener('keydown', onKey);
+    if(go==='djsets'){ navTo('djsets', document.querySelector('[data-pg=djsets]')); }
+    else { goHome(); }
+    resetAgenda();
+    overlay.style.opacity='0';
+    setTimeout(()=>{ if(overlay.parentNode) overlay.parentNode.removeChild(overlay); if(prevFocus && prevFocus.focus){ try{prevFocus.focus();}catch(e){} } }, 320);
+  };
+  const onKey = (e)=>{ if(e.key==='Escape'){ closeConfirm('home'); } };
+  document.addEventListener('keydown', onKey);
+  const versetsBtn = overlay.querySelector('#agc-versets');
+  if(versetsBtn) versetsBtn.addEventListener('click', ()=>closeConfirm('djsets'));
+  const vertodoBtn = overlay.querySelector('#agc-vertodo');
+  if(vertodoBtn){
+    vertodoBtn.addEventListener('click', ()=>closeConfirm('djsets'));
+    vertodoBtn.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); closeConfirm('djsets'); } });
+  }
+  const vbtn = overlay.querySelector('#agc-volver-btn');
+  vbtn.addEventListener('click', ()=>closeConfirm('home'));
+  vbtn.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); closeConfirm('home'); } });
+
+  // Aura azul del manifiesto siguiendo el cursor (pantalla completa)
+  const glow = overlay.querySelector('#agc-glow');
+  const half = 310;
+  let gx=window.innerWidth*0.5, gy=window.innerHeight*0.4, tx=gx, ty=gy, ang=0;
+  glow.style.transform = `translate(${gx-half}px,${gy-half}px)`;
+  if(!rm){
+    const gloop = ()=>{
+      if(!hoverable){ ang+=0.01; tx=window.innerWidth/2+Math.cos(ang)*window.innerWidth*0.18; ty=window.innerHeight/2+Math.sin(ang)*window.innerHeight*0.18; }
+      gx+=(tx-gx)*0.06; gy+=(ty-gy)*0.06;
+      glow.style.transform=`translate(${gx-half}px,${gy-half}px)`;
+      if(document.getElementById('ag-confirm-overlay')) requestAnimationFrame(gloop);
+    };
+    requestAnimationFrame(gloop);
+    if(hoverable){ overlay.addEventListener('pointermove', e=>{ tx=e.clientX; ty=e.clientY; }); }
+  }
+
+  // Secuencia de entrada
+  const $o = id => overlay.querySelector(id);
+  const show = el => { if(el) el.style.opacity='1'; };
+  const entryEl = $o('#agc-entry');
+  const typeEntry = (txt)=>{
+    if(rm){ entryEl.textContent=txt; return; }
+    entryEl.textContent=''; let i=0;
+    (function st(){ if(i<=txt.length){ entryEl.textContent=txt.slice(0,i); i++; setTimeout(st,30); } })();
+  };
+  const rows = [].slice.call(overlay.querySelectorAll('.agc-row'));
+  setTimeout(()=>{ overlay.style.opacity='1'; }, 16);
+  if(rm){
+    ['#agc-hero','#agc-sub','#agc-box','#agc-note','#agc-seal','#agc-reco','#agc-volver'].forEach(s=>show($o(s)));
+    $o('#agc-box').style.transform='none';
+    rows.forEach(r=>{ r.style.opacity='1'; r.style.transform='none'; });
+    entryEl.textContent='Registro Nº '+entryNum;
+  } else {
+    setTimeout(()=>show($o('#agc-hero')),150);
+    setTimeout(()=>show($o('#agc-sub')),420);
+    setTimeout(()=>{ const b=$o('#agc-box'); show(b); b.style.transform='translateY(0)'; },820);
+    setTimeout(()=>typeEntry('Registro Nº '+entryNum),1050);
+    rows.forEach((r,i)=> setTimeout(()=>{ r.style.opacity='1'; r.style.transform='translateY(0)'; }, 1300+i*140));
+    const aft=1300+rows.length*140+160;
+    setTimeout(()=>show($o('#agc-note')), aft);
+    setTimeout(()=>show($o('#agc-seal')), aft+220);
+    setTimeout(()=>show($o('#agc-reco')), aft+440);
+    setTimeout(()=>show($o('#agc-volver')), aft+640);
+  }
 }
 
 function resetAgenda(){
@@ -5722,6 +5873,7 @@ window.openFicha = async function openFicha(id){
 
   const f=document.getElementById('ficha');
   f.style.display='flex';
+  if(typeof positionFichaBelowNav==='function') positionFichaBelowNav();
   f.classList.add('on');
   requestAnimationFrame(()=>f.classList.add('show'));
   if(typeof updateTickerTag==='function') updateTickerTag();
@@ -5734,80 +5886,7 @@ window.openFicha = async function openFicha(id){
   }
 }
 
-// ─── SISTEMA DE RATING ───────────────────────────────────────────────────────
-async function loadDjRating(id){
-  const wrap = document.getElementById(`rating-wrap-${id}`);
-  if(!wrap) return;
-  const lsKey = `asdl_rating_${id}`;
-  let saved = null;
-  try{ saved = localStorage.getItem(lsKey); }catch(e){}
-  if(saved){
-    renderRatingFixed(wrap, parseInt(saved), id);
-    return;
-  }
-  renderRatingInput(wrap, id);
-}
-
-function renderRatingInput(wrap, id){
-  wrap.innerHTML = `
-    <div style="margin-bottom:10px;font-size:11px;color:rgba(240,236,226,.6);line-height:1.7">
-      ¿Cómo fue tu experiencia grabando en el Archivo? Tu opinión queda guardada para siempre.
-    </div>
-    <div id="stars-input-${id}" style="display:flex;gap:6px;margin-bottom:14px;cursor:pointer">
-      ${[1,2,3,4,5].map(n=>`
-        <svg data-val="${n}" onclick="selectRating('${id}',${n})" onmouseover="hoverRating('${id}',${n})" onmouseout="hoverRating('${id}',0)"
-          width="30" height="30" viewBox="0 0 24 24" style="transition:transform .15s;flex-shrink:0"
-          fill="rgba(255,255,255,.15)" stroke="rgba(255,255,255,.3)" stroke-width="1.5">
-          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-        </svg>`).join('')}
-    </div>
-    <div id="rating-msg-${id}" style="font-size:9px;letter-spacing:.2em;color:var(--wd);text-transform:uppercase;min-height:14px"></div>
-  `;
-}
-
-function hoverRating(id, val){
-  const stars = document.querySelectorAll(`#stars-input-${id} svg`);
-  stars.forEach((s,i)=>{
-    const active = i < val;
-    s.setAttribute('fill', active ? '#f0c040' : 'rgba(255,255,255,.15)');
-    s.setAttribute('stroke', active ? '#f0c040' : 'rgba(255,255,255,.3)');
-    s.style.transform = active ? 'scale(1.18)' : 'scale(1)';
-  });
-}
-
-function selectRating(id, val){
-  const msg = document.getElementById(`rating-msg-${id}`);
-  if(msg) msg.textContent = 'Guardando...';
-  hoverRating(id, val);
-  try{ localStorage.setItem(`asdl_rating_${id}`, val); }catch(e){}
-  // Guardar en Supabase (fire and forget)
-  (async()=>{
-    try{
-      await sb.from('ratings').upsert({dj_id:id, rating:val, created_at:new Date().toISOString()},{onConflict:'dj_id'});
-    }catch(e){ console.warn('Rating save error:', e); }
-  })();
-  setTimeout(()=>{
-    const wrap = document.getElementById(`rating-wrap-${id}`);
-    if(wrap) renderRatingFixed(wrap, val, id);
-  }, 600);
-}
-
-function renderRatingFixed(wrap, val, id){
-  const labels = {1:'Regular',2:'Buena onda',3:'Muy buena',4:'Excelente',5:'Increíble 🌀'};
-  wrap.innerHTML = `
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-      ${[1,2,3,4,5].map(n=>`
-        <svg width="26" height="26" viewBox="0 0 24 24"
-          fill="${n<=val?'#f0c040':'rgba(255,255,255,.12)'}"
-          stroke="${n<=val?'#f0c040':'rgba(255,255,255,.2)'}"
-          stroke-width="1.5">
-          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-        </svg>`).join('')}
-      <span style="font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:#f0c040;margin-left:4px">${val}/5</span>
-    </div>
-    <div style="font-size:9px;letter-spacing:.22em;color:rgba(240,236,226,.5);text-transform:uppercase">${labels[val]||''} · Guardado permanentemente</div>
-  `;
-}
+// (Sistema de rating de 5 estrellas eliminado — código muerto removido 2026-06-23)
 
 function closeFicha(){
   const f=document.getElementById('ficha');
@@ -7193,6 +7272,12 @@ function smBuildCard(s, delay){
       card.classList.add('has-cover');
     };
     imgEl.onerror = function(){
+      // Reintento con .png (el archivo puede estar en png en vez de jpg)
+      if(imgEl.dataset.triedPng !== '1' && /\.jpg$/i.test(imgEl.src) && imgEl.src.indexOf('/img/covers/') > -1){
+        imgEl.dataset.triedPng = '1';
+        imgEl.src = imgEl.src.replace(/\.jpg$/i, '.png');
+        return;
+      }
       // Fallback B2B: probar primer artista
       var firstArtist = artNombre.includes(' B2B ')
         ? artNombre.split(' B2B ')[0].trim() : null;
@@ -8833,6 +8918,10 @@ function perfilImgFallback(el){
     var urls = fb.split('|');
     el.setAttribute('data-fallbacks', urls.slice(1).join('|'));
     el.src = urls[0];
+  } else if(el.dataset.triedPng !== '1' && /\.jpg$/i.test(el.src)){
+    // Reintento con .png (la foto puede estar en png en vez de jpg)
+    el.dataset.triedPng = '1';
+    el.src = el.src.replace(/\.jpg$/i, '.png');
   } else {
     el.style.display = 'none';
   }
