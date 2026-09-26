@@ -3160,8 +3160,6 @@ var COVER_MAP = {
   'SANTOS|1': 'SANTOS',
   'SATURE|1': 'SATURE',
   'SATURE (B2B)|1': 'SATURE',
-  'SAX|1': 'SAX 1',
-  'SAX|2': 'SAX 3',
   'SIKO|1': 'SIKO 2',
   'SIKO|2': 'SIKO 3',
   'SIKO|3': 'SIKO 4',
@@ -3196,6 +3194,8 @@ var COVER_MAP = {
   'AGUS OLIVO|2': 'AGUS OLIVO 2',
   'AVENIX|1': 'AVENIX',
   'AXEL MORALEZ|1': 'AXEL MORALEZ',
+  'SAX|1': 'SAX 1',
+  'SAX|2': 'SAX 2',
   'AXEL MORALES|1': 'AXEL MORALEZ',
   'BAKAN MUSIK|1': 'BAKAN MUSIK',
   'BAKAN MUSIC|1': 'BAKAN MUSIK',
@@ -5858,7 +5858,12 @@ window.openFicha = async function openFicha(id){
   // Para cada set: cover usando COVER_MAP con número cronológico, link de YT desde SM o videos{}
   function _buildSetThumb(smEntry, chronoNum){
     const setYt = smEntry.url_yt || videos[smEntry.id] || '';
-    const coverFn = getCoverFilename(smEntry.artista, chronoNum);
+    // Número de portada propio del nombre exacto del set (no mezclar con B2B)
+    var _coverList = SM.filter(function(x){ return x.artista.toUpperCase()===smEntry.artista.toUpperCase() && x.estado!=='Oculto'; })
+      .sort(function(a,b){ return a.fecha<b.fecha?-1:a.fecha>b.fecha?1:0; });
+    var _coverNum = _coverList.findIndex(function(x){ return x.id===smEntry.id; })+1;
+    if(_coverNum<1) _coverNum = smEntry.set_num||1;
+    const coverFn = getCoverFilename(smEntry.artista, _coverNum);
     const coverSrc = imgURL('img/covers', coverFn);
     const label = _artistSets.length > 1
       ? 'Set ' + chronoNum + '/' + _artistSets.length + ' · ' + (smEntry.categoria||'')
@@ -5880,7 +5885,7 @@ window.openFicha = async function openFicha(id){
         +'</a>';
     } else {
       // Pendiente: mostrar cover si existe + overlay "Próximamente"
-      var _pendCover = imgURL('img/covers', getCoverFilename(smEntry.artista, chronoNum));
+      var _pendCover = imgURL('img/covers', getCoverFilename(smEntry.artista, _coverNum));
       var _pendFecha = smEntry.fecha ? new Date(smEntry.fecha+'T12:00:00').toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric'}) : '';
       return '<div style="position:relative;aspect-ratio:16/9;overflow:hidden;border:1px solid rgba(255,255,255,.07)">'
         +'<img src="'+_pendCover+'" alt="'+esc(_artistName)+'" loading="lazy" decoding="async"'
@@ -7282,8 +7287,6 @@ function smLoadPhotos(artista, cb){
 function smBuildCard(s, delay){
   var _displayName = smGetName(s.id, s.artista);
   var isPend   = s.estado === 'Pendiente';
-  var sibs     = smSiblings(s.artista);
-  var hasMulti = sibs.length > 1;
 
   var artNombre = s.artista;
   // Calcular orden cronológico real — matchear nombre exacto primero, fallback a split B2B
@@ -7296,6 +7299,7 @@ function smBuildCard(s, delay){
   })).sort(function(a,b){ return a.fecha < b.fecha ? -1 : a.fecha > b.fecha ? 1 : 0; });
   var chronoNum = allSets.findIndex(function(x){ return x.id === s.id; }) + 1;
   if(chronoNum < 1) chronoNum = s.set_num || 1;
+  var hasMulti = allSets.length > 1;
 
   var coverFilename = getCoverFilename(artNombre, chronoNum);
   var coverUrl      = imgURL('img/covers', coverFilename);
@@ -7390,7 +7394,7 @@ function smBuildCard(s, delay){
     ? '<div class="gc-set-estado pend">Pr\xF3ximamente</div>'
     : '<div class="gc-set-estado pub">Publicado</div>';
   var mH = hasMulti
-    ? '<div class="gc-set-multi">Set ' + s.set_num + '/' + sibs.length + '</div>'
+    ? '<div class="gc-set-multi">Set ' + chronoNum + '/' + allSets.length + '</div>'
     : '';
 
   var body = document.createElement('div');
