@@ -3160,10 +3160,6 @@ var COVER_MAP = {
   'SANTOS|1': 'SANTOS',
   'SATURE|1': 'SATURE',
   'SATURE (B2B)|1': 'SATURE',
-  'SIKO|1': 'SIKO 2',
-  'SIKO|2': 'SIKO 3',
-  'SIKO|3': 'SIKO 4',
-  'SIKO|4': 'SIKO 5',
   'SIO B2B PERTY|1': 'SIO B2B PERTY',
   'SOULDER|1': 'SOULDER',
   'SOUND SIX|1': 'SOUNDSIX 1',
@@ -3195,7 +3191,6 @@ var COVER_MAP = {
   'AVENIX|1': 'AVENIX',
   'AXEL MORALEZ|1': 'AXEL MORALEZ',
   'SAX|1': 'SAX 1',
-  'SAX|2': 'SAX 2',
   'AXEL MORALES|1': 'AXEL MORALEZ',
   'BAKAN MUSIK|1': 'BAKAN MUSIK',
   'BAKAN MUSIC|1': 'BAKAN MUSIK',
@@ -3218,6 +3213,29 @@ var COVER_MAP = {
   'SHMELLER|1': 'SHMELLER',
   'WET|1': 'WET',
 };
+
+function smCoverChronoNum(artista, id){
+  var norm = function(t){ return (t||'').toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Z0-9 ]/g,'').trim(); };
+  var canon = function(a){ var au=(a||'').toUpperCase(); return (typeof NAME_ALIAS!=='undefined' && NAME_ALIAS[au]) ? NAME_ALIAS[au] : a; };
+  artista = canon(artista);
+  var isB2B = / B2B /i.test(artista);
+  if(isB2B){
+    var exact = SM.filter(function(x){ return norm(x.artista) === norm(artista) && x.estado !== 'Oculto'; })
+      .sort(function(a,b){ return a.fecha < b.fecha ? -1 : a.fecha > b.fecha ? 1 : 0; });
+    var n1 = exact.findIndex(function(x){ return x.id === id; }) + 1;
+    return n1 < 1 ? 1 : n1;
+  }
+  var target = norm(artista);
+  var all = SM.filter(function(x){
+    if(x.estado === 'Oculto') return false;
+    var xa = canon(x.artista);
+    if(norm(xa) === target) return true;
+    var parts = xa.split(/\s+B2B\s+/).map(function(p){ return norm(canon(p)); });
+    return parts.indexOf(target) > -1;
+  }).sort(function(a,b){ return a.fecha < b.fecha ? -1 : a.fecha > b.fecha ? 1 : 0; });
+  var n2 = all.findIndex(function(x){ return x.id === id; }) + 1;
+  return n2 < 1 ? 1 : n2;
+}
 
 function getCoverFilename(artista, chronoNum){
   var key = artista.toUpperCase() + '|' + chronoNum;
@@ -5858,11 +5876,7 @@ window.openFicha = async function openFicha(id){
   // Para cada set: cover usando COVER_MAP con número cronológico, link de YT desde SM o videos{}
   function _buildSetThumb(smEntry, chronoNum){
     const setYt = smEntry.url_yt || videos[smEntry.id] || '';
-    // Número de portada propio del nombre exacto del set (no mezclar con B2B)
-    var _coverList = SM.filter(function(x){ return x.artista.toUpperCase()===smEntry.artista.toUpperCase() && x.estado!=='Oculto'; })
-      .sort(function(a,b){ return a.fecha<b.fecha?-1:a.fecha>b.fecha?1:0; });
-    var _coverNum = _coverList.findIndex(function(x){ return x.id===smEntry.id; })+1;
-    if(_coverNum<1) _coverNum = smEntry.set_num||1;
+    var _coverNum = smCoverChronoNum(smEntry.artista, smEntry.id);
     const coverFn = getCoverFilename(smEntry.artista, _coverNum);
     const coverSrc = imgURL('img/covers', coverFn);
     const label = _artistSets.length > 1
@@ -7301,7 +7315,7 @@ function smBuildCard(s, delay){
   if(chronoNum < 1) chronoNum = s.set_num || 1;
   var hasMulti = allSets.length > 1;
 
-  var coverFilename = getCoverFilename(artNombre, chronoNum);
+  var coverFilename = getCoverFilename(artNombre, smCoverChronoNum(artNombre, s.id));
   var coverUrl      = imgURL('img/covers', coverFilename);
   var storedCover   = null;
   try{ storedCover = localStorage.getItem('cover_' + s.id); }catch(e){}
