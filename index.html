@@ -2467,7 +2467,7 @@ html, body{ overflow-x:clip; }
 
           <div class="arc-stats" style="margin-top:3px">
             <div class="arc-stat">
-              <div class="arc-stat-n">13</div>
+              <div class="arc-stat-n" id="arc-stat-jams">—</div>
               <div class="arc-stat-l">DJ Jams realizadas</div>
             </div>
             <div class="arc-stat">
@@ -3150,6 +3150,7 @@ var COVER_MAP = {
   'REBEKAOS|1': 'REBEKAOS',
   'RIBZ|1': 'RIBZ',
   'RISCO B2B MATI PINO|1': 'RISCO B2B MATI PINO',
+  'MATI PINO|2': 'MATI PINO',
   'ROBER AYALA|1': 'ROBER AYALA',
   'ROXIE|1': 'ROXIE',
   'RUKU|1': 'RUKU',
@@ -3211,6 +3212,7 @@ var COVER_MAP = {
   'SHARON B3|1': 'SHARON B3',
   'SHMELER|1': 'SHMELLER',
   'SHMELLER|1': 'SHMELLER',
+  'SIKO|1': 'SIKO 1',
   'WET|1': 'WET',
 };
 
@@ -3802,6 +3804,16 @@ async function loadTotalFromSupabase(){
         ).size;
         arcEl.textContent = uniqueArtists;
       }
+    }
+    // Actualizar arc-stat-jams (cantidad de DJ Jams distintas realizadas — ya no queda un numero fijo)
+    var jamsEl = document.getElementById('arc-stat-jams');
+    if(jamsEl && typeof SM !== 'undefined'){
+      var jamNums = new Set();
+      SM.forEach(function(s){
+        var m = /DJ JAM (\d+)/.exec(s.categoria || '');
+        if(m) jamNums.add(m[1]);
+      });
+      if(jamNums.size) jamsEl.textContent = jamNums.size;
     }
   }catch(e){ console.warn('[ASDL] loadTotalFromSupabase error:', e); }
 }
