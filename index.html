@@ -776,6 +776,11 @@ input[type=file]{display:none}
   opacity:1;visibility:visible;
   transition:opacity .4s cubic-bezier(.16,1,.3,1),visibility 0s 0s;
 }
+/* La info de reposo (tipo, nombre, estado, fecha) se va cuando entra la ficha: sin duplicados */
+@media (hover:hover){
+  .gc-set:not(.pend-card) .gc-set-body{ transition:opacity .3s cubic-bezier(.16,1,.3,1); }
+  .gc-set:not(.pend-card):hover .gc-set-body{ opacity:0; }
+}
 .ficha-inner{
   width:100%;max-width:340px;
   text-align:center;
@@ -1984,12 +1989,6 @@ html, body{ overflow-x:clip; }
   transition:all .3s cubic-bezier(.2,.8,.2,1);
   overflow:hidden;
 }
-#pg-home .cta::before,
-.cta::before{
-  content:''; position:absolute; inset:0;
-  background:linear-gradient(120deg, transparent 30%, rgba(255,255,255,.25) 50%, transparent 70%);
-  transform:translateX(-120%); transition:transform .8s; pointer-events:none;
-}
 #pg-home .cta:hover,
 .cta:hover{
   transform:translateY(-2px);
@@ -1999,8 +1998,6 @@ html, body{ overflow-x:clip; }
     inset 0 1px 0 rgba(255,255,255,.28);
   gap:22px;
 }
-#pg-home .cta:hover::before,
-.cta:hover::before{ transform:translateX(120%); }
 
 /* ═══════════════════════════════════════════════════════════════
    ARCHIVO (#pg-archivo) — Profundidad + normalización tipográfica
@@ -2603,293 +2600,428 @@ html, body{ overflow-x:clip; }
 
     <!-- AGENDA — Graba tu Set (layout 2 columnas + carrusel al final) -->
     <div id="pg-agenda" class="pg">
-
-      <!-- GRABA TU SET (form + calendario) -->
-      <section class="ag-section">
-        <div class="ag-layout">
-
-          <!-- LEFT -->
-          <div class="ag-left">
-            <div class="sec-num">02</div>
-            <h1 class="ag-title">Grabá tu Set<br><span class="soft">en el Archivo</span></h1>
-            <div class="ag-wave">
-              <i style="animation-delay:0s"></i><i style="animation-delay:.1s"></i><i style="animation-delay:.2s"></i><i style="animation-delay:.3s"></i><i style="animation-delay:.4s"></i><i style="animation-delay:.5s"></i><i style="animation-delay:.6s"></i><i style="animation-delay:.7s"></i><i style="animation-delay:.8s"></i><i style="animation-delay:.9s"></i><i style="animation-delay:1s"></i><i style="animation-delay:1.1s"></i><i style="animation-delay:1.2s"></i><i style="animation-delay:1.3s"></i><i style="animation-delay:0s"></i><i style="animation-delay:.15s"></i><i style="animation-delay:.3s"></i><i style="animation-delay:.45s"></i><i style="animation-delay:.6s"></i><i style="animation-delay:.75s"></i>
-            </div>
-            <div class="ag-desc">Conectá con una comunidad en constante evolución y generá el material que te va a llevar a donde querés estar. El registro es fundamental, <strong>nosotros lo hacemos real y cercano</strong>.</div>
-
-            <!-- Trust strip -->
-            <div class="ag-trust">
-              <div class="ag-trust-item">
-                <div class="ag-trust-n"><span class="acc" id="trust-sets-count">186</span></div>
-                <div class="ag-trust-l">Sets publicados</div>
-              </div>
-              <div class="ag-trust-item">
-                <div class="ag-trust-n"><span class="acc">OPEN</span></div>
-                <div class="ag-trust-l">format</div>
-              </div>
-              <div class="ag-trust-item">
-                <div class="ag-trust-n"><span class="acc">11–21hs</span></div>
-                <div class="ag-trust-l">Lun a Dom</div>
-              </div>
-            </div>
-
-            <div class="ag-form" id="ag-form">
-              <div class="ag-sec-title">Tu sesión</div>
-
-              <!-- Pricing tiles · 3 columnas: Common / B2B / Custom -->
-              <div class="ag-pricing">
-                <label class="ag-tier" id="tier-basico">
-                  <input type="radio" name="ag-tipo" value="Basico" hidden>
-                  <div class="ag-tier-check"></div>
-                  <div class="ag-tier-n">SET BÁSICO</div>
-                  <ul>
-                    <li>30 minutos de grabación</li>
-                    <li>1 cámara + audio masterizado</li>
-                    <li>Edición y publicación incluida</li>
-                    <li>10 fotos profesionales y 4 clips verticales</li>
-                  </ul>
-                  <div class="ag-tier-p">$<span id="precio-basico">35.000</span></div>
-                </label>
-                <label class="ag-tier on" id="tier-solo">
-                  <input type="radio" name="ag-tipo" value="Common" checked hidden>
-                  <div class="ag-tier-check"></div>
-                  <div class="ag-tier-n">SET COMMON</div>
-                  <ul>
-                    <li>1 hora de grabación</li>
-                    <li>2 cámaras + audio masterizado</li>
-                    <li>Edición y publicación incluida</li>
-                    <li>15 fotos profesionales y 7 clips verticales</li>
-                    <li>Contenido 360°</li>
-                  </ul>
-                  <div class="ag-tier-p">$<span id="precio-solo">70.000</span></div>
-                </label>
-                <label class="ag-tier" id="tier-b2b">
-                  <input type="radio" name="ag-tipo" value="B2B" hidden>
-                  <div class="ag-tier-check"></div>
-                  <div class="ag-tier-n">SET B2B</div>
-                  <ul>
-                    <li>90 minutos de grabación</li>
-                    <li>2 cámaras + audio masterizado</li>
-                    <li>Edición y publicación incluida</li>
-                    <li>20 fotos profesionales y 10 clips verticales</li>
-                    <li>Contenido 360°</li>
-                  </ul>
-                  <div class="ag-tier-p">$<span id="precio-b2b">90.000</span></div>
-                </label>
-                <label class="ag-tier" id="tier-custom">
-                  <input type="radio" name="ag-tipo" value="Custom" hidden>
-                  <div class="ag-tier-check"></div>
-                  <div class="ag-tier-n">SET CUSTOM</div>
-                  <ul>
-                    <li>100% personalizado</li>
-                    <li>Un set hecho a tu medida</li>
-                    <li>Con 1, 2 o hasta 3 cámaras</li>
-                    <li>25 fotos profesionales y 12 clips verticales</li>
-                  </ul>
-                  <div class="ag-tier-p">desde $<span id="precio-custom">120.000</span></div>
-                </label>
-              </div>
-
-              <!-- RIDER TÉCNICO — desplegable spec-sheet de terminal -->
-              <style>
-              #pg-agenda .ag-rider{ border:1px solid var(--wf); background:rgba(0,0,0,.22); margin:18px 0 4px; }
-              #pg-agenda .ag-rider summary{ list-style:none; cursor:pointer; padding:15px 18px; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--ivory); display:flex; align-items:center; gap:11px; transition:color .2s; }
-              #pg-agenda .ag-rider summary::-webkit-details-marker{ display:none; }
-              #pg-agenda .ag-rider summary::before{ content:'[ + ]'; color:var(--ultrasonic); font-weight:700; }
-              #pg-agenda .ag-rider[open] summary::before{ content:'[ − ]'; }
-              #pg-agenda .ag-rider summary:hover{ color:var(--ultrasonic); }
-              #pg-agenda .ag-rider-body{ padding:6px 20px 22px; border-top:1px solid var(--wf); }
-              #pg-agenda .ag-rider pre{ font-family:'IBM Plex Mono',monospace; font-size:11px; line-height:1.75; color:rgba(240,236,226,.68); white-space:pre-wrap; word-break:break-word; margin:0; letter-spacing:.02em; }
-              #pg-agenda .ag-rider pre .acc{ color:var(--ultrasonic); font-weight:700; letter-spacing:.06em; }
-              </style>
-              <details class="ag-rider">
-                <summary>Setup estándar de grabación</summary>
-                <div class="ag-rider-body">
-<pre>Todos los sets se registran de forma nativa en esta configuración fija:
-
-<span class="acc">■ HARDWARE / CONSOLA</span>
-  Pioneer XDJ-RX2
-  · Sistema todo-en-uno autónomo de 2 canales.
-  · Carga de tracks exclusiva por unidades USB (pendrives).
-  · Archivos analizados en Rekordbox (waveforms + metadata).
-
-<span class="acc">■ MONITOREO / BOOTH</span>
-  Pioneer DM-40
-  · Monitores activos de referencia de 4" en posición de cabina.
-
-────────────────────────────
-
-<span class="acc">[ ! ] MODIFICACIONES Y ENTRADAS EXTRA</span>
-No improvisamos en cabina el día de la sesión. Si tu performance exige bandejas de vinilo (turntables), controladores externos o un mixer específico, coordinalo previamente de forma obligatoria.
-
-<span class="acc">[ > ] CONFIGURACIONES ALTERNATIVAS</span>
-Para consultar disponibilidad de espacio, ruteo de audio o compatibilidad de otros setups, escribinos directo por WhatsApp.</pre>
-                </div>
-              </details>
-
-              <div class="ag-sec-title" style="margin-top:52px">Tu información</div>
-
-              <div class="ag-field">
-                <div class="ag-lbl"><span>Nombre artístico *</span><span class="stat">REQ</span></div>
-                <div class="ag-inp-wrap"><input class="ag-inp" id="ag-artist" placeholder="Tu nombre de DJ o proyecto" oninput="checkComunidadDebounce(this.value)"></div>
-              </div>
-
-              <div id="ag-comunidad-badge" style="display:none;margin-bottom:14px;padding:10px 14px;background:rgba(8,9,231,.15);border:1px solid rgba(8,9,231,.4);font-size:10px;letter-spacing:.14em;color:var(--ultrasonic);text-transform:uppercase">🔵 Artista de la comunidad — 10% OFF aplicado</div>
-
-              <div class="ag-field">
-                <div class="ag-lbl"><span>Email de contacto *</span><span class="stat">REQ</span></div>
-                <div class="ag-inp-wrap"><input class="ag-inp" id="ag-email" type="email" placeholder="tu@email.com"></div>
-              </div>
-
-              <div class="ag-field">
-                <div class="ag-lbl"><span>WhatsApp *</span><span class="stat" id="ag-wa-req">REQ</span></div>
-                <div class="ag-inp-wrap"><input class="ag-inp" id="ag-whatsapp" placeholder="+54 9 11 ..."></div>
-              </div>
-
-              <div class="ag-field">
-                <div class="ag-lbl"><span>Mensaje adicional</span><span class="stat">OPT</span></div>
-                <textarea class="ag-ta" id="ag-msg" placeholder="Género, B2B con quién, referencias de sonido..."></textarea>
-              </div>
-
-              <!-- ¿Ya grabaste antes? (informativo, no cambia el precio) -->
-              <style>
-              #pg-agenda .ag-reg-toggle{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-              #pg-agenda .ag-reg-opt{ position:relative; padding:13px 14px; border:1px solid var(--wf); background:rgba(255,255,255,.015); cursor:pointer; font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:.04em; color:var(--wd); text-align:center; transition:all .2s; }
-              #pg-agenda .ag-reg-opt input{ position:absolute; opacity:0; pointer-events:none; }
-              #pg-agenda .ag-reg-opt:hover{ border-color:rgba(8,9,231,.4); }
-              #pg-agenda .ag-reg-opt:has(input:checked){ border-color:var(--ultrasonic); background:rgba(8,9,231,.08); color:var(--ivory); }
-              </style>
-              <div class="ag-field">
-                <div class="ag-lbl"><span>¿Ya grabaste en el Archivo?</span><span class="stat">REQ</span></div>
-                <div class="ag-reg-toggle">
-                  <label class="ag-reg-opt"><input type="radio" name="ag-reg" value="no" checked>No, primera vez</label>
-                  <label class="ag-reg-opt"><input type="radio" name="ag-reg" value="si">Sí, ya grabé acá</label>
-                </div>
-              </div>
-
-              <!-- Campos legacy ocultos (mantenidos para submitAgenda) -->
-              <input type="hidden" id="ag-genre" value="">
-              <input type="hidden" id="ag-links" value="">
-
-              <div id="ag-action-block">
-                <button class="ag-submit" id="ag-submit-btn" onclick="submitAgenda()" disabled>Solicitar fecha →</button>
-                <div style="font-size:10px;letter-spacing:.14em;color:rgba(255,250,231,.4);margin-top:14px">En menos de 24hs, el equipo del Archivo confirma tu reserva</div>
-                <div id="ag-status" style="font-size:11px;letter-spacing:.1em;color:var(--wd);margin-top:14px;min-height:18px;line-height:1.8"></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- RIGHT: Calendario + Franjas + WhatsApp full-width -->
-          <div class="ag-right">
-            <div class="ag-cal-title">Disponibilidad</div>
-            <div class="ag-cal-sub" id="cal-subtitle">Pedí cualquier fecha — confirmamos en 24hs</div>
-            <div class="cal30" id="cal30-public"></div>
-            <div id="slots-public" style="margin-top:4px"></div>
-
-            <!-- WhatsApp full-width (mismo grosor que el calendario) -->
-            <div class="ag-wa-zone">
-              <div class="ag-wa-lbl">¿Preferís hablar primero?</div>
-              <a class="ag-wa-full" href="https://api.whatsapp.com/send?phone=541154705205&amp;text=Hola%2C%20equipo%20del%20Archivo.%20Quiero%20agendar%20mi%20DJ%20SET%20y%20ser%20parte%20del%20registro" target="_blank" rel="noopener">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                Consultar por WhatsApp →
-              </a>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      <!-- MANIFIESTO — El número del archivo como protagonista (Opción 3) -->
       <style>
-      .ag-mft{position:relative;overflow:hidden;max-width:1280px;margin:0 auto;padding:clamp(40px,6vw,64px) clamp(24px,5vw,72px) clamp(56px,8vw,88px);min-height:clamp(420px,54vw,520px)}
-      .ag-mft-num{position:absolute;right:clamp(-6px,0vw,0px);bottom:clamp(-16px,-1.4vw,-6px);font-family:'Space Mono',monospace;font-weight:700;font-size:clamp(170px,32vw,330px);line-height:.72;letter-spacing:-.05em;color:transparent;-webkit-text-stroke:3px #1B00E6;pointer-events:none;user-select:none;z-index:0}
-      .ag-mft-body{position:relative;z-index:1;max-width:460px}
-      .ag-mft-kicker{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:rgba(240,236,226,.4);margin-bottom:18px}
-      .ag-mft-title{font-family:'Space Mono',monospace;font-weight:700;font-size:clamp(30px,5vw,52px);line-height:1.05;letter-spacing:-.02em;color:var(--ivory);margin:0 0 18px}
-      .ag-mft-title span{color:#1B00E6}
-      .ag-mft-copy{font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.75;color:rgba(240,236,226,.55);max-width:400px;margin:0 0 24px}
-      .ag-mft-cta{display:inline-block;background:#1B00E6;color:#F0ECE2;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.18em;text-transform:uppercase;padding:14px 22px;cursor:pointer;text-decoration:none;transition:transform .2s}
-      .ag-mft-cta:hover{transform:translateY(-2px)}
+      /* ═══ GRABA TU SET v2 — todo bajo .gts, no toca estilos globales ═══ */
+      .gts{--g-b:#1b00e6;--g-b2:#2b1aff;--g-w:#f0ece2;--g-w2:rgba(240,236,226,.62);--g-w3:rgba(240,236,226,.38);--g-line:rgba(240,236,226,.1);--g-card:#0b0b10;--g-ok:#3ddc97;
+        color:var(--g-w);font-family:'IBM Plex Mono',monospace;padding-bottom:110px}
+      .gts *{box-sizing:border-box}
+      .gts-wrap{max-width:1120px;margin:0 auto;padding:0 clamp(18px,4vw,40px)}
+      .gts-sec{padding:clamp(56px,9vw,104px) 0}
+      .gts-eyebrow{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--g-b2);margin-bottom:14px}
+      .gts-h1{font-family:'Space Mono',monospace;font-weight:700;font-size:clamp(44px,9vw,92px);line-height:.95;letter-spacing:-.04em;margin:0}
+      .gts-h2{font-family:'Space Mono',monospace;font-weight:700;font-size:clamp(30px,5vw,48px);line-height:1.02;letter-spacing:-.03em;margin:0 0 14px}
+      .gts-h3{font-family:'Space Mono',monospace;font-weight:700;font-size:clamp(20px,3vw,26px);letter-spacing:-.02em;margin:0 0 6px}
+      .gts-p{font-size:14px;line-height:1.75;color:var(--g-w2);max-width:560px;margin:0}
+      .gts-btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;background:var(--g-b);color:var(--g-w);border:1px solid var(--g-b);font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;padding:16px 24px;min-height:50px;cursor:pointer;text-decoration:none;border-radius:2px;transition:background .2s,transform .2s}
+      .gts-btn:hover{background:var(--g-b2)}
+      .gts-btn .arr{transition:transform .2s}.gts-btn:hover .arr{transform:translateX(4px)}
+      .gts-btn.ghost{background:transparent;border-color:rgba(240,236,226,.3)}
+      .gts-btn.ghost:hover{border-color:var(--g-w);background:transparent}
+      .gts-btn[disabled]{opacity:.35;cursor:not-allowed}
+      .gts-link{background:none;border:none;color:var(--g-w2);font-family:inherit;font-size:12px;letter-spacing:.08em;text-decoration:underline;text-underline-offset:4px;cursor:pointer;padding:6px 0}
+      .gts-link:hover{color:var(--g-w)}
+      .gts-mono{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--g-w3)}
+
+      /* HERO */
+      .gts-hero{position:relative;min-height:min(86vh,760px);display:flex;align-items:flex-end;overflow:hidden;border-bottom:1px solid var(--g-line)}
+      .gts-hero-media{position:absolute;inset:0;z-index:0;background:#000}
+      .gts-hero-media img,.gts-hero-media video{width:100%;height:100%;object-fit:cover;opacity:.55;filter:saturate(1.1)}
+      .gts-hero-media::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,6,6,.35) 0%,rgba(6,6,6,.15) 35%,#060606 96%)}
+      .gts-hero-in{position:relative;z-index:1;padding-top:clamp(90px,14vh,140px);padding-bottom:clamp(40px,7vw,72px);width:100%}
+      .gts-hero-meta{display:flex;flex-wrap:wrap;gap:6px 18px;margin:22px 0 28px;font-size:12px;letter-spacing:.1em;color:var(--g-w2)}
+      .gts-hero-meta b{color:var(--g-w)}
+      .gts-hero-ctas{display:flex;flex-wrap:wrap;align-items:center;gap:18px}
+
+      /* MURO DE CARAS */
+      .gts-wall-top{display:grid;grid-template-columns:auto 1fr;gap:clamp(18px,4vw,48px);align-items:end;margin-bottom:28px}
+      .gts-wall-n{font-family:'Space Mono',monospace;font-weight:700;font-size:clamp(96px,20vw,200px);line-height:.78;letter-spacing:-.06em;color:transparent;-webkit-text-stroke:2px var(--g-b2)}
+      .gts-wall-faces{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:6px}
+      .gts-face{position:relative;aspect-ratio:1;overflow:hidden;background:#0d0d14;cursor:pointer;border:none;padding:0;color:inherit;font:inherit}
+      .gts-face img{width:100%;height:100%;object-fit:cover;object-position:center top;transition:transform .4s;filter:grayscale(.15)}
+      .gts-face:hover img{transform:scale(1.05);filter:none}
+      .gts-face span{position:absolute;left:0;right:0;bottom:0;padding:16px 6px 5px;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;background:linear-gradient(transparent,rgba(0,0,0,.85));text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+      .gts-genres{margin-top:22px;font-size:12px;line-height:1.9;color:var(--g-w2)}
+      .gts-genres b{color:var(--g-w)}
+
+      /* RESERVA */
+      .gts-book{background:radial-gradient(ellipse at 50% 0%,rgba(27,0,230,.14),transparent 60%);border-top:1px solid var(--g-line)}
+      .gts-fmts{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:34px 0 46px}
+      .gts-fmt{position:relative;background:var(--g-card);border:1px solid var(--g-line);padding:22px 18px 18px;display:flex;flex-direction:column;gap:10px;cursor:pointer;text-align:left;color:inherit;font:inherit;transition:border-color .2s,transform .2s}
+      .gts-fmt:hover{border-color:rgba(43,26,255,.6)}
+      .gts-fmt.rec{border:1px solid var(--g-b2);background:linear-gradient(180deg,rgba(27,0,230,.22),var(--g-card) 70%)}
+      .gts-fmt.on{outline:2px solid var(--g-b2);outline-offset:-2px}
+      .gts-fmt-badge{position:absolute;top:-10px;left:16px;background:var(--g-b);color:var(--g-w);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;padding:4px 8px}
+      .gts-fmt-n{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--g-b2);font-weight:700}
+      .gts-fmt.rec .gts-fmt-n{color:var(--g-w)}
+      .gts-fmt-p{font-family:'Space Mono',monospace;font-weight:700;font-size:clamp(26px,3vw,34px);letter-spacing:-.03em;line-height:1}
+      .gts-fmt-p small{font-size:12px;font-weight:400;letter-spacing:0;color:var(--g-w2);margin-right:4px}
+      .gts-fmt-ideal{font-size:12px;line-height:1.6;color:var(--g-w2);min-height:58px}
+      .gts-fmt-ideal b{color:var(--g-w);font-weight:400;display:block;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;opacity:.6;margin-bottom:3px}
+      .gts-fmt ul{list-style:none;margin:0;padding:10px 0 0;border-top:1px solid var(--g-line);font-size:11.5px;line-height:1.55;color:var(--g-w2);display:flex;flex-direction:column;gap:6px;flex:1}
+      .gts-fmt li::before{content:'› ';color:var(--g-b2)}
+      .gts-fmt-cta{margin-top:6px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:var(--g-w);display:flex;justify-content:space-between;align-items:center;gap:8px}
+      .gts-fmt-ex{font-size:10.5px;letter-spacing:.06em;color:var(--g-w3);text-decoration:underline;text-underline-offset:3px;font-weight:400;text-transform:none}
+      .gts-fmt-ex:hover{color:var(--g-w)}
+
+      .gts-wiz{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start}
+      .gts-panel{background:var(--g-card);border:1px solid var(--g-line);min-height:420px}
+      .gts-tabs{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--g-line)}
+      .gts-tab{padding:14px 16px;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--g-w3);border-bottom:2px solid transparent;margin-bottom:-1px}
+      .gts-tab b{display:block;font-size:10px;color:var(--g-w3);margin-bottom:3px}
+      .gts-tab.on{color:var(--g-w);border-color:var(--g-b2)}.gts-tab.on b{color:var(--g-b2)}
+      .gts-tab.done{color:var(--g-w2)}.gts-tab.done b::after{content:' ✓';color:var(--g-ok)}
+      .gts-step{padding:clamp(20px,3vw,32px)}
+      .gts-step-k{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--g-b2);margin-bottom:8px}
+      .gts-chips{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 22px}
+      .gts-chip{background:transparent;border:1px solid var(--g-line);color:var(--g-w2);font-family:inherit;font-size:11px;letter-spacing:.08em;padding:9px 12px;cursor:pointer;border-radius:2px;transition:all .15s}
+      .gts-chip:hover{border-color:rgba(240,236,226,.35);color:var(--g-w)}
+      .gts-chip.on{background:var(--g-b);border-color:var(--g-b);color:var(--g-w)}
+      .gts-chip.off{opacity:.3;text-decoration:line-through;cursor:not-allowed}
+      .gts-cal-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+      .gts-cal-t{font-family:'Space Mono',monospace;font-weight:700;font-size:16px;text-transform:capitalize}
+      .gts-cal-nav button{background:transparent;border:1px solid var(--g-line);color:var(--g-w);width:40px;height:40px;cursor:pointer;font-size:15px}
+      .gts-cal-nav button:disabled{opacity:.25;cursor:default}
+      .gts-cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;max-width:560px}
+      .gts-dow{font-size:10px;letter-spacing:.14em;color:var(--g-w3);text-align:center;padding:4px 0}
+      .gts-day{height:clamp(40px,6vw,50px);border:1px solid var(--g-line);background:rgba(255,255,255,.02);color:var(--g-w);font-family:'Space Mono',monospace;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;position:relative;transition:all .15s;padding:0}
+      .gts-day:hover{border-color:var(--g-b2)}
+      .gts-day.sel{background:var(--g-b);border-color:var(--g-b)}
+      .gts-day.no{color:rgba(240,236,226,.18);background:transparent;border-color:transparent;cursor:default;text-decoration:line-through}
+      .gts-day.jam::after{content:'JAM';position:absolute;bottom:3px;font-size:7px;letter-spacing:.1em;color:var(--g-b2);font-family:'IBM Plex Mono',monospace}
+      .gts-day.empty{border:none;background:none;cursor:default}
+      .gts-legend{display:flex;gap:16px;margin-top:10px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--g-w3)}
+      .gts-legend i{display:inline-block;width:9px;height:9px;border:1px solid var(--g-line);margin-right:6px;vertical-align:-1px}
+      .gts-legend i.s{background:var(--g-b);border-color:var(--g-b)}
+      .gts-times{margin-top:22px;padding-top:20px;border-top:1px solid var(--g-line)}
+      .gts-times-h{font-family:'Space Mono',monospace;font-weight:700;font-size:15px;margin-bottom:12px}
+      .gts-times-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:6px}
+      .gts-time{min-height:48px;border:1px solid var(--g-line);background:transparent;color:var(--g-w);font-family:'Space Mono',monospace;font-size:14px;cursor:pointer;transition:all .15s;border-radius:2px}
+      .gts-time:hover{border-color:var(--g-b2)}
+      .gts-time.on{background:var(--g-b);border-color:var(--g-b)}
+      .gts-time.no{opacity:.25;cursor:not-allowed;text-decoration:line-through}
+      .gts-note{font-size:12px;line-height:1.6;color:var(--g-w2);margin-top:12px}
+      .gts-note.warn{color:#ffb4a0}
+      .gts-nav{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:26px;flex-wrap:wrap}
+      .gts-field{margin-bottom:14px}
+      .gts-field label{display:flex;justify-content:space-between;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--g-w2);margin-bottom:7px}
+      .gts-field label em{font-style:normal;color:var(--g-w3);letter-spacing:.1em}
+      .gts-in,.gts-ta{width:100%;background:#07070b;border:1px solid var(--g-line);color:var(--g-w);font-family:'IBM Plex Mono',monospace;font-size:16px;padding:13px 14px;border-radius:2px;outline:none;transition:border-color .2s}
+      .gts-in:focus,.gts-ta:focus{border-color:var(--g-b2)}
+      .gts-in.bad{border-color:#ff6a4d}
+      .gts-ta{min-height:110px;resize:vertical}
+      .gts-err{font-size:12px;color:#ff8f78;margin-top:6px;min-height:0}
+      .gts-hi{padding:12px 14px;border:1px solid rgba(43,26,255,.5);background:rgba(27,0,230,.12);font-size:12px;line-height:1.6;margin-bottom:14px}
+      .gts-check{display:flex;gap:10px;align-items:flex-start;font-size:12px;line-height:1.6;color:var(--g-w2);cursor:pointer;margin:6px 0 14px}
+      .gts-check input{margin-top:3px;accent-color:var(--g-b);width:16px;height:16px;flex-shrink:0}
+      .gts-rev{border:1px solid var(--g-line)}
+      .gts-rev-row{display:flex;justify-content:space-between;gap:12px;padding:12px 14px;border-bottom:1px solid var(--g-line);font-size:13px}
+      .gts-rev-row:last-child{border-bottom:none}
+      .gts-rev-row span:first-child{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--g-w3);padding-top:2px}
+      .gts-rev-row span:last-child{text-align:right}
+      .gts-rev-row.tot span:last-child{font-family:'Space Mono',monospace;font-weight:700;font-size:20px}
+      .gts-fine{font-size:12px;line-height:1.7;color:var(--g-w2);margin-top:12px}
+      .gts-fine b{color:var(--g-w);font-weight:400}
+
+      .gts-sum{background:var(--g-card);border:1px solid var(--g-line);position:sticky;top:20px}
+      .gts-sum-h{display:flex;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--g-line);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--g-w3)}
+      .gts-sum-r{display:flex;justify-content:space-between;gap:10px;padding:11px 16px;border-bottom:1px solid var(--g-line);font-size:12px}
+      .gts-sum-r span:first-child{color:var(--g-w3);letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;padding-top:1px}
+      .gts-sum-r span:last-child{text-align:right}
+      .gts-sum-r .empty{color:var(--g-w3)}
+      .gts-sum-tot{padding:14px 16px;display:flex;justify-content:space-between;align-items:baseline}
+      .gts-sum-tot b{font-family:'Space Mono',monospace;font-size:24px;letter-spacing:-.02em}
+      .gts-sum-foot{padding:0 16px 16px;font-size:11px;line-height:1.6;color:var(--g-w3)}
+      .gts-help{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+      .gts-wa{display:flex;align-items:center;justify-content:center;gap:9px;border:1px solid var(--g-line);padding:13px;color:var(--g-w);font-size:11px;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;transition:border-color .2s}
+      .gts-wa:hover{border-color:#25D366}
+      .gts-jamlink{font-size:12px;line-height:1.6;color:var(--g-w2);text-align:center}
+      .gts-jamlink button{background:none;border:none;color:var(--g-w);font:inherit;text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:0}
+
+      .gts-done{padding:clamp(28px,4vw,44px)}
+      .gts-done-k{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--g-ok);margin-bottom:12px}
+      .gts-done ol{margin:22px 0 0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:14px}
+      .gts-done li{counter-increment:s;display:grid;grid-template-columns:34px 1fr;font-size:13px;line-height:1.65;color:var(--g-w2)}
+      .gts-done li::before{content:'0' counter(s);font-family:'Space Mono',monospace;color:var(--g-b2);font-weight:700}
+      .gts-done li b{color:var(--g-w);font-weight:400}
+
+      /* QUÉ TE LLEVÁS */
+      .gts-inc-g{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--g-line);border:1px solid var(--g-line);margin-top:30px}
+      .gts-inc-i{background:#060606;padding:24px 20px}
+      .gts-inc-i b{display:block;font-family:'Space Mono',monospace;font-size:17px;margin-bottom:8px}
+      .gts-inc-i p{font-size:12px;line-height:1.65;color:var(--g-w2);margin:0}
+      .gts-gear{margin-top:14px;display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center;border:1px solid var(--g-line);padding:18px 20px}
+      .gts-gear-n{font-family:'Space Mono',monospace;font-weight:700;font-size:clamp(20px,3vw,28px);color:var(--g-b2);letter-spacing:-.02em}
+      .gts-gear p{font-size:12px;line-height:1.7;color:var(--g-w2);margin:0}
+
+      /* ASÍ QUEDA */
+      .gts-asi-g{display:grid;grid-template-columns:repeat(6,1fr);grid-auto-rows:clamp(90px,12vw,150px);gap:6px;margin-top:30px}
+      .gts-asi-i{position:relative;overflow:hidden;background:#0d0d14;display:block;color:var(--g-w);text-decoration:none}
+      .gts-asi-i img{width:100%;height:100%;object-fit:cover;transition:transform .5s}
+      .gts-asi-i:hover img{transform:scale(1.04)}
+      .gts-asi-i span{position:absolute;left:0;right:0;bottom:0;padding:22px 10px 8px;background:linear-gradient(transparent,rgba(0,0,0,.9));font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;display:flex;justify-content:space-between;gap:8px}
+      .gts-asi-i span em{font-style:normal;color:var(--g-w3)}
+      .gts-asi-i.a{grid-column:span 4;grid-row:span 3}.gts-asi-i.b{grid-column:span 2;grid-row:span 2}.gts-asi-i.c{grid-column:span 2;grid-row:span 1}
+      .gts-asi-i.d{grid-column:span 3;grid-row:span 2}.gts-asi-i.e{grid-column:span 3;grid-row:span 2}
+      .gts-asi-cta{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;margin-top:28px;padding-top:24px;border-top:1px solid var(--g-line)}
+
+      /* TESTIMONIOS */
+      .gts-tes-g{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(16px,3vw,32px);margin-top:30px}
+      .gts-tes{border-top:1px solid var(--g-line);padding-top:20px}
+      .gts-tes q{display:block;font-size:14px;line-height:1.75;color:var(--g-w);quotes:'«' '»'}
+      .gts-tes-who{display:flex;align-items:center;gap:12px;margin-top:18px}
+      .gts-tes-who img,.gts-tes-who i{width:44px;height:44px;border-radius:50%;object-fit:cover;object-position:center top;background:#14142a;display:block;flex-shrink:0}
+      .gts-tes-who b{display:block;font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+      .gts-tes-who small{font-size:10.5px;color:var(--g-w3);letter-spacing:.1em}
+
+      /* DJ JAM */
+      .gts-jam{border:1px solid var(--g-line);background:linear-gradient(135deg,rgba(27,0,230,.16),transparent 55%)}
+      .gts-jam summary{list-style:none;cursor:pointer;padding:clamp(24px,4vw,40px);display:flex;justify-content:space-between;align-items:center;gap:20px}
+      .gts-jam summary::-webkit-details-marker{display:none}
+      .gts-jam-plus{flex-shrink:0;width:48px;height:48px;border:1px solid rgba(240,236,226,.3);display:flex;align-items:center;justify-content:center;font-size:22px;transition:transform .25s}
+      .gts-jam[open] .gts-jam-plus{transform:rotate(45deg)}
+      .gts-jam-body{padding:0 clamp(24px,4vw,40px) clamp(24px,4vw,40px);display:grid;grid-template-columns:1fr 1fr;gap:clamp(20px,4vw,48px)}
+      .gts-jam-big{font-family:'Space Mono',monospace;font-weight:700;font-size:clamp(40px,7vw,72px);line-height:.9;letter-spacing:-.04em;margin:0 0 16px}
+      .gts-jam-big span{color:var(--g-b2)}
+      .gts-jam-faces{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin:18px 0}
+      .gts-jam-faces img{width:100%;aspect-ratio:1;object-fit:cover;object-position:center top;display:block;background:#0d0d14}
+      .gts-jam-next{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--g-b2);margin-bottom:16px}
+
+      /* FAQ */
+      .gts-faq{margin-top:26px;border-top:1px solid var(--g-line)}
+      .gts-faq details{border-bottom:1px solid var(--g-line)}
+      .gts-faq summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:44px 1fr 24px;gap:8px;align-items:center;padding:18px 4px;font-size:14px}
+      .gts-faq summary::-webkit-details-marker{display:none}
+      .gts-faq summary em{font-style:normal;font-size:11px;color:var(--g-b2)}
+      .gts-faq summary::after{content:'+';color:var(--g-b2);font-size:18px;text-align:right}
+      .gts-faq details[open] summary::after{content:'−'}
+      .gts-faq details p{margin:0 0 18px 52px;font-size:13px;line-height:1.75;color:var(--g-w2);max-width:680px}
+
+      /* CIERRE */
+      .gts-end{text-align:left;padding:clamp(80px,12vw,150px) 0}
+
+      /* CTA PERSISTENTE */
+      .gts-fab{position:fixed;top:64px;right:22px;z-index:900;opacity:0;pointer-events:none;transform:translateY(-8px);transition:opacity .25s,transform .25s}
+      .gts-fab.show{opacity:1;pointer-events:auto;transform:none}
+      .gts-bar{display:none}
+      body[data-pg="agenda"] #ticker{display:none!important}
+      body:not([data-pg="agenda"]) #gts-fab,body:not([data-pg="agenda"]) #gts-bar{display:none!important}
+
+      @media (max-width:900px){
+        .gts-fmts{grid-template-columns:1fr 1fr}
+        .gts-wiz{grid-template-columns:1fr}
+        .gts-sum{position:static}
+        .gts-inc-g{grid-template-columns:1fr 1fr}
+        .gts-jam-body{grid-template-columns:1fr}
+      }
+      @media (max-width:640px){
+        .gts{padding-bottom:96px}
+        .gts-fab{display:none}
+        .gts-wall-top{grid-template-columns:1fr}
+        .gts-wall-faces{grid-template-columns:repeat(4,1fr);gap:4px}
+        .gts-fmts{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;margin-left:-18px;margin-right:-18px;padding:12px 18px 4px;gap:10px}
+        .gts-fmt{flex:0 0 78%;scroll-snap-align:start}
+        .gts-fmt-ideal{min-height:0}
+        .gts-tab{padding:12px 10px;font-size:9.5px;letter-spacing:.1em}
+        .gts-asi-g{grid-template-columns:1fr 1fr;grid-auto-rows:130px}
+        .gts-asi-i.a{grid-column:span 2;grid-row:span 2}.gts-asi-i.b,.gts-asi-i.c{grid-column:span 1;grid-row:span 1}.gts-asi-i.d,.gts-asi-i.e{grid-column:span 2;grid-row:span 1}
+        .gts-tes-g{grid-template-columns:1fr}
+        .gts-gear{grid-template-columns:1fr;gap:8px}
+        .gts-faq details p{margin-left:0}
+        .gts-bar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:950;background:rgba(8,8,12,.97);border-top:1px solid rgba(43,26,255,.6);padding:10px 14px calc(10px + env(safe-area-inset-bottom));gap:12px;align-items:center;justify-content:space-between;transform:translateY(110%);transition:transform .3s}
+        .gts-bar.show{transform:none}
+        .gts-bar-i{min-width:0;font-size:11px;line-height:1.4;color:var(--g-w2)}
+        .gts-bar-i b{display:block;color:var(--g-w);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .gts-bar .gts-btn{flex-shrink:0;padding:12px 16px;min-height:46px;font-size:11px}
+      }
+      @media (prefers-reduced-motion:reduce){.gts *{transition:none!important}}
       </style>
-      <div class="ag-mft">
-        <div class="ag-mft-num" id="manifiesto-count" aria-hidden="true">186</div>
-        <div class="ag-mft-body">
-          <div class="ag-mft-kicker">Sos el próximo en el Archivo</div>
-          <h2 class="ag-mft-title">Sos el próximo<br>en el <span>archivo</span>.</h2>
-          <p class="ag-mft-copy">No sólo grabamos sets. Acá forjamos conexiones entre colegas y compartimos lo que amamos. Grabar en el Archivo no es como grabar en ningún otro lugar de Buenos Aires.</p>
-          <a class="ag-mft-cta" onclick="document.getElementById('ag-form').scrollIntoView({behavior:'smooth',block:'start'})">Reservá tu fecha ahora →</a>
+
+      <div class="gts">
+
+        <!-- 01 · ENCABEZADO -->
+        <section class="gts-hero" aria-label="Grabá tu set">
+          <div class="gts-hero-media" id="gts-hero-media"></div>
+          <div class="gts-wrap gts-hero-in">
+            <div class="gts-eyebrow">Archivo Secreto del Lab / Grabá tu set</div>
+            <h1 class="gts-h1">Grabá tu set<br>en el Archivo.</h1>
+            <p class="gts-p" style="margin-top:20px">Producimos tu set, lo editamos y lo publicamos. Te llevás video, fotos, clips y audio masterizado, y pasás a ser parte de un registro real de la escena.</p>
+            <div class="gts-hero-meta">
+              <span>Desde <b id="gts-desde">$35.000</b></span><span>Lun a dom · <b>11 a 19 hs</b></span><span>San Telmo, CABA</span>
+            </div>
+            <div class="gts-hero-ctas">
+              <button class="gts-btn" type="button" onclick="GTS.goBook('hero')">Ver fechas disponibles <span class="arr">→</span></button>
+              <button class="gts-link" type="button" onclick="document.getElementById('gts-asi').scrollIntoView({behavior:'smooth'})">Mirá cómo queda ↓</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- 02 · MURO DE CARAS -->
+        <section class="gts-sec" aria-label="Artistas del Archivo">
+          <div class="gts-wrap">
+            <div class="gts-wall-top">
+              <div class="gts-wall-n" id="gts-count" aria-hidden="true">186</div>
+              <div>
+                <div class="gts-eyebrow">Ellos ya están en el Archivo</div>
+                <h2 class="gts-h2"><span id="gts-count-txt">186</span> sets registrados.</h2>
+                <p class="gts-p">Cada cara es un set real, grabado en esta cabina. Tocá cualquiera para ver su registro.</p>
+              </div>
+            </div>
+            <div class="gts-wall-faces" id="gts-faces"></div>
+            <div class="gts-genres"><b>Open format.</b> Breaks, dub, reggaetón, electro, pop, drum and bass, dembow, techno, house, psytrance… lo que aparezca, se registra.</div>
+          </div>
+        </section>
+
+        <!-- 03 · RESERVA -->
+        <section class="gts-sec gts-book" id="gts-book" aria-label="Reservá tu sesión">
+          <div class="gts-wrap">
+            <div class="gts-eyebrow">Tu sesión</div>
+            <h2 class="gts-h2">Reservá tu sesión.</h2>
+            <p class="gts-p">Elegí cómo querés grabar y cuándo. Nada queda confirmado hasta que el equipo te escriba.</p>
+
+            <div class="gts-fmts" id="gts-fmts"></div>
+
+            <div class="gts-wiz" id="gts-wiz">
+              <div class="gts-panel">
+                <div class="gts-tabs" id="gts-tabs">
+                  <div class="gts-tab" data-t="1"><b>01</b>Fecha</div>
+                  <div class="gts-tab" data-t="2"><b>02</b>Tus datos</div>
+                  <div class="gts-tab" data-t="3"><b>03</b>Enviar</div>
+                </div>
+                <div id="gts-stage"></div>
+              </div>
+              <aside class="gts-sum" aria-label="Resumen de tu sesión">
+                <div class="gts-sum-h"><span>Tu sesión</span><span id="gts-sum-n"></span></div>
+                <div class="gts-sum-r"><span>Sesión</span><span id="gts-sum-tipo" class="empty">Sin elegir</span></div>
+                <div class="gts-sum-r"><span>Fecha</span><span id="gts-sum-fecha" class="empty">Sin elegir</span></div>
+                <div class="gts-sum-r"><span>Hora</span><span id="gts-sum-hora" class="empty">Sin elegir</span></div>
+                <div class="gts-sum-tot"><span class="gts-mono">Total</span><b id="gts-sum-tot">—</b></div>
+                <div class="gts-sum-foot" id="gts-sum-foot">Seña de $15.000 recién cuando confirmamos tu fecha. Se descuenta del total.</div>
+                <div class="gts-help">
+                  <a class="gts-wa" id="gts-wa" href="https://api.whatsapp.com/send?phone=541154705205&amp;text=Hola%2C%20equipo%20del%20Archivo.%20Quiero%20agendar%20mi%20DJ%20SET%20y%20ser%20parte%20del%20registro" target="_blank" rel="noopener">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.26-.46-2.39-1.47-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.61-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.07 2.88 1.21 3.07.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.23 1.36.2 1.87.12.57-.09 1.76-.72 2.01-1.41.25-.69.25-1.29.17-1.41-.07-.12-.27-.2-.57-.35M12.05 21.79h-.01a9.87 9.87 0 01-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 01-1.51-5.26c0-5.45 4.44-9.88 9.89-9.88 2.64 0 5.12 1.03 6.99 2.9a9.82 9.82 0 012.89 6.99c0 5.45-4.44 9.88-9.88 9.88m8.41-18.3A11.82 11.82 0 0012.05 0C5.5 0 .16 5.34.16 11.89c0 2.1.55 4.14 1.59 5.95L.06 24l6.3-1.65a11.88 11.88 0 005.68 1.45h.01c6.55 0 11.89-5.34 11.89-11.89a11.82 11.82 0 00-3.48-8.41z"/></svg>
+                    ¿Preferís hablar primero?
+                  </a>
+                  <div class="gts-jamlink">¿Preferís grabar en una jornada con otros DJs? <button type="button" onclick="GTS.openJam()">Mirá la DJ JAM</button></div>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </section>
+
+        <!-- 04 · QUÉ TE LLEVÁS -->
+        <section class="gts-sec" aria-label="Qué te llevás">
+          <div class="gts-wrap">
+            <div class="gts-eyebrow">Qué te llevás</div>
+            <h2 class="gts-h2">Vos tocás. Nosotros hacemos el resto.</h2>
+            <div class="gts-inc-g">
+              <div class="gts-inc-i"><b>Videoset</b><p>Tu set filmado con 1 a 3 cámaras, editado y publicado en nuestro canal.</p></div>
+              <div class="gts-inc-i"><b>Audio masterizado</b><p>Tu set mezclado y masterizado, listo para subir a donde quieras.</p></div>
+              <div class="gts-inc-i"><b>Fotos y clips</b><p>Fotos profesionales y clips verticales para mover tus redes.</p></div>
+              <div class="gts-inc-i"><b>Tu lugar en el Archivo</b><p>Ficha propia con tu propuesta, tus links y todos tus sets.</p></div>
+            </div>
+            <div class="gts-gear">
+              <div class="gts-gear-n">Pioneer XDJ-RX2</div>
+              <p>La cabina de todos los sets del Archivo, con monitores DM-40. Traé tus tracks en USB, analizados en Rekordbox. ¿Vinilos, controlador o tu propio mixer? Avisanos antes y lo coordinamos.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 05 · ASÍ QUEDA -->
+        <section class="gts-sec" id="gts-asi" aria-label="Así queda tu set" style="padding-top:0">
+          <div class="gts-wrap">
+            <div class="gts-eyebrow">El registro</div>
+            <h2 class="gts-h2">Así queda tu set.</h2>
+            <p class="gts-p">Sets reales, publicados. Tocá cualquiera para verlo completo.</p>
+            <div class="gts-asi-g" id="gts-asi-g"></div>
+            <div class="gts-asi-cta">
+              <div class="gts-h3" style="margin:0">¿Querés el tuyo?</div>
+              <button class="gts-btn" type="button" onclick="GTS.goBook('galeria')">Reservar mi set <span class="arr">→</span></button>
+            </div>
+          </div>
+        </section>
+
+        <!-- 06 · TESTIMONIOS -->
+        <section class="gts-sec" aria-label="Testimonios" style="padding-top:0">
+          <div class="gts-wrap">
+            <div class="gts-eyebrow">Artistas del Archivo</div>
+            <h2 class="gts-h2">Lo dicen los que ya tocaron acá.</h2>
+            <div class="gts-tes-g" id="gts-tes"></div>
+          </div>
+        </section>
+
+        <!-- 07 · DJ JAM -->
+        <section class="gts-sec" id="gts-jam-sec" aria-label="DJ JAM" style="padding-top:0">
+          <div class="gts-wrap">
+            <details class="gts-jam" id="gts-jam">
+              <summary>
+                <div>
+                  <div class="gts-eyebrow">DJ JAM</div>
+                  <div class="gts-h2" style="margin:0">¿Querés ser parte de una jornada con otros DJs?</div>
+                </div>
+                <span class="gts-jam-plus" aria-hidden="true">+</span>
+              </summary>
+              <div class="gts-jam-body">
+                <div>
+                  <p class="gts-jam-big">8 horas.<br><span>8 sets.</span></p>
+                  <p class="gts-p">Imaginá un día en el que 8 artistas de distinto palo coinciden para ser parte de una misma jornada, uno detrás de otro. Todos, sin excepción, se llevan videoset, clips, fotos y su audio masterizado.</p>
+                  <p class="gts-p" style="margin-top:12px">Acá el DJ no solo viene a grabar: se encuentra con una pista que baila y celebra cada drop, sin importar el género ni la trayectoria. Open format, dos domingos por mes.</p>
+                  <div class="gts-jam-faces" id="gts-jam-faces"></div>
+                  <p class="gts-mono">Mismo valor que un Set Common · <span id="gts-jam-precio">$70.000</span></p>
+                </div>
+                <div>
+                  <div class="gts-jam-next" id="gts-jam-next"></div>
+                  <div class="gts-h3">Postulate a la próxima jornada.</div>
+                  <p class="gts-p" style="margin-bottom:18px">Dejanos tu nombre y tu mail. Te invitamos cuando haya lugar.</p>
+                  <div id="gts-jam-form">
+                    <div class="gts-field"><label for="gts-jam-n">Nombre artístico</label><input class="gts-in" id="gts-jam-n" autocomplete="nickname" placeholder="Tu nombre de DJ o proyecto"></div>
+                    <div class="gts-field"><label for="gts-jam-e">Email</label><input class="gts-in" id="gts-jam-e" type="email" inputmode="email" autocomplete="email" placeholder="tu@email.com"></div>
+                    <label class="gts-check"><input type="checkbox" id="gts-jam-ok"> Quiero recibir novedades del Archivo por mail.</label>
+                    <button class="gts-btn" type="button" style="width:100%" onclick="GTS.sendJam()">Postularme <span class="arr">→</span></button>
+                    <div class="gts-err" id="gts-jam-err" role="alert"></div>
+                  </div>
+                </div>
+              </div>
+            </details>
+          </div>
+        </section>
+
+        <!-- 08 · ANTES DE VENIR -->
+        <section class="gts-sec" aria-label="Preguntas frecuentes" style="padding-top:0">
+          <div class="gts-wrap">
+            <div class="gts-eyebrow">Preguntas frecuentes</div>
+            <h2 class="gts-h2">Antes de venir.</h2>
+            <div class="gts-faq">
+              <details><summary><em>01</em>¿Qué tengo que traer?</summary><p>Tus tracks en USB (analizados en Rekordbox) y tus auriculares. Si no tenés, te alquilamos unos por $10.000. Llegá al menos 15 minutos antes.</p></details>
+              <details><summary><em>02</em>¿Qué equipo hay en cabina?</summary><p>Pioneer XDJ-RX2 con monitores Pioneer DM-40. Si tocás con vinilos, controlador o tu propio mixer, avisanos antes de la sesión para coordinarlo.</p></details>
+              <details><summary><em>03</em>¿Cuándo confirman mi reserva?</summary><p>En menos de 24 hs te escribimos por WhatsApp. Ahí te pasamos los datos para la seña de $15.000 por transferencia, que deja tu fecha reservada.</p></details>
+              <details><summary><em>04</em>¿Cómo pago el resto?</summary><p>La seña se descuenta del total. El resto lo pagás el día de la grabación, en efectivo o por transferencia.</p></details>
+              <details><summary><em>05</em>¿Puedo cambiar la fecha o cancelar?</summary><p>Sí, con al menos 48 hs de anticipación. Si cancelás sin avisar con 48 hs, perdés la seña.</p></details>
+              <details><summary><em>06</em>¿Cuándo recibo el material?</summary><p>En hasta 15 días. Muchas veces antes, según el flujo de trabajo.</p></details>
+              <details><summary><em>07</em>¿Hay descuento si ya grabé en el Archivo?</summary><p>Sí: si ya grabaste un set con nosotros, tenés 10% OFF sobre el total (no aplica al Set B2B, que ya suma minutos). Se descuenta el día de la grabación.</p></details>
+              <details><summary><em>08</em>¿Dónde se publica mi set?</summary><p>En el canal de YouTube del Archivo y en tu ficha dentro de archivosecretodellab.com, junto a todos los artistas del registro.</p></details>
+            </div>
+          </div>
+        </section>
+
+        <!-- 09 · CIERRE -->
+        <section class="gts-end" aria-label="Reservá">
+          <div class="gts-wrap">
+            <div class="gts-eyebrow">Sos el próximo</div>
+            <h2 class="gts-h1" style="font-size:clamp(40px,8vw,84px)">¿Sos el próximo<br>en el Archivo?</h2>
+            <p class="gts-p" style="margin:22px 0 28px">Grabá tu set. Dejalo en el Archivo.</p>
+            <button class="gts-btn" type="button" onclick="GTS.goBook('cierre')">Reservar mi set <span class="arr">→</span></button>
+          </div>
+        </section>
+
+        <!-- CTA PERSISTENTE -->
+        <button class="gts-btn gts-fab" id="gts-fab" type="button" onclick="GTS.goBook('fijo')">Reservar mi set <span class="arr">→</span></button>
+        <div class="gts-bar" id="gts-bar">
+          <div class="gts-bar-i" id="gts-bar-i"><b>Desde $35.000</b>Lun a dom · 11 a 19 hs</div>
+          <button class="gts-btn" type="button" id="gts-bar-btn" onclick="GTS.barAction()">Reservar <span class="arr">→</span></button>
         </div>
       </div>
-
-      <!-- CARRUSEL DE DESCUBRIMIENTO (constreñido al ancho del texto + fade lateral) -->
-      <section class="caru-wrap caru-wrap-primary" aria-label="Galería de artistas del archivo">
-        <div class="caru-label">Explorá la galería para <span>descubrir</span> a los artistas que se han sumado</div>
-        <div class="caru-track-outer">
-          <div class="caru-track" id="caru-track">
-            <div class="caru-placeholder">Cargando galería…</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- (texto de transición movido a la etiqueta de redes ↓) -->
-
-      <!-- CONTACTOS HORIZONTALES (después de las fotos) -->
-      <section class="contact-row">
-        <div class="cr-label">Cada día, el archivo sigue creciendo. Seguí la evolución del Archivo en sus canales oficiales ↓</div>
-        <div class="cr-grid">
-
-          <a class="cr-card yt" href="https://www.youtube.com/@ArchivoSecretodelLab/videos" target="_blank" rel="noopener">
-            <div class="cr-head">
-              <svg class="cr-icon" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.4" viewBox="0 0 24 24"><path d="M22.54 6.42a2.78 2.78 0 00-1.95-1.97C18.88 4 12 4 12 4s-6.88 0-8.59.45A2.78 2.78 0 001.46 6.42 29 29 0 001 12a29 29 0 00.46 5.58 2.78 2.78 0 001.95 1.97C5.12 20 12 20 12 20s6.88 0 8.59-.45a2.78 2.78 0 001.95-1.97A29 29 0 0023 12a29 29 0 00-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="currentColor" stroke="none"/></svg>
-              <div class="cr-id">YT_01</div>
-            </div>
-            <div>
-              <div class="cr-main">YouTube</div>
-              <div class="cr-handle">@ArchivoSecretodelLab</div>
-              <div class="cr-sub">Sets completos, jornadas y archivo audiovisual</div>
-            </div>
-            <div class="cr-stat">
-              <div>SUSCRIBITE</div>
-              <div style="margin-left:auto;color:var(--accent)">VER →</div>
-            </div>
-          </a>
-
-          <a class="cr-card ig" href="https://www.instagram.com/archivosecretodellab" target="_blank" rel="noopener">
-            <div class="cr-head">
-              <svg class="cr-icon" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.4" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>
-              <div class="cr-id">IG_02</div>
-            </div>
-            <div>
-              <div class="cr-main">Instagram</div>
-              <div class="cr-handle">@archivosecretodellab</div>
-              <div class="cr-sub">Novedades, convocatorias<br>y detrás de cámaras</div>
-            </div>
-            <div class="cr-stat">
-              <div>SEGUINOS</div>
-              <div style="margin-left:auto;color:var(--accent)">SEGUIR →</div>
-            </div>
-          </a>
-
-          <a class="cr-card em" href="mailto:produccion@archivosecretodellab.com">
-            <div class="cr-head">
-              <svg class="cr-icon" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.4" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>
-              <div class="cr-id">EM_03</div>
-            </div>
-            <div>
-              <div class="cr-main">Email</div>
-              <div class="cr-handle">produccion<br>@archivosecretodellab.com</div>
-              <div class="cr-sub">Consultas, booking y producción</div>
-            </div>
-            <div class="cr-stat">
-              <div>RESP &lt;24H</div>
-              <div style="margin-left:auto;color:var(--accent)">ESCRIBIR →</div>
-            </div>
-          </a>
-
-        </div>
-      </section>
-
     </div>
+
 
     <!-- CONTÁCTANOS — ELIMINADO · funcionalidad unificada en #pg-agenda -->
     <div id="pg-renta" class="pg">
@@ -3007,6 +3139,7 @@ Para consultar disponibilidad de espacio, ruteo de audio o compatibilidad de otr
     <div class="ant" onclick="adminTab('artists')" data-at="artists">Artistas</div>
     <div class="ant" onclick="adminTab('jams')" data-at="jams">Dj Jams</div>
     <div class="ant" onclick="adminTab('agenda-admin')" data-at="agenda-admin">Agenda</div>
+    <div class="ant" onclick="adminTab('embudo')" data-at="embudo">Embudo</div>
   </div>
   <div class="acont" id="a-cont"></div>
 </div>
@@ -4505,6 +4638,7 @@ function navTo(pg, el){
   }
   if(el) el.classList.add('on');
   if(typeof updateTickerTag==='function') updateTickerTag();
+  document.body.setAttribute('data-pg', pg);
   if(pg==='home'){
     if(typeof initCards === 'function' && !window._cardsInited){
       window._cardsInited = true;
@@ -4520,6 +4654,7 @@ function navTo(pg, el){
     else subnavTo('djs', document.querySelector('.snt'));
   }
   if(pg==='agenda'){
+    if(window.GTS) GTS.init();
     initCalendar();
     // Galería de rostros (carrusel horizontal — ahora al final como descubrimiento)
     if(typeof loadFotosContacto === 'function' && !window._galeriaLoaded){
@@ -4652,6 +4787,7 @@ async function renderCal30Public(){
 }
 
 function renderCal30(container, mode='public'){
+  if(!container) return; // la agenda pública nueva usa su propio calendario (GTS)
   const today = new Date();
   const maxDate = new Date(); maxDate.setDate(today.getDate()+30);
   const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
@@ -5408,7 +5544,7 @@ function initCards(){
   setTimeout(spawnCard, 600);
   setTimeout(spawnCard, 1200);
   setInterval(()=>{
-    var onScreen = document.querySelectorAll('#cl .fc').length;
+    var onScreen = document.querySelectorAll('#cl .fc').length + _cardsPendientes;
     var maxCards = window.innerWidth <= 700 ? 3 : 6;
     if(onScreen >= maxCards) return;
     if(cardQueue.length > 0){
@@ -5421,78 +5557,95 @@ function initCards(){
   }, 1800); // spawn cada 1.8s
 }
 
+// ── Perfil completo: solo estos DJs pueden aparecer en el Inicio ──
+// Reglas: bio personal (no plantilla, 60+ caracteres) · al menos un link ·
+// al menos un set Publicado con YouTube · foto de perfil que carga de verdad.
+var BIO_PLANTILLA = /^(set grabado (para|en) el archivo|participante de la dj jam|archivo p[uú]blico en directo)/i;
+function _normNombre(t){
+  return String(t||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Za-z0-9 ]/g,'').toUpperCase().replace(/\s+/g,' ').trim();
+}
+function perfilCompleto(dj){
+  if(!dj || dj.hidden) return false;
+  var bio = String(dj.bio||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+  if(bio.length < 60 || BIO_PLANTILLA.test(bio)) return false;
+  var links = String(dj.links||'').trim();
+  if(!links || links === '—' || links === '-') return false;
+  if(typeof SM === 'undefined' || !SM.length) return false;
+  var nombres = [_normNombre(dj.artist), _normNombre(dj.alias)].filter(Boolean);
+  return SM.some(function(s){
+    if(s.estado !== 'Publicado' || !s.url_yt) return false;
+    // "FOMO / JORRON", "SATURE (B2B)", "SAX B2B BORONIK" → se separa en nombres
+    var alias = (typeof NAME_ALIAS !== 'undefined') ? NAME_ALIAS : {};
+    var completo = String(s.artista||'');
+    var partes = completo.split(/\s+B2B\s+|\s*\/\s*|\s*\(B2B\)\s*/i);
+    partes.push(completo);
+    return partes.some(function(part){
+      var p = String(part||'').trim();
+      return [p, alias[p.toUpperCase()]].some(function(cand){
+        var n = _normNombre(cand);
+        return n && nombres.some(function(m){ return _mismoNombre(n, m); });
+      });
+    });
+  });
+}
+// Mismo artista aunque el nombre esté escrito distinto en la ficha y en el registro de sets:
+// "SAFI" ↔ "AGUS SAFI" (uno contiene al otro) · "MORALES" ↔ "MORALEZ" (una letra, nombres de 6+)
+function _mismoNombre(x, y){
+  if(x === y) return true;
+  var wx = x.split(' '), wy = y.split(' ');
+  var dentro = function(a, b){ return a.every(function(w){ return b.indexOf(w) > -1; }); };
+  if(dentro(wx, wy) || dentro(wy, wx)) return true;
+  if(Math.min(x.length, y.length) < 6 || Math.abs(x.length - y.length) > 1) return false;
+  var i = 0, j = 0, dif = 0;
+  while(i < x.length && j < y.length){
+    if(x[i] === y[j]){ i++; j++; continue; }
+    if(++dif > 1) return false;
+    if(x.length > y.length) i++; else if(y.length > x.length) j++; else { i++; j++; }
+  }
+  return dif + (x.length - i) + (y.length - j) <= 1;
+}
+var _cardsPendientes = 0, _fotoFallida = {};
+
 function spawnCard(){
   if(window.innerWidth <= 700) return; // mobile: nunca cards flotantes
-  if(!cardQueue.length) return;
-  const dj = cardQueue.shift();
-  if(cardActive.has(dj.i)) return;
-  cardActive.add(dj.i);
-
-  const el = document.createElement('div');
-  // Consultar SM como fuente de verdad para el estado
-  // Fuzzy match para nombres con caracteres especiales
-  var _normCard = function(t){ return t.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Z0-9 ]/g,'').toUpperCase(); };
-  var _djNorm = _normCard(dj.artist);
-  var _djUpper = dj.artist.toUpperCase();
-  var _aliasUpper = (dj.alias||'').toUpperCase();
-  var _smPub = (typeof SM !== 'undefined') && SM.some(function(s){
-    var sn = s.artista.toUpperCase();
-    return s.estado === 'Publicado' && (sn === _djUpper || sn === _aliasUpper || _normCard(sn) === _djNorm || sn.indexOf(_djUpper) > -1 || _djUpper.indexOf(sn) > -1);
-  });
-  const soon = !_smPub && (dj.isSoon || SOON.includes(dj.artist));
-  var smMatch = SM.filter(function(s){
-    var sn = s.artista.toUpperCase();
-    return sn === _djUpper || sn === _aliasUpper || _normCard(sn) === _djNorm || sn.indexOf(_djUpper) > -1 || _djUpper.indexOf(sn) > -1;
-  })[0];
-  var coverSlug = smMatch ? smSlug(smMatch.artista) : smSlug(dj.artist);
-  var coverUrl = imgURL('img/perfiles', getPerfilFilename(smMatch ? smMatch.artista : dj.artist));
-
-  el.className = 'fc fc-glass';
-  if(soon) el.classList.add('fc-soon-glass');
-
-  // Aplicar foto — primero cache en memoria, luego GitHub
-  var _hpfoto = _photoCache[dj.i] || photos[dj.i] || null;
-  if(!_hpfoto && smMatch) _hpfoto = _photoCache[smMatch.id] || photos[smMatch.id] || null;
-  if(!_hpfoto && dj.fotoPerfil) _hpfoto = dj.fotoPerfil;
-  // Foto de perfil desde GitHub como fallback final — prueba múltiples variaciones de case
-  var _artistName = dj.artist;
-  var _mapped = getPerfilFilename(_artistName);
-  var _upper = _artistName.toUpperCase();
-  var _perfilUrls = [];
-  var _pSeen = {};
-  [_mapped, _artistName, _upper].forEach(function(n){
-    var u = imgURL('img/perfiles', n);
-    if(!_pSeen[u]){ _pSeen[u]=1; _perfilUrls.push(u); }
-  });
-  if(!soon){
-    if(_hpfoto){
-      el.style.backgroundImage = 'url('+_hpfoto+')';
-    } else {
-      // Intentar cargar desde GitHub silenciosamente con fallback de case
-      (function(urls, target){
-        var i = 0;
-        function tryLoad(){
-          if(i >= urls.length) return;
-          var testImg = new Image();
-          testImg.onload = function(){
-            target.style.backgroundImage = 'url('+urls[i]+')';
-            target.style.backgroundSize = 'cover';
-            target.style.backgroundPosition = 'center top';
-            target.classList.add('fc-has-photo');
-          };
-          testImg.onerror = function(){ i++; tryLoad(); };
-          testImg.src = urls[i];
-        }
-        tryLoad();
-      })(_perfilUrls, el);
-    }
-    if(_hpfoto){
-      el.style.backgroundSize = 'cover';
-      el.style.backgroundPosition = 'center top';
-      el.classList.add('fc-has-photo');
-    }
+  // Se evalúa al momento de mostrar: así ya cuentan las bios que llegaron desde el Panel (Supabase)
+  var dj = null;
+  while(cardQueue.length){
+    var c = cardQueue.shift();
+    var key = c.i + '|' + c.artist;
+    if(cardActive.has(c.i) || _fotoFallida[key]) continue;
+    var vivo = DJS.find(function(d){ return d.i === c.i && d.artist === c.artist; }) || c;
+    if(perfilCompleto(vivo)){ dj = vivo; break; }
   }
+  if(!dj) return;
+  cardActive.add(dj.i);
+  _cardsPendientes++;
 
+  // Candidatos de foto: memoria primero, después GitHub (con variantes de mayúsculas)
+  var urls = [];
+  function sumar(u){ if(u && urls.indexOf(u) === -1) urls.push(u); }
+  sumar(_photoCache[dj.i]); sumar(photos[dj.i]); sumar(dj.fotoPerfil);
+  var smM = SM.filter(function(s){ return _normNombre(s.artista) === _normNombre(dj.artist); })[0];
+  if(smM){ sumar(_photoCache[smM.id]); sumar(photos[smM.id]); }
+  [getPerfilFilename(dj.artist), dj.artist, dj.artist.toUpperCase()].forEach(function(n){ sumar(imgURL('img/perfiles', n)); });
+
+  // La tarjeta se crea recién cuando la foto cargó. Sin foto, no hay tarjeta.
+  var k = 0;
+  (function probar(){
+    if(k >= urls.length){
+      _cardsPendientes--; _fotoFallida[dj.i + '|' + dj.artist] = 1; cardActive.delete(dj.i); return;
+    }
+    var img = new Image();
+    img.onload  = function(){ _cardsPendientes--; placeCard(dj, urls[k]); };
+    img.onerror = function(){ k++; probar(); };
+    img.src = urls[k];
+  })();
+}
+
+function placeCard(dj, foto){
+  if(window.innerWidth <= 700){ cardActive.delete(dj.i); return; }
+  const el = document.createElement('div');
+  el.className = 'fc fc-glass fc-has-photo';
   el.innerHTML = `
     <div class="fc-glass-layer">
       <div class="fc-n">${fmtDjId(dj.i,3)} / Archivo</div>
@@ -5500,7 +5653,6 @@ function spawnCard(){
       <div class="fc-g">${cap3genres(dj.genre)||'Por confirmar'}</div>
       <div class="fc-hr"></div>
       <div class="fc-t">${dj.type||'DJ JAM'}</div>
-      ${soon?'<div class="fc-s">↗ Próximamente</div>':''}
     </div>
   `;
   el.onclick = ()=>{ fichaFrom='home'; openFicha(dj.i); };
@@ -5534,6 +5686,9 @@ function spawnCard(){
   const tilt = (Math.random() - .5) * (isMobile ? 1.4 : 3.0);
 
   el.style.cssText=`left:${x}px;top:${startY}px;transform:rotate(${tilt}deg);opacity:0;transition:opacity .7s;`;
+  el.style.backgroundImage='url('+foto+')';
+  el.style.backgroundSize='cover';
+  el.style.backgroundPosition='center top';
   document.getElementById('cl').appendChild(el);
   requestAnimationFrame(()=>{el.style.opacity='1'});
 
@@ -5713,6 +5868,10 @@ window.openFicha = async function openFicha(id){
   // Normalizar id
   const normId = id.replace(/^ASDL0*/,'').replace(/^0+/,'') || '0';
   const isASDL = /^ASDL/.test(id);
+  if(isASDL && typeof openEncuentro === 'function' && typeof SM !== 'undefined'){
+    const _setB2B = SM.find(function(s){ return s.id === id; });
+    if(_setB2B && _esB2B(_setB2B.artista)){ openEncuentro(_setB2B); return; }
+  }
   let dj = null;
 
   // IDs con prefijo ASDL: resolver desde SM y luego enriquecer con DJS por nombre
@@ -5814,24 +5973,7 @@ window.openFicha = async function openFicha(id){
   // Estricto: matchea si el nombre del set es EXACTAMENTE el del DJ,
   // o si el DJ es participante de un B2B (split por " B2B "). Evita falsos
   // positivos como "SAX" matcheando "BORONIK B2B SAX" o viceversa.
-  const _artistSets = (typeof SM !== 'undefined')
-    ? SM.filter(function(s){
-        if(s.estado === 'Oculto') return false;
-        var smName = (s.artista || '').toUpperCase();
-        var smNorm = _norm(smName);
-        // 1) Match exacto del nombre completo del set
-        if(smName === _djUp || (_djAliasUp && smName === _djAliasUp)) return true;
-        if(smNorm === _djNorm || (_djAliasNorm && smNorm === _djAliasNorm)) return true;
-        // 2) El DJ es uno de los participantes del B2B
-        var parts = smName.split(/\s+B2B\s+/).map(function(x){ return x.trim(); });
-        if(parts.length > 1){
-          if(parts.indexOf(_djUp) > -1 || (_djAliasUp && parts.indexOf(_djAliasUp) > -1)) return true;
-          var partsNorm = parts.map(_norm);
-          if(partsNorm.indexOf(_djNorm) > -1 || (_djAliasNorm && partsNorm.indexOf(_djAliasNorm) > -1)) return true;
-        }
-        return false;
-      }).sort(function(a,b){ return a.fecha < b.fecha ? -1 : a.fecha > b.fecha ? 1 : 0; })
-    : [];
+  const _artistSets = _setsDeArtista(_artistName, _artistAlias);
 
   // Para cada set: cover usando COVER_MAP con número cronológico, link de YT desde SM o videos{}
   function _buildSetThumb(smEntry, chronoNum){
@@ -5839,9 +5981,10 @@ window.openFicha = async function openFicha(id){
     var _coverNum = smCoverChronoNum(smEntry.artista, smEntry.id);
     const coverFn = getCoverFilename(smEntry.artista, _coverNum);
     const coverSrc = imgURL('img/covers', coverFn);
-    const label = _artistSets.length > 1
-      ? 'Set ' + chronoNum + '/' + _artistSets.length + ' · ' + (smEntry.categoria||'')
-      : (smEntry.categoria||'Set en YouTube');
+    var _partesSet = _b2bPartes(smEntry.artista);
+    var _con = _partesSet.length > 1 ? _partesSet.filter(function(pn){ var q=_nomNorm(pn); return q !== _nomNorm(_artistName) && (!_artistAlias || q !== _nomNorm(_artistAlias)); }).join(' & ') : '';
+    const label = (_artistSets.length > 1 ? 'Set ' + chronoNum + '/' + _artistSets.length + ' · ' : '')
+      + (_con ? 'B2B con ' + _con : (smEntry.categoria || 'Set en YouTube'));
 
     if(setYt){
       return '<a href="'+setYt+'" target="_blank" rel="noopener"'
@@ -6144,6 +6287,7 @@ function adminTab(tab){
   else if(tab==='artists') renderAdminArtistsMerged(cont);
   else if(tab==='jams') renderAdminJams(cont);
   else if(tab==='agenda-admin') renderAdminAgendaTab(cont);
+  else if(tab==='embudo') renderAdminEmbudo(cont);
 }
 
 function renderAdminOverview(c){
@@ -7184,19 +7328,40 @@ function smLoadPhotos(artista, cb){
 }
 
 // ─── CARD DEL SET ───────────────────────────────────────────────────────────
+// ── B2B: un set de dos artistas es un ENCUENTRO, no un artista nuevo ──
+// Reconoce "B2B", " x " y "&". La barra "/" NO cuenta: "FOMO / JORRON" es un mismo artista con dos nombres.
+// Si NAME_ALIAS lleva el nombre a un dúo fijo (ej. "ISHIT B2B ARIKA" → SPACEGIRLS), es un artista, no un encuentro.
+function _b2bPartes(nombre){
+  var n = String(nombre||'').trim();
+  try{ if(typeof NAME_ALIAS!=='undefined' && NAME_ALIAS[n.toUpperCase()]) n = NAME_ALIAS[n.toUpperCase()]; }catch(e){}
+  var p = n.split(/\s+B2B\s+|\s+x\s+|\s*&\s*/i).map(function(x){ return x.trim(); }).filter(Boolean);
+  return p.length > 1 ? p : [n];
+}
+function _esB2B(nombre){ return _b2bPartes(nombre).length > 1; }
+function _nomNorm(t){ return String(t||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[^A-Z0-9 ]/g,'').replace(/\s+/g,' ').trim(); }
+// Todos los sets de un artista, solos y B2B, en orden cronológico (una sola numeración en todo el sitio)
+function _setsDeArtista(nombre, alias){
+  var a = _nomNorm(nombre), b = _nomNorm(alias);
+  var mismo = function(x){ var q=_nomNorm(x); return q && (q===a || (b && q===b)); };
+  return (typeof SM!=='undefined' ? SM : []).filter(function(x){
+    if(x.estado === 'Oculto') return false;
+    if(mismo(x.artista)) return true;
+    try{ if(typeof NAME_ALIAS!=='undefined' && mismo(NAME_ALIAS[String(x.artista||'').toUpperCase()])) return true; }catch(e){}
+    var partes = _b2bPartes(x.artista);
+    return partes.length > 1 && partes.some(mismo);
+  }).sort(function(p,q){ return p.fecha < q.fecha ? -1 : p.fecha > q.fecha ? 1 : 0; });
+}
+
 function smBuildCard(s, delay){
   var _displayName = smGetName(s.id, s.artista);
   var isPend   = s.estado === 'Pendiente';
 
   var artNombre = s.artista;
   // Calcular orden cronológico real — matchear nombre exacto primero, fallback a split B2B
-  var _allSetsExact = SM.filter(function(x){
-    return x.artista.toUpperCase() === artNombre.toUpperCase() && x.estado !== 'Oculto';
-  });
-  var allSets = (_allSetsExact.length > 0 ? _allSetsExact : SM.filter(function(x){
-    return x.artista.split(' B2B ')[0].toUpperCase() === artNombre.split(' B2B ')[0].toUpperCase()
-      && x.estado !== 'Oculto';
-  })).sort(function(a,b){ return a.fecha < b.fecha ? -1 : a.fecha > b.fecha ? 1 : 0; });
+  // Una sola numeración en todo el sitio: los B2B cuentan como set de cada artista.
+  // La tarjeta de un B2B no lleva número propio: es el encuentro de dos trayectorias.
+  var allSets = _esB2B(artNombre) ? [s] : _setsDeArtista(artNombre);
+  if(!allSets.length) allSets = [s];
   var chronoNum = allSets.findIndex(function(x){ return x.id === s.id; }) + 1;
   if(chronoNum < 1) chronoNum = s.set_num || 1;
   var hasMulti = allSets.length > 1;
@@ -7308,6 +7473,12 @@ function smBuildCard(s, delay){
     return a === sn || al === sn;
   }) : null;
   var genre = djMatch && djMatch.genre ? djMatch.genre : '';
+  if(!genre && _esB2B(artNombre) && typeof DJS !== 'undefined'){
+    genre = _b2bPartes(artNombre).map(function(pn){
+      var d = DJS.find(function(x){ return _nomNorm(x.artist) === _nomNorm(pn); });
+      return d && d.genre ? String(d.genre).split(/[,/·]/)[0].trim() : '';
+    }).filter(function(g){ return g && !/^(sin g[eé]nero|por confirmar|[—-])$/i.test(g); }).filter(function(g,i,arr){ return arr.indexOf(g)===i; }).join(' · ');
+  }
   // Fecha en formato 21.MARZO.2026
   var dateStr = '';
   if(s.fecha){
@@ -7326,6 +7497,7 @@ function smBuildCard(s, delay){
   rows += '<div class="ficha-row"><span class="k">TYPE</span><span class="v">' + (s.categoria || '') + '</span></div>';
   if(genre) rows += '<div class="ficha-row"><span class="k">G&Eacute;NERO</span><span class="v">' + genre + '</span></div>';
   if(dateStr) rows += '<div class="ficha-row"><span class="k">FECHA</span><span class="v">' + dateStr + '</span></div>';
+  if(hasMulti) rows += '<div class="ficha-row"><span class="k">SET</span><span class="v">' + chronoNum + ' DE ' + allSets.length + '</span></div>';
   ficha.innerHTML =
       '<div class="ficha-inner">'
     +   '<div class="ficha-name">' + _displayName + '</div>'
@@ -9092,6 +9264,8 @@ function updateAllCounters(){
   // Trust strip — "Sets publicados" en vivo (sin estimación)
   var tsc = document.getElementById('trust-sets-count');
   if(tsc) tsc.textContent = n;
+  var gc = document.getElementById('gts-count'); if(gc) gc.textContent = n;
+  var gt = document.getElementById('gts-count-txt'); if(gt) gt.textContent = n;
 }
 
 // ═══════════════════════════════════════════════════════
@@ -9496,6 +9670,841 @@ function updateStepperStates(){
   if(content) content.addEventListener('scroll', onScroll, {passive:true});
   window.addEventListener('scroll', onScroll, {passive:true});
 })();
+
+</script>
+<script>
+
+// ═══════════════════════════════════════════════════════════════
+// GRABA TU SET v2 — reserva en 3 pasos
+// Reutiliza: sb (Supabase), CFG (precios del Panel), guardarReserva(),
+// buscarDJ(), SM, DJS, JAMS, perfilCompleto(), imgURL(), getPerfilFilename().
+// Tablas nuevas (ver instructivo): postulaciones_jam, solicitudes_incompletas, embudo_eventos.
+// ═══════════════════════════════════════════════════════════════
+
+// Lee una variable global sin romper si su script no terminó de cargar
+// (una variable 'let/const' de un script fallido no se puede ni consultar con typeof).
+function _gtsHay(nombre){ try{ return (0,eval)(nombre) !== undefined; }catch(e){ return false; } }
+
+// ═══════════════════════════════════════════════════════════════
+// FICHA DEL ENCUENTRO — se abre al tocar un set B2B
+// Los dos artistas lado a lado, cada uno con acceso a su ficha propia.
+// ═══════════════════════════════════════════════════════════════
+function _djPorNombre(nombre){
+  if(typeof DJS==='undefined') return null;
+  var n=_nomNorm(nombre);
+  var porNom=function(d){ return _nomNorm(d.artist)===n || (d.alias && _nomNorm(d.alias)===n); };
+  var dj = DJS.find(function(d){ return !d.hidden && porNom(d); }) || DJS.find(porNom);
+  if(!dj){ try{ var al=NAME_ALIAS[String(nombre).toUpperCase()]; if(al){ var m=_nomNorm(al); dj=DJS.find(function(d){ return _nomNorm(d.artist)===m; }); } }catch(e){} }
+  return dj || null;
+}
+function _fotoUrls(nombre, dj){
+  var u=[];
+  try{
+    if(dj){ if(typeof _photoCache!=='undefined' && _photoCache[dj.i]) u.push(_photoCache[dj.i]); if(typeof photos!=='undefined' && photos[dj.i]) u.push(photos[dj.i]); }
+    var base = dj ? dj.artist : nombre;
+    if(typeof getPerfilFilename==='function') u.push(imgURL('img/perfiles', getPerfilFilename(base)));
+    u.push(imgURL('img/perfiles', base)); u.push(imgURL('img/perfiles', String(base).toUpperCase()));
+  }catch(e){}
+  return u.filter(function(x,i){ return x && u.indexOf(x)===i; });
+}
+function cerrarEncuentro(){
+  var o=document.getElementById('encuentro'); if(o) o.remove();
+  document.removeEventListener('keydown', _escEncuentro);
+}
+function _escEncuentro(e){ if(e.key==='Escape') cerrarEncuentro(); }
+function openEncuentro(set){
+  cerrarEncuentro();
+  var esc=function(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); };
+  var partes=_b2bPartes(set.artista);
+  // Texto del encuentro: si existe una ficha del dúo (ej. "BORONIK B2B SAX") con propuesta propia
+  var resuelto=set.artista; try{ resuelto=NAME_ALIAS[String(set.artista).toUpperCase()]||set.artista; }catch(e){}
+  var duo=(typeof DJS!=='undefined')?DJS.find(function(d){ return _nomNorm(d.artist)===_nomNorm(resuelto); }):null;
+  var texto=duo && duo.bio ? String(duo.bio).replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim() : '';
+  if(texto.length<40 || /^(set grabado|participante de la dj jam|archivo p[uú]blico en directo|—)/i.test(texto)) texto='';
+  var fecha=''; if(set.fecha){ try{ fecha=new Date(set.fecha+'T12:00:00').toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'}); }catch(e){} }
+  var yt=set.url_yt || (typeof videos!=='undefined' && videos[set.id]) || '';
+
+  var col=function(nombre, idx){
+    var dj=_djPorNombre(nombre);
+    var sets=_setsDeArtista(dj?dj.artist:nombre, dj?dj.alias:'');
+    var pos=sets.findIndex(function(x){ return x.id===set.id; })+1;
+    var genero=dj && dj.genre ? String(dj.genre).split(/[,/·]/).slice(0,3).map(function(g){return g.trim();}).filter(function(g){ return g && !/^(sin g[eé]nero|por confirmar|[—-])$/i.test(g); }).join(' · ') : '';
+    return '<div class="enc-col">'
+      + '<div class="enc-foto"><img id="enc-img-'+idx+'" alt="'+esc(dj?dj.artist:nombre)+'"><span>'+esc(String(nombre).charAt(0))+'</span></div>'
+      + '<div class="enc-n">'+esc(dj?dj.artist:nombre)+'</div>'
+      + (genero?'<div class="enc-g">'+esc(genero)+'</div>':'')
+      + '<div class="enc-s">'+(pos&&sets.length?'Su set '+pos+' de '+sets.length+' en el Archivo':'')+'</div>'
+      + (dj ? '<button type="button" class="enc-btn" data-dj="'+esc(dj.i)+'">Ver su ficha →</button>' : '<div class="enc-g" style="margin-top:12px">Todavía sin ficha propia</div>')
+      + '</div>';
+  };
+
+  var o=document.createElement('div'); o.id='encuentro'; o.setAttribute('role','dialog'); o.setAttribute('aria-modal','true'); o.setAttribute('aria-label','B2B '+set.artista);
+  o.innerHTML='<style>'
+    + '#encuentro{position:fixed;inset:0;z-index:99999;background:rgba(4,4,8,.86);display:flex;align-items:center;justify-content:center;padding:18px;font-family:"IBM Plex Mono",monospace;color:#f0ece2;animation:encIn .25s ease}'
+    + '@keyframes encIn{from{opacity:0}to{opacity:1}}'
+    + '#encuentro .enc-box{position:relative;width:100%;max-width:760px;max-height:92vh;overflow:auto;background:#0a0a10;border:1px solid rgba(43,26,255,.55);padding:clamp(22px,4vw,40px)}'
+    + '#encuentro .enc-x{position:absolute;top:12px;right:12px;width:40px;height:40px;background:transparent;border:1px solid rgba(240,236,226,.25);color:#f0ece2;font-size:18px;cursor:pointer}'
+    + '#encuentro .enc-k{font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:#2b1aff;margin-bottom:10px}'
+    + '#encuentro .enc-t{font-family:"Space Mono",monospace;font-weight:700;font-size:clamp(24px,4.5vw,40px);line-height:1.05;letter-spacing:-.03em;margin:0 0 6px}'
+    + '#encuentro .enc-t i{font-style:normal;color:#2b1aff;font-size:.6em;vertical-align:middle;margin:0 .3em}'
+    + '#encuentro .enc-meta{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(240,236,226,.45);margin-bottom:24px}'
+    + '#encuentro .enc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}'
+    + '#encuentro .enc-col{border:1px solid rgba(240,236,226,.1);padding:18px;text-align:center}'
+    + '#encuentro .enc-foto{position:relative;width:96px;height:96px;margin:0 auto 12px;border-radius:50%;overflow:hidden;background:#15152a;display:flex;align-items:center;justify-content:center}'
+    + '#encuentro .enc-foto img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top}'
+    + '#encuentro .enc-foto span{font-family:"Space Mono",monospace;font-size:30px;color:rgba(240,236,226,.4)}'
+    + '#encuentro .enc-n{font-family:"Space Mono",monospace;font-weight:700;font-size:17px;text-transform:uppercase}'
+    + '#encuentro .enc-g{font-size:11px;color:rgba(240,236,226,.55);margin-top:5px;line-height:1.5}'
+    + '#encuentro .enc-s{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:#2b1aff;margin-top:8px;min-height:14px}'
+    + '#encuentro .enc-btn{margin-top:14px;width:100%;background:transparent;border:1px solid rgba(240,236,226,.3);color:#f0ece2;font-family:inherit;font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:12px;cursor:pointer}'
+    + '#encuentro .enc-btn:hover{border-color:#2b1aff;background:rgba(27,0,230,.15)}'
+    + '#encuentro .enc-txt{font-size:13px;line-height:1.75;color:rgba(240,236,226,.7);margin:22px 0 0;border-left:2px solid #1b00e6;padding-left:14px}'
+    + '#encuentro .enc-yt{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:22px;background:#1b00e6;color:#f0ece2;text-decoration:none;font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;padding:16px}'
+    + '#encuentro .enc-yt:hover{background:#2b1aff}'
+    + '@media(max-width:560px){#encuentro .enc-grid{grid-template-columns:1fr 1fr;gap:8px}#encuentro .enc-col{padding:12px 8px}#encuentro .enc-foto{width:68px;height:68px}#encuentro .enc-n{font-size:13px}}'
+    + '</style>'
+    + '<div class="enc-box">'
+    + '<button type="button" class="enc-x" aria-label="Cerrar">×</button>'
+    + '<div class="enc-k">B2B · Un encuentro en el Archivo</div>'
+    + '<h2 class="enc-t">'+partes.map(esc).join('<i>×</i>')+'</h2>'
+    + '<div class="enc-meta">'+esc(set.id)+(set.categoria?' · '+esc(set.categoria):'')+(fecha?' · '+esc(fecha):'')+'</div>'
+    + '<div class="enc-grid">'+partes.map(col).join('')+'</div>'
+    + (texto?'<p class="enc-txt">'+esc(texto)+'</p>':'')
+    + (yt?'<a class="enc-yt" href="'+esc(yt)+'" target="_blank" rel="noopener">▶ Ver el set completo</a>':'<div class="enc-meta" style="margin:22px 0 0;text-align:center">Set en edición · Próximamente</div>')
+    + '</div>';
+  document.body.appendChild(o);
+  partes.forEach(function(nombre, idx){
+    var img=document.getElementById('enc-img-'+idx); if(!img) return;
+    var urls=_fotoUrls(nombre, _djPorNombre(nombre)), k=0;
+    img.onerror=function(){ k++; if(k<urls.length) img.src=urls[k]; else img.remove(); };
+    if(urls.length) img.src=urls[0]; else img.remove();
+  });
+  o.addEventListener('click', function(e){ if(e.target===o) cerrarEncuentro(); });
+  o.querySelector('.enc-x').addEventListener('click', cerrarEncuentro);
+  Array.prototype.forEach.call(o.querySelectorAll('[data-dj]'), function(b){
+    b.addEventListener('click', function(){ var id=b.getAttribute('data-dj'); cerrarEncuentro(); if(typeof openFicha==='function') openFicha(id); });
+  });
+  document.addEventListener('keydown', _escEncuentro);
+  o.querySelector('.enc-x').focus();
+}
+
+window.GTS = (function(){
+  var FMT = {
+    Basico:{n:'Set Básico', corto:'Básico', min:30, cfg:'precio_basico', def:35000,
+      ideal:'Querés registrar tu set y llevarte material, sin una gran producción.',
+      items:['30 minutos de grabación','1 cámara + audio masterizado','Edición y publicación','10 fotos y 4 clips verticales']},
+    Common:{n:'Set Common', corto:'Common', min:60, cfg:'precio_solo', def:70000, rec:true,
+      ideal:'Querés un set completo de una hora y contenido para mover tus redes.',
+      items:['1 hora de grabación','2 cámaras + audio masterizado','Edición y publicación','15 fotos y 7 clips verticales','Contenido 360°']},
+    B2B:{n:'Set B2B', corto:'B2B', min:90, cfg:'precio_b2b', def:90000,
+      ideal:'Tocan de a dos y quieren un registro largo del encuentro. Precio total por los dos.',
+      items:['90 minutos de grabación','2 cámaras + audio masterizado','Edición y publicación','20 fotos y 10 clips verticales','Contenido 360°']},
+    Custom:{n:'Set Custom', corto:'Custom', min:90, cfg:'precio_custom', def:120000, desde:true,
+      ideal:'Tenés un lanzamiento, un live o una idea que no entra en ningún formato.',
+      items:['Desde 90 minutos','1 a 3 cámaras','Edición y publicación','25 fotos y 12 clips verticales','Lo armamos con vos']}
+  };
+  var ORDEN = ['Basico','Common','B2B','Custom'];
+  var APERTURA = 11*60, CIERRE = 20*60, PASO = 30, ANTICIPACION_H = 48, DIAS = 60;
+  var MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  var DIAS_N = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+
+  var S = { tipo:null, fecha:null, hora:null, paso:1, calY:0, calM:0,
+            ocupados:{}, bloqueados:{}, jams:{}, cargado:false, enviado:false,
+            grabo:false, nSets:0, datos:{}, enviando:false };
+  var iniciado = false;
+
+  // ── utilidades ──
+  function $(id){ return document.getElementById(id); }
+  function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function precio(t){ var f=FMT[t]; if(!f) return 0; var v=Number((_gtsHay('CFG')&&CFG)?CFG[f.cfg]:NaN); return v>0?v:f.def; }
+  function plata(n){ return '$'+Number(n||0).toLocaleString('es-AR'); }
+  function pad(n){ return String(n).padStart(2,'0'); }
+  function hhmm(m){ return pad(Math.floor(m/60))+':'+pad(m%60); }
+  function iso(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+  function parseIso(s){ var p=String(s).split('-'); return new Date(+p[0], +p[1]-1, +p[2]); }
+  function fechaLarga(s){ var d=parseIso(s); return DIAS_N[d.getDay()]+' '+d.getDate()+' de '+MESES[d.getMonth()]; }
+  function mayus(t){ t=String(t||''); return t.charAt(0).toUpperCase()+t.slice(1); }
+  function fechaCorta(s){ var d=parseIso(s); return d.getDate()+' '+MESES[d.getMonth()].slice(0,3).toUpperCase(); }
+  function horasHasta(fecha, min){ var d=parseIso(fecha); d.setHours(0,min,0,0); return (d - new Date())/36e5; }
+  function ytId(u){ var m=String(u||'').match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([a-zA-Z0-9_-]{11})/); return m?m[1]:null; }
+  function total(){
+    var p = precio(S.tipo);
+    var dto = (_gtsHay('CFG') && CFG.descuento_comunidad) ? Number(CFG.descuento_comunidad) : 10;
+    if(S.grabo && S.tipo !== 'B2B' && S.tipo !== 'Custom') return {base:p, final:Math.round(p*(1-dto/100)), dto:dto};
+    return {base:p, final:p, dto:0};
+  }
+  function sesionId(){
+    try{ var k=sessionStorage.getItem('gts_sid'); if(!k){ k=Date.now().toString(36)+Math.random().toString(36).slice(2,8); sessionStorage.setItem('gts_sid',k); } return k; }catch(e){ return 'x'; }
+  }
+
+  // ── métricas: embudo propio + Píxel de Meta ──
+  function track(ev, extra){
+    try{
+      var key='gts_ev_'+ev;
+      if(ev!=='envio' && sessionStorage.getItem(key)) return;
+      sessionStorage.setItem(key,'1');
+    }catch(e){}
+    try{ if(_gtsHay('sb')) sb.from('embudo_eventos').insert([{evento:ev, sesion:sesionId(), tipo:S.tipo||null}]).then(function(){}, function(){}); }catch(e){}
+    var mapa={vio_reserva:'ViewContent', eligio_sesion:'CustomizeProduct', eligio_fecha:'InitiateCheckout', envio:'Lead', postulacion_jam:'CompleteRegistration'};
+    try{ if(window.fbq && mapa[ev]) window.fbq('track', mapa[ev], extra||{}); }catch(e){}
+    try{ if(window.gtag) window.gtag('event', 'gts_'+ev, {set_tipo:S.tipo||''}); }catch(e){}
+  }
+  function initPixel(){
+    var id = (_gtsHay('CFG') && CFG.meta_pixel_id) ? String(CFG.meta_pixel_id).trim() : '';
+    if(!id || window.fbq) return;
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    window.fbq('init', id); window.fbq('track','PageView');
+  }
+
+  // ── ocupación real: solicitudes + bloqueos del Panel + domingos de jam ──
+  function intervalo(h, tipo){
+    h = String(h||'').trim();
+    var F = {'Mañana':[660,780],'Tarde':[780,1080],'Noche':[1080,1260]};
+    if(F[h]) return F[h];
+    var m = h.match(/^(\d{1,2}):(\d{2})/); if(!m) return null;
+    var s = (+m[1])*60 + (+m[2]);
+    var t = String(tipo||'').toLowerCase();
+    var dur = (t.indexOf('b2b')>-1 || t.indexOf('custom')>-1) ? 90 : (t.indexOf('bas')>-1 ? 30 : 60);
+    return [s, s+dur];
+  }
+  async function cargarOcupacion(){
+    var hoy = iso(new Date());
+    var ocup = {}, rows = [];
+    if(_gtsHay('sb')){
+      try{
+        var r = await sb.from('reservas_publicas').select('fecha,horario,estado,tipo').neq('estado','Cancelada').gte('fecha',hoy);
+        if(r.error) throw r.error; rows = r.data||[];
+      }catch(e){
+        try{ var r2 = await sb.from('reservas_publicas').select('fecha,horario,estado').neq('estado','Cancelada').gte('fecha',hoy); rows = (r2&&r2.data)||[]; }catch(e2){}
+      }
+      try{
+        var b = await sb.from('disponibilidad').select('fecha').eq('activo',false).gte('fecha',hoy);
+        (b.data||[]).forEach(function(x){ S.bloqueados[x.fecha]=1; });
+      }catch(e){}
+    }
+    rows.forEach(function(x){ var iv=intervalo(x.horario, x.tipo); if(iv && x.fecha){ (ocup[x.fecha]=ocup[x.fecha]||[]).push(iv); } });
+    S.ocupados = ocup;
+    if(_gtsHay('blockedDates')) Object.keys(blockedDates).forEach(function(k){ if(blockedDates[k]) S.bloqueados[k]=1; });
+    (_gtsHay('JAMS')?JAMS:[]).forEach(function(j){
+      if(j && j.dateISO && (j.upcoming || j.estado==='Proxima')) S.jams[j.dateISO]=1;
+    });
+    S.cargado = true;
+  }
+  function horarios(fecha, tipo){
+    var dur = (FMT[tipo]||FMT.Common).min, oc = S.ocupados[fecha]||[], out=[];
+    for(var s=APERTURA; s+dur<=CIERRE; s+=PASO){
+      var libre = oc.every(function(iv){ return s+dur<=iv[0] || s>=iv[1]; });
+      out.push({min:s, ok: libre && horasHasta(fecha,s) >= ANTICIPACION_H});
+    }
+    return out;
+  }
+  function libre(fecha, horaMin, tipo){
+    if(!fecha || horaMin==null) return false;
+    var dur=(FMT[tipo]||FMT.Common).min;
+    if(horaMin+dur>CIERRE) return false;
+    return (S.ocupados[fecha]||[]).every(function(iv){ return horaMin+dur<=iv[0] || horaMin>=iv[1]; }) && horasHasta(fecha,horaMin)>=ANTICIPACION_H;
+  }
+  function estadoDia(fecha){
+    var d=parseIso(fecha), hoy=new Date(); hoy.setHours(0,0,0,0);
+    var max=new Date(hoy); max.setDate(max.getDate()+DIAS);
+    if(d<hoy || d>max) return 'fuera';
+    if(S.jams[fecha]) return 'jam';
+    if(S.bloqueados[fecha]) return 'no';
+    return horarios(fecha, S.tipo||'Common').some(function(h){return h.ok;}) ? 'ok' : 'no';
+  }
+
+  // ── formatos ──
+  function renderFormatos(){
+    var c=$('gts-fmts'); if(!c) return;
+    c.innerHTML = ORDEN.map(function(t){
+      var f=FMT[t], ej=ejemplo(t);
+      return '<button type="button" class="gts-fmt'+(f.rec?' rec':'')+(S.tipo===t?' on':'')+'" data-t="'+t+'">'
+        + (f.rec?'<span class="gts-fmt-badge">★ El más elegido</span>':'')
+        + '<span class="gts-fmt-n">'+f.n+'</span>'
+        + '<span class="gts-fmt-p">'+(f.desde?'<small>desde</small>':'')+plata(precio(t))+'</span>'
+        + '<span class="gts-fmt-ideal"><b>Ideal si</b>'+f.ideal+'</span>'
+        + '<ul>'+f.items.map(function(i){return '<li>'+i+'</li>';}).join('')+'</ul>'
+        + '<span class="gts-fmt-cta"><span>'+(t==='Custom'?'Contanos tu idea →':(S.tipo===t?'✓ Elegido':'Elegir →'))+'</span>'
+        + (ej?'<a class="gts-fmt-ex" href="'+esc(ej)+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">Mirá uno así</a>':'')+'</span>'
+        + '</button>';
+    }).join('');
+    Array.prototype.forEach.call(c.querySelectorAll('.gts-fmt'), function(b){
+      b.addEventListener('click', function(){ elegirTipo(b.getAttribute('data-t'), true); });
+    });
+  }
+  function ejemplo(t){
+    if(!_gtsHay('SM')) return null;
+    var pub = SM.filter(function(s){ return s.estado==='Publicado' && ytId(s.url_yt); });
+    pub.sort(function(a,b){ return String(b.fecha||'').localeCompare(String(a.fecha||'')); });
+    var m = pub.filter(function(s){
+      var b2b = /\bB2B\b/i.test(s.artista||'');
+      if(t==='B2B') return b2b;
+      if(t==='Common') return s.tipo==='COMMON' && !b2b;
+      if(t==='Custom') return s.tipo==='CUSTOM';
+      return false;
+    })[0];
+    return m ? m.url_yt : null;
+  }
+  function elegirTipo(t, scroll){
+    if(!FMT[t]) return;
+    S.tipo = t; S.tocado = true;
+    track('eligio_sesion');
+    if(t!=='Custom' && S.hora!=null && !libre(S.fecha, S.hora, t)){ S.hora=null; S.avisoHora='Ese horario no alcanza para un '+FMT[t].n+'. Elegí otro.'; }
+    if(t!=='Custom' && S.paso!==1 && S.hora==null) S.paso=1;
+    if(t==='Custom') S.paso=1;
+    render();
+    if(scroll){ var w=$('gts-wiz'); if(w) w.scrollIntoView({behavior:'smooth', block:'start'}); }
+  }
+
+  // ── wizard ──
+  function render(){
+    if(!$('gts-stage')) return;
+    if(!S.tipo) S.tipo='Common'; // el recomendado, hasta que la persona elija otro
+    renderFormatos();
+    Array.prototype.forEach.call(document.querySelectorAll('#gts-tabs .gts-tab'), function(el){
+      var n=+el.getAttribute('data-t');
+      el.classList.toggle('on', !S.enviado && n===S.paso);
+      el.classList.toggle('done', S.enviado || n<S.paso);
+    });
+    var st=$('gts-stage');
+    if(S.enviado) st.innerHTML = vistaListo();
+    else if(S.tipo==='Custom') st.innerHTML = vistaCustom();
+    else if(S.paso===1) st.innerHTML = vistaFecha();
+    else if(S.paso===2) st.innerHTML = vistaDatos();
+    else st.innerHTML = vistaRevisar();
+    enlazar();
+    resumen();
+  }
+  function chips(){
+    return '<div class="gts-chips" role="group" aria-label="Tipo de sesión">'+ORDEN.map(function(t){
+      var off = (t!=='Custom' && S.hora!=null && S.fecha && !libre(S.fecha, S.hora, t));
+      return '<button type="button" class="gts-chip'+(S.tipo===t?' on':'')+(off?' off':'')+'" data-chip="'+t+'"'+(off?' title="No entra en el horario elegido"':'')+'>'
+        + FMT[t].corto+' · '+(t==='Custom'?'a medida':(FMT[t].min>=60?(FMT[t].min/60).toString().replace('.5',' h 30')+(FMT[t].min===60?' h':''):FMT[t].min+' min'))+'</button>';
+    }).join('')+'</div>';
+  }
+  function vistaFecha(){
+    var h='<div class="gts-step"><div class="gts-step-k">Paso 1 de 3</div><div class="gts-h3">¿Cuándo querés grabar?</div>'
+      + '<p class="gts-note" style="margin-top:2px">Elegí el día y la hora. Los horarios se ajustan a lo que dura tu sesión.</p>'
+      + chips();
+    if(!S.cargado){ h+='<p class="gts-note">Cargando disponibilidad…</p></div>'; return h; }
+    var hoy=new Date(); hoy.setHours(0,0,0,0);
+    var max=new Date(hoy); max.setDate(max.getDate()+DIAS);
+    var primero=new Date(S.calY, S.calM, 1), dias=new Date(S.calY, S.calM+1, 0).getDate();
+    var puedeAtras = (S.calY>hoy.getFullYear() || (S.calY===hoy.getFullYear() && S.calM>hoy.getMonth()));
+    var puedeAdelante = new Date(S.calY, S.calM+1, 1) <= max;
+    h+='<div class="gts-cal-h"><div class="gts-cal-t">'+MESES[S.calM]+' '+S.calY+'</div><div class="gts-cal-nav">'
+      + '<button type="button" data-mes="-1" aria-label="Mes anterior"'+(puedeAtras?'':' disabled')+'>←</button> '
+      + '<button type="button" data-mes="1" aria-label="Mes siguiente"'+(puedeAdelante?'':' disabled')+'>→</button></div></div>'
+      + '<div class="gts-cal">'+['D','L','M','M','J','V','S'].map(function(d){return '<div class="gts-dow">'+d+'</div>';}).join('');
+    for(var i=0;i<primero.getDay();i++) h+='<div class="gts-day empty"></div>';
+    for(var d=1; d<=dias; d++){
+      var f=S.calY+'-'+pad(S.calM+1)+'-'+pad(d), e=estadoDia(f);
+      var cls='gts-day'+(e==='ok'?'':' no')+(e==='jam'?' jam':'')+(S.fecha===f?' sel':'');
+      h+= e==='ok' ? '<button type="button" class="'+cls+'" data-dia="'+f+'" aria-label="'+fechaLarga(f)+'">'+d+'</button>'
+                   : '<div class="'+cls+'" aria-hidden="true">'+d+'</div>';
+    }
+    h+='</div><div class="gts-legend"><span><i></i>Disponible</span><span><i class="s"></i>Elegido</span><span style="color:var(--g-b2)">JAM · jornada</span></div>';
+    if(S.fecha){
+      var hs=horarios(S.fecha, S.tipo);
+      h+='<div class="gts-times"><div class="gts-times-h">'+mayus(fechaLarga(S.fecha))+'</div><div class="gts-times-g">'
+        + hs.map(function(x){ return '<button type="button" class="gts-time'+(x.ok?'':' no')+(S.hora===x.min?' on':'')+'"'+(x.ok?' data-hora="'+x.min+'"':' disabled aria-disabled="true"')+'>'+hhmm(x.min)+'</button>'; }).join('')
+        + '</div><p class="gts-note">Tu '+FMT[S.tipo].n+' dura '+(FMT[S.tipo].min>=60?(FMT[S.tipo].min===60?'1 hora':'1 h 30'):'30 min')+'. El último set termina a las 20 hs.</p></div>';
+    } else {
+      h+='<p class="gts-note">Tocá un día para ver los horarios. Podés pedir fecha con al menos 48 hs de anticipación.</p>';
+    }
+    if(S.avisoHora){ h+='<p class="gts-note warn" role="alert">'+esc(S.avisoHora)+'</p>'; S.avisoHora=null; }
+    h+='<div class="gts-nav"><span class="gts-mono">'+(S.hora!=null?'✓ '+fechaCorta(S.fecha)+' · '+hhmm(S.hora):'')+'</span>'
+      + '<button type="button" class="gts-btn" data-ir="2"'+(S.hora==null?' disabled':'')+'>Siguiente: tus datos <span class="arr">→</span></button></div></div>';
+    return h;
+  }
+  function campo(id, lbl, tipo, ph, val, extra, opc){
+    return '<div class="gts-field"><label for="'+id+'">'+lbl+(opc?'<em>opcional</em>':'')+'</label>'
+      + '<input class="gts-in" id="'+id+'" type="'+(tipo||'text')+'" placeholder="'+esc(ph)+'" value="'+esc(val||'')+'" '+(extra||'')+'>'
+      + '<div class="gts-err" id="'+id+'-err"></div></div>';
+  }
+  function vistaDatos(){
+    var D=S.datos;
+    return '<div class="gts-step"><div class="gts-step-k">Paso 2 de 3</div><div class="gts-h3">Unos datos y listo.</div>'
+      + '<p class="gts-note" style="margin:2px 0 18px">Solo lo justo para escribirte. El resto lo vemos cuando te contactemos.</p>'
+      + campo('gts-n','Nombre artístico','text','Tu nombre de DJ o proyecto',D.nombre,'autocomplete="nickname"')
+      + '<div id="gts-yo"></div>'
+      + (S.tipo==='B2B' ? campo('gts-b2b','¿Con quién tocás?','text','Nombre artístico de tu dupla',D.b2b,'') : '')
+      + campo('gts-w','WhatsApp','tel','+54 9 11 …',D.wa,'inputmode="tel" autocomplete="tel"')
+      + campo('gts-e','Email','email','tu@email.com',D.email,'inputmode="email" autocomplete="email"')
+      + campo('gts-i','Instagram','text','@tuusuario',D.ig,'autocapitalize="off"')
+      + '<p class="gts-note" style="margin-top:0">Guardamos tu avance por si se corta algo en el camino.</p>'
+      + '<div class="gts-nav"><button type="button" class="gts-link" data-ir="1">← Volver a la fecha</button>'
+      + '<button type="button" class="gts-btn" data-ir="3">Revisar <span class="arr">→</span></button></div></div>';
+  }
+  function vistaRevisar(){
+    var D=S.datos, t=total();
+    var fila=function(k,v){ return '<div class="gts-rev-row"><span>'+k+'</span><span>'+v+'</span></div>'; };
+    return '<div class="gts-step"><div class="gts-step-k">Paso 3 de 3</div><div class="gts-h3">Revisá y enviá.</div>'
+      + '<p class="gts-note" style="margin:2px 0 18px">Si algo no está bien, volvé atrás: no se pierde nada.</p>'
+      + '<div class="gts-rev">'
+      + fila('Sesión', FMT[S.tipo].n) + fila('Fecha', fechaLarga(S.fecha)) + fila('Hora', hhmm(S.hora)+' hs')
+      + fila('Artista', esc(D.nombre)) + (S.tipo==='B2B'?fila('B2B con', esc(D.b2b)):'')
+      + fila('WhatsApp', esc(D.wa)) + fila('Email', esc(D.email)) + fila('Instagram', esc(D.ig))
+      + (t.dto ? fila('Ya grabaste acá', '−'+t.dto+'% · <s style="opacity:.5">'+plata(t.base)+'</s>') : '')
+      + '<div class="gts-rev-row tot"><span>Total</span><span>'+plata(t.final)+'</span></div></div>'
+      + '<div class="gts-nav"><button type="button" class="gts-link" data-ir="2">← Editar mis datos</button>'
+      + '<button type="button" class="gts-btn" id="gts-send">Enviar solicitud <span class="arr">→</span></button></div>'
+      + '<div class="gts-err" id="gts-send-err" role="alert"></div>'
+      + '<p class="gts-fine"><b>No pagás nada hasta que confirmemos tu fecha.</b> Después, una seña de '+plata(senia())+' la reserva y se descuenta del total. Cancelaciones y cambios: hasta 48 hs antes.</p></div>';
+  }
+  function vistaCustom(){
+    var D=S.datos;
+    return '<div class="gts-step"><div class="gts-step-k">Set Custom · a medida</div><div class="gts-h3">Contanos tu idea.</div>'
+      + '<p class="gts-note" style="margin:2px 0 14px">Un lanzamiento, un live, una puesta especial: lo armamos con vos. Desde '+plata(precio('Custom'))+' y desde 90 minutos.</p>'
+      + chips()
+      + campo('gts-n','Nombre artístico','text','Tu nombre de DJ o proyecto',D.nombre,'autocomplete="nickname"')
+      + campo('gts-w','WhatsApp','tel','+54 9 11 …',D.wa,'inputmode="tel" autocomplete="tel"')
+      + campo('gts-e','Email','email','tu@email.com',D.email,'inputmode="email" autocomplete="email"')
+      + '<div class="gts-field"><label for="gts-idea">Tu idea</label><textarea class="gts-ta" id="gts-idea" placeholder="Qué querés grabar, cuántas personas, si tenés fecha en mente…">'+esc(D.idea||'')+'</textarea><div class="gts-err" id="gts-idea-err"></div></div>'
+      + '<div class="gts-nav"><span></span><button type="button" class="gts-btn" id="gts-send-custom">Enviar mi idea <span class="arr">→</span></button></div>'
+      + '<div class="gts-err" id="gts-send-err" role="alert"></div>'
+      + '<p class="gts-fine">Te escribimos en menos de 24 hs para coordinar fecha y presupuesto. No pagás nada hasta que lo confirmemos.</p></div>';
+  }
+  function vistaListo(){
+    var D=S.datos, custom=S.tipo==='Custom';
+    return '<div class="gts-done"><div class="gts-done-k">✓ Solicitud enviada</div>'
+      + '<div class="gts-h2">Listo, '+esc(D.nombre||'')+'.</div>'
+      + '<p class="gts-p">'+(custom?'Recibimos tu idea. Ya estás en camino al Archivo.':'Pediste tu '+FMT[S.tipo].n+' para el '+fechaLarga(S.fecha)+' a las '+hhmm(S.hora)+' hs. Ya estás en camino al Archivo.')+'</p>'
+      + '<ol>'
+      + '<li><span><b>En menos de 24 hs te escribimos por WhatsApp</b> para confirmar '+(custom?'la propuesta y la fecha':'tu fecha')+'.</span></li>'
+      + '<li><span>Ahí te pasamos los datos para la <b>seña de '+plata(senia())+'</b> por transferencia. Se descuenta del total.</span></li>'
+      + '<li><span>El día de tu sesión, <b>llegá 15 minutos antes</b> con tus tracks en USB y tus auriculares (si no tenés, te alquilamos unos por $10.000). El resto se paga en efectivo o transferencia.</span></li>'
+      + '<li><span>En <b>hasta 15 días</b> tenés tu material.</span></li>'
+      + '</ol><p class="gts-fine">Cancelaciones y cambios de fecha: hasta 48 hs antes.</p>'
+      + '<div class="gts-nav"><button type="button" class="gts-link" onclick="navTo(\'djsets\',document.querySelector(\'[data-pg=djsets]\'))">Mirá el registro mientras tanto →</button></div></div>';
+  }
+  function senia(){ return (_gtsHay('CFG') && Number(CFG.senia)>0) ? Number(CFG.senia) : 15000; }
+
+  function enlazar(){
+    var st=$('gts-stage'); if(!st) return;
+    Array.prototype.forEach.call(st.querySelectorAll('[data-chip]'), function(b){
+      b.addEventListener('click', function(){ if(b.classList.contains('off')) { S.avisoHora='Ese formato no entra en el horario que elegiste. Cambiá la hora primero.'; render(); return; } guardarCampos(); elegirTipo(b.getAttribute('data-chip'), false); });
+    });
+    Array.prototype.forEach.call(st.querySelectorAll('[data-mes]'), function(b){
+      b.addEventListener('click', function(){ S.calM += +b.getAttribute('data-mes'); if(S.calM<0){S.calM=11;S.calY--;} if(S.calM>11){S.calM=0;S.calY++;} render(); });
+    });
+    Array.prototype.forEach.call(st.querySelectorAll('[data-dia]'), function(b){
+      b.addEventListener('click', function(){ S.fecha=b.getAttribute('data-dia'); S.hora=null; S.tocado=true; render(); var t=$('gts-stage').querySelector('.gts-times'); if(t && window.innerWidth<900) t.scrollIntoView({behavior:'smooth',block:'nearest'}); });
+    });
+    Array.prototype.forEach.call(st.querySelectorAll('[data-hora]'), function(b){
+      b.addEventListener('click', function(){ S.hora=+b.getAttribute('data-hora'); track('eligio_fecha'); render(); });
+    });
+    Array.prototype.forEach.call(st.querySelectorAll('[data-ir]'), function(b){
+      b.addEventListener('click', function(){ irA(+b.getAttribute('data-ir')); });
+    });
+    var n=$('gts-n');
+    if(n && S.tipo!=='Custom'){ n.addEventListener('input', function(){ clearTimeout(S._t); S._t=setTimeout(function(){ detectar(n.value); }, 600); }); if(n.value) detectar(n.value); }
+    var e=$('gts-e'); if(e) e.addEventListener('blur', function(){ guardarCampos(); guardarIncompleta(); });
+    var send=$('gts-send'); if(send) send.addEventListener('click', enviar);
+    var sc=$('gts-send-custom'); if(sc) sc.addEventListener('click', enviarCustom);
+  }
+  function guardarCampos(){
+    var D=S.datos, g=function(id){ var el=$(id); return el ? el.value.trim() : null; };
+    var v;
+    if((v=g('gts-n'))!==null) D.nombre=v;
+    if((v=g('gts-w'))!==null) D.wa=v;
+    if((v=g('gts-e'))!==null) D.email=v;
+    if((v=g('gts-i'))!==null) D.ig=v;
+    if((v=g('gts-b2b'))!==null) D.b2b=v;
+    if((v=g('gts-idea'))!==null) D.idea=v;
+  }
+  function error(id, msg){ var el=$(id+'-err'), inp=$(id); if(el) el.textContent=msg||''; if(inp) inp.classList.toggle('bad', !!msg); return !msg; }
+  function validar(conIg){
+    guardarCampos();
+    var D=S.datos, ok=true;
+    ok = error('gts-n', D.nombre ? '' : 'Contanos cómo te llamás como artista.') && ok;
+    ok = error('gts-w', (String(D.wa||'').replace(/\D/g,'').length>=8) ? '' : 'Dejanos un WhatsApp válido: por ahí te confirmamos.') && ok;
+    ok = error('gts-e', /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(D.email||'') ? '' : 'Revisá el email: parece incompleto.') && ok;
+    if(conIg) ok = error('gts-i', D.ig ? '' : 'Dejanos tu Instagram para conocer tu propuesta.') && ok;
+    if(S.tipo==='B2B' && $('gts-b2b')) ok = error('gts-b2b', D.b2b ? '' : 'Contanos con quién vas a tocar.') && ok;
+    if(!ok){ var b=document.querySelector('#gts-stage .gts-in.bad'); if(b) b.focus(); }
+    return ok;
+  }
+  function irA(p){
+    if(p>S.paso){
+      if(S.paso===1 && (S.fecha==null || S.hora==null)) return;
+      if(S.paso===2 && !validar(true)) return;
+    } else guardarCampos();
+    S.paso=p; render(); guardarIncompleta();
+    var w=$('gts-wiz'); if(w && window.innerWidth<900) w.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+
+  // ── "ya grabaste": reconoce al artista por sus sets publicados ──
+  async function detectar(nombre){
+    var box=$('gts-yo'); nombre=String(nombre||'').trim();
+    if(nombre.length<2){ S.grabo=false; S.nSets=0; if(box) box.innerHTML=''; resumen(); return; }
+    var n=0;
+    try{
+      if(_gtsHay('SM') && typeof _normNombre==='function' && typeof _mismoNombre==='function'){
+        var yo=_normNombre(nombre), alias=(_gtsHay('NAME_ALIAS'))?NAME_ALIAS:{};
+        n = SM.filter(function(s){
+          if(s.estado!=='Publicado') return false;
+          var partes=String(s.artista||'').split(/\s+B2B\s+|\s*\/\s*|\s*\(B2B\)\s*/i); partes.push(String(s.artista||''));
+          return partes.some(function(p){ p=String(p).trim(); return [p, alias[p.toUpperCase()]].some(function(c){ var x=_normNombre(c); return x && (x===yo); }); });
+        }).length;
+      }
+    }catch(e){}
+    var com=false;
+    try{ if(typeof buscarDJ==='function'){ var r=await buscarDJ(nombre); com=!!(r&&r.esComunidad); } }catch(e){}
+    S.grabo = n>0 || com; S.nSets = n;
+    if(box){
+      if(S.grabo){
+        var dto=(S.tipo==='B2B')?'':' Tenés <b>'+(total().dto||10)+'% OFF</b> sobre el total.';
+        box.innerHTML='<div class="gts-hi">De vuelta en el Archivo. '+(n>0?'Este sería tu <b>set N° '+(n+1)+'</b>.':'')+dto+'</div>';
+      } else box.innerHTML='';
+    }
+    resumen();
+  }
+
+  // ── avance guardado (para escribirle a quien no terminó) ──
+  function guardarIncompleta(){
+    if(S.enviado || !_gtsHay('sb')) return;
+    var D=S.datos; if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(D.email||'')) return;
+    var firma=[D.email,D.nombre,D.wa,D.ig,S.tipo,S.fecha,S.hora,S.paso].join('|');
+    if(firma===S._firma) return; S._firma=firma;
+    try{ sb.from('solicitudes_incompletas').insert([{ email:D.email, nombre_artistico:D.nombre||null, whatsapp:D.wa||null, instagram:D.ig||null,
+      tipo:S.tipo||null, fecha:S.fecha||null, horario:S.hora!=null?hhmm(S.hora):null, paso:S.paso, completada:false }]).then(function(){},function(){}); }catch(e){}
+  }
+
+  // ── envío ──
+  async function enviar(){
+    if(S.enviando) return;
+    var errEl=$('gts-send-err'), btn=$('gts-send');
+    S.enviando=true; if(btn){ btn.disabled=true; btn.innerHTML='Enviando…'; } if(errEl) errEl.textContent='';
+    try{
+      await cargarOcupacion();
+      if(!libre(S.fecha, S.hora, S.tipo)){
+        S.hora=null; S.paso=1; S.avisoHora='Alguien acaba de pedir ese horario. Elegí otro y seguimos: tus datos quedan guardados.';
+        S.enviando=false; render(); return;
+      }
+      var D=S.datos, t=total(), existe=false;
+      try{ var r=await buscarDJ(D.nombre); existe=!!(r&&r.existe); }catch(e){}
+      var reserva = {
+        nombre_artistico: D.nombre, email: D.email, whatsapp: D.wa, genero: '',
+        links: D.ig, tipo: S.tipo, fecha: S.fecha, horario: hhmm(S.hora),
+        ya_registrado: S.grabo, mensaje: (S.tipo==='B2B' && D.b2b ? 'B2B con: '+D.b2b : ''),
+        es_comunidad: S.grabo && S.tipo!=='B2B', descuento: !!t.dto, precio_base: t.final,
+        senia: senia(), estado: 'Pendiente'
+      };
+      var res = await guardarReserva(reserva);
+      if(!res || !res.ok) throw new Error((res&&res.error)||'error');
+      if(!existe){
+        try{ await sb.from('djs').upsert([{ nombre_artistico:D.nombre, email:D.email, whatsapp:D.wa, genero:'', links:D.ig, tipo_set:S.tipo, total_sets:0, es_comunidad:false }], {onConflict:'nombre_artistico', ignoreDuplicates:true}); }catch(e){}
+      }
+      track('envio', {value:t.final, currency:'ARS'});
+      try{ sb.from('solicitudes_incompletas').insert([{ email:D.email, paso:4, completada:true }]).then(function(){},function(){}); }catch(e){}
+      S.enviado=true; render();
+      var w=$('gts-wiz'); if(w) w.scrollIntoView({behavior:'smooth',block:'start'});
+    }catch(e){
+      if(errEl) errEl.innerHTML='No pudimos enviar tu solicitud. Probá de nuevo o <a href="'+$('gts-wa').href+'" target="_blank" rel="noopener" style="color:inherit">escribinos por WhatsApp</a>.';
+      if(btn){ btn.disabled=false; btn.innerHTML='Enviar solicitud <span class="arr">→</span>'; }
+    }
+    S.enviando=false;
+  }
+  async function enviarCustom(){
+    if(S.enviando) return;
+    if(!validar(false)) return;
+    var D=S.datos; if(!error('gts-idea', D.idea ? '' : 'Contanos aunque sea en una línea qué tenés en mente.')) return;
+    var errEl=$('gts-send-err'), btn=$('gts-send-custom');
+    S.enviando=true; if(btn){ btn.disabled=true; btn.innerHTML='Enviando…'; }
+    try{
+      var res = await guardarReserva({ nombre_artistico:D.nombre, email:D.email, whatsapp:D.wa, genero:'', links:'', tipo:'Custom',
+        fecha:null, horario:'A coordinar', ya_registrado:false, mensaje:'IDEA: '+D.idea, es_comunidad:false, descuento:false,
+        precio_base:precio('Custom'), senia:senia(), estado:'Pendiente' });
+      if(!res || !res.ok) throw new Error('error');
+      track('envio', {value:precio('Custom'), currency:'ARS'});
+      S.enviado=true; render();
+    }catch(e){
+      // Respaldo: si la base no acepta una solicitud sin fecha, la idea sale por WhatsApp
+      var txt='Hola, equipo del Archivo. Soy '+D.nombre+' y quiero un Set Custom. Mi idea: '+D.idea;
+      var url='https://api.whatsapp.com/send?phone=541154705205&text='+encodeURIComponent(txt);
+      if(errEl) errEl.innerHTML='No pudimos guardar tu idea acá. <a href="'+url+'" target="_blank" rel="noopener" style="color:inherit">Mandánosla por WhatsApp con un toque →</a>';
+      if(btn){ btn.disabled=false; btn.innerHTML='Enviar mi idea <span class="arr">→</span>'; }
+    }
+    S.enviando=false;
+  }
+
+  // ── resumen lateral + barra móvil ──
+  function resumen(){
+    var set=function(id, v){ var el=$(id); if(!el) return; el.textContent = v || 'Sin elegir'; el.classList.toggle('empty', !v); };
+    var custom=S.tipo==='Custom';
+    set('gts-sum-tipo', S.tipo ? FMT[S.tipo].n : '');
+    set('gts-sum-fecha', custom ? 'A coordinar' : (S.fecha ? fechaLarga(S.fecha) : ''));
+    set('gts-sum-hora', custom ? 'A coordinar' : (S.hora!=null ? hhmm(S.hora)+' hs' : ''));
+    var t = S.tipo ? total() : null;
+    var tot=$('gts-sum-tot'); if(tot) tot.innerHTML = t ? ((custom?'<small style="font-size:12px;font-weight:400">desde </small>':'')+(t.dto?'<s style="font-size:13px;opacity:.45;font-weight:400">'+plata(t.base)+'</s> ':'')+plata(t.final)) : '—';
+    var n=$('gts-sum-n'); if(n) n.textContent = (S.grabo && S.nSets) ? 'Tu set N° '+(S.nSets+1) : '';
+    var foot=$('gts-sum-foot'); if(foot) foot.textContent = 'Seña de '+plata(senia())+' recién cuando confirmamos tu fecha. Se descuenta del total.';
+    var bi=$('gts-bar-i'), bb=$('gts-bar-btn');
+    if(bi){
+      if(!S.tocado) bi.innerHTML='<b>Desde '+plata(precio('Basico'))+'</b>Lun a dom · 11 a 19 hs';
+      else bi.innerHTML='<b>'+FMT[S.tipo].n+' · '+(custom?'desde ':'')+plata(t.final)+'</b>'+(custom?'A medida':(S.hora!=null?fechaCorta(S.fecha)+' · '+hhmm(S.hora)+' hs':'Falta elegir fecha'));
+    }
+    if(bb) bb.innerHTML = (S.tocado ? 'Seguir' : 'Reservar')+' <span class="arr">→</span>';
+    var desde=$('gts-desde'); if(desde) desde.textContent=plata(precio('Basico'));
+    var jp=$('gts-jam-precio'); if(jp) jp.textContent=plata(precio('Common'));
+  }
+
+  // ── contenido visual: caras, portadas, testimonios, jam ──
+  function fotoDe(nombre){
+    var urls=[];
+    try{
+      var dj=(_gtsHay('DJS'))?DJS.find(function(d){ return String(d.artist).toUpperCase()===String(nombre).toUpperCase(); }):null;
+      if(dj){ if(_gtsHay('_photoCache') && _photoCache[dj.i]) urls.push(_photoCache[dj.i]); if(_gtsHay('photos') && photos[dj.i]) urls.push(photos[dj.i]); if(dj.fotoPerfil) urls.push(dj.fotoPerfil); }
+      if(typeof imgURL==='function'){
+        if(typeof getPerfilFilename==='function') urls.push(imgURL('img/perfiles', getPerfilFilename(nombre)));
+        urls.push(imgURL('img/perfiles', nombre)); urls.push(imgURL('img/perfiles', String(nombre).toUpperCase()));
+      }
+    }catch(e){}
+    return urls.filter(function(u,i){ return u && urls.indexOf(u)===i; });
+  }
+  function imgConRespaldo(img, urls, alFallar){
+    var k=0; img.onerror=function(){ k++; if(k<urls.length) img.src=urls[k]; else if(alFallar) alFallar(); };
+    if(urls.length) img.src=urls[0]; else if(alFallar) alFallar();
+  }
+  function mezclar(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+  function renderCaras(){
+    var c=$('gts-faces'); if(!c || c._ok || !_gtsHay('DJS')) return;
+    var lista = DJS.filter(function(d){ return !d.hidden && d.session!=='B2B' && String(d.artist).indexOf(' B2B ')===-1 && (typeof perfilCompleto!=='function' || perfilCompleto(d)); });
+    var vistos={}; lista=lista.filter(function(d){ var k=String(d.artist).toUpperCase(); if(vistos[k]) return false; vistos[k]=1; return true; });
+    lista = mezclar(lista).slice(0, window.innerWidth<640 ? 16 : 30);
+    if(!lista.length) return;
+    c._ok=true; c.innerHTML='';
+    lista.forEach(function(d){
+      var b=document.createElement('button'); b.type='button'; b.className='gts-face'; b.title=d.artist; b.style.display='none';
+      var img=document.createElement('img'); img.alt=d.artist; img.loading='lazy';
+      img.onload=function(){ b.style.display=''; };
+      var s=document.createElement('span'); s.textContent=d.artist;
+      b.appendChild(img); b.appendChild(s);
+      b.addEventListener('click', function(){ if(typeof openFicha==='function') openFicha(d.i); });
+      c.appendChild(b);
+      imgConRespaldo(img, fotoDe(d.artist), function(){ b.remove(); });
+    });
+  }
+  function renderAsi(){
+    var c=$('gts-asi-g'); if(!c || c._ok || !_gtsHay('SM')) return;
+    var pub=SM.filter(function(s){ return s.estado==='Publicado' && ytId(s.url_yt); });
+    pub.sort(function(a,b){ return String(b.fecha||'').localeCompare(String(a.fecha||'')); });
+    var vistos={}, el=[];
+    pub.forEach(function(s){ var k=String(s.artista||'').toUpperCase(); if(!vistos[k] && el.length<5){ vistos[k]=1; el.push(s); } });
+    if(!el.length) return;
+    c._ok=true;
+    var cls=['a','b','c','d','e'];
+    c.innerHTML = el.map(function(s,i){
+      var id=ytId(s.url_yt);
+      return '<a class="gts-asi-i '+cls[i]+'" href="'+esc(s.url_yt)+'" target="_blank" rel="noopener">'
+        + '<img loading="lazy" alt="'+esc(s.artista)+' en el Archivo" src="https://img.youtube.com/vi/'+id+'/hqdefault.jpg">'
+        + '<span>'+esc(s.artista)+'<em>'+esc(s.id||'')+'</em></span></a>';
+    }).join('');
+  }
+  var TESTIMONIOS = [
+    {q:'Como ellos, nadie. La pasé increíble, el recibimiento fue excelente, te preparan todo lo que necesitás y hay mucho cariño detrás.', a:'Le Rosa Negra'},
+    {q:'La pasé increíble, estoy súper contenta de tener material para poder compartir y mostrar mi arte.', a:'Agus Olivo'},
+    {q:'En el Archivo la pasé genial. Prácticamente es mi casa: muy a gusto, muy cómodo.', a:'Pekko'}
+  ];
+  function renderTestimonios(){
+    var c=$('gts-tes'); if(!c || c._ok) return; c._ok=true;
+    c.innerHTML = TESTIMONIOS.map(function(t,i){
+      var sets=(_gtsHay('SM'))?SM.filter(function(s){ return String(s.artista||'').toUpperCase()===t.a.toUpperCase() && s.estado==='Publicado'; }):[];
+      var cod=sets.length?sets[0].id:'';
+      return '<figure class="gts-tes" style="margin:0"><q>'+esc(t.q)+'</q><figcaption class="gts-tes-who"><img id="gts-tes-img-'+i+'" alt="">'
+        + '<div><b>'+esc(t.a)+'</b><small>'+esc(cod?cod+' · Artista del Archivo':'Artista del Archivo')+'</small></div></figcaption></figure>';
+    }).join('');
+    TESTIMONIOS.forEach(function(t,i){ var img=$('gts-tes-img-'+i); if(img) imgConRespaldo(img, fotoDe(t.a), function(){ var x=document.createElement('i'); img.replaceWith(x); }); });
+  }
+  function renderJam(){
+    var nx=$('gts-jam-next');
+    if(nx){
+      var hoy=iso(new Date());
+      var prox=(_gtsHay('JAMS')?JAMS:[]).filter(function(j){ return j.dateISO && j.dateISO>=hoy && (j.upcoming || j.estado==='Proxima'); })
+        .sort(function(a,b){ return a.dateISO.localeCompare(b.dateISO); })[0];
+      nx.textContent = prox ? 'Próxima jornada · '+fechaLarga(prox.dateISO) : 'Próxima jornada · fecha a confirmar';
+    }
+    var c=$('gts-jam-faces'); if(!c || c._ok || !_gtsHay('SM')) return; c._ok=true;
+    var jam=SM.filter(function(s){ return s.tipo==='DJ_JAM' && s.estado==='Publicado'; });
+    jam.sort(function(a,b){ return String(b.fecha||'').localeCompare(String(a.fecha||'')); });
+    var vistos={}, n=0;
+    jam.forEach(function(s){
+      var nom=String(s.artista||''); if(n>=12 || vistos[nom.toUpperCase()] || /B2B/i.test(nom)) return;
+      var dj=(_gtsHay('DJS'))?DJS.find(function(d){ return String(d.artist).toUpperCase()===nom.toUpperCase(); }):null;
+      if(!dj || (typeof perfilCompleto==='function' && !perfilCompleto(dj))) return;
+      vistos[nom.toUpperCase()]=1; n++;
+      var img=document.createElement('img'); img.alt=nom; img.loading='lazy'; img.style.display='none';
+      img.onload=function(){ img.style.display=''; };
+      c.appendChild(img); imgConRespaldo(img, fotoDe(dj.artist), function(){ img.remove(); });
+    });
+  }
+  function renderHero(){
+    var m=$('gts-hero-media'); if(!m || m._ok) return; m._ok=true;
+    var vid=(_gtsHay('CFG') && CFG.gts_hero_video) ? String(CFG.gts_hero_video).trim() : '';
+    if(vid){ m.innerHTML='<video autoplay muted loop playsinline preload="metadata" src="'+esc(vid)+'"></video>'; return; }
+    if(!_gtsHay('SM')) return;
+    var pub=SM.filter(function(s){ return s.estado==='Publicado' && s.tipo==='COMMON' && ytId(s.url_yt); });
+    pub.sort(function(a,b){ return String(b.fecha||'').localeCompare(String(a.fecha||'')); });
+    if(!pub.length) return;
+    var id=ytId(pub[0].url_yt), img=document.createElement('img'); img.alt=''; 
+    imgConRespaldo(img, ['https://img.youtube.com/vi/'+id+'/maxresdefault.jpg','https://img.youtube.com/vi/'+id+'/hqdefault.jpg'], function(){ img.remove(); });
+    m.appendChild(img);
+  }
+  function renderContador(){
+    var n = (typeof getTOTAL==='function') ? getTOTAL() : 186;
+    var a=$('gts-count'), b=$('gts-count-txt'); if(a) a.textContent=n; if(b) b.textContent=n;
+  }
+
+  // ── DJ JAM: postulación ──
+  async function sendJam(){
+    var n=$('gts-jam-n'), e=$('gts-jam-e'), ok=$('gts-jam-ok'), err=$('gts-jam-err');
+    var nom=(n&&n.value||'').trim(), mail=(e&&e.value||'').trim();
+    if(!nom){ err.textContent='Contanos tu nombre artístico.'; n.focus(); return; }
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)){ err.textContent='Revisá el email: parece incompleto.'; e.focus(); return; }
+    err.textContent='Enviando…';
+    try{
+      var r = await sb.from('postulaciones_jam').insert([{ nombre_artistico:nom, email:mail, acepta_novedades:!!(ok&&ok.checked), origen:'graba-tu-set' }]);
+      if(r && r.error) throw r.error;
+      track('postulacion_jam');
+      $('gts-jam-form').innerHTML='<div class="gts-hi" style="margin:0">Listo, '+esc(nom)+'. Ya estás en la lista: te escribimos cuando haya lugar en una jornada.</div>';
+    }catch(x){
+      err.innerHTML='No pudimos guardar tu postulación. <a href="https://api.whatsapp.com/send?phone=541154705205&text='+encodeURIComponent('Hola, equipo del Archivo. Soy '+nom+' y quiero sumarme a una DJ JAM.')+'" target="_blank" rel="noopener" style="color:inherit">Escribinos por WhatsApp →</a>';
+    }
+  }
+
+  // ── navegación y barra fija ──
+  function goBook(origen){
+    if(!S.tipo) S.tipo='Common';
+    render();
+    var w=$('gts-wiz'); if(w) w.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+  function barAction(){ goBook('barra'); }
+  function openJam(){ var d=$('gts-jam'); if(d){ d.open=true; d.scrollIntoView({behavior:'smooth',block:'start'}); } }
+  function observar(){
+    if(!('IntersectionObserver' in window)) return;
+    var vis={hero:true, wiz:false};
+    var actualizar=function(){
+      var mostrar = !vis.hero && !vis.wiz && !S.enviado;
+      var bar=$('gts-bar'), fab=$('gts-fab');
+      if(bar) bar.classList.toggle('show', mostrar);
+      if(fab) fab.classList.toggle('show', mostrar);
+    };
+    var hero=document.querySelector('.gts-hero'), wiz=$('gts-wiz'), book=$('gts-book');
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(e.target===hero) vis.hero=e.isIntersecting;
+        if(e.target===wiz) vis.wiz=e.isIntersecting && e.intersectionRatio>0.25;
+        if(e.target===book && e.isIntersecting) track('vio_reserva');
+      });
+      actualizar();
+    }, {threshold:[0,0.25]});
+    if(hero) io.observe(hero); if(wiz) io.observe(wiz); if(book) io.observe(book);
+    document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='hidden'){ guardarCampos(); guardarIncompleta(); } });
+  }
+
+  // ── arranque ──
+  async function init(){
+    var hoy=new Date();
+    if(!iniciado){
+      iniciado=true;
+      S.calY=hoy.getFullYear(); S.calM=hoy.getMonth();
+      // La barra y el botón fijos viven en <body> para que "position:fixed" funcione en cualquier contenedor
+      ['gts-bar','gts-fab'].forEach(function(id){ var el=$(id); if(el && el.parentNode!==document.body) document.body.appendChild(el); });
+      observar();
+    }
+    initPixel(); setTimeout(initPixel, 3000);
+    render(); renderContador();
+    renderHero(); renderCaras(); renderAsi(); renderTestimonios(); renderJam();
+    await cargarOcupacion();
+    // Si el mes actual ya no tiene días libres, abrir directo el siguiente
+    if(S.fecha==null){
+      var dias=new Date(S.calY,S.calM+1,0).getDate(), hay=false;
+      for(var d=1; d<=dias && !hay; d++){ if(estadoDia(S.calY+'-'+pad(S.calM+1)+'-'+pad(d))==='ok') hay=true; }
+      if(!hay){ S.calM++; if(S.calM>11){S.calM=0;S.calY++;} }
+    }
+    render();
+    // Links directos desde Instagram: ?set=common | basico | b2b | custom
+    try{
+      var q=new URLSearchParams(location.search).get('set');
+      var mapa={basico:'Basico', common:'Common', b2b:'B2B', custom:'Custom'};
+      if(q && mapa[q.toLowerCase()] && !S._deep){ S._deep=true; elegirTipo(mapa[q.toLowerCase()], true); }
+    }catch(e){}
+  }
+
+  // Pruebas: expone el motor de horarios sin tocar el DOM
+  return { init:init, goBook:goBook, barAction:barAction, openJam:openJam, sendJam:sendJam,
+           _test:{ S:S, horarios:horarios, libre:libre, intervalo:intervalo, estadoDia:estadoDia, total:total, FMT:FMT } };
+})();
+
+
+// ═══════════════════════════════════════════════════════════════
+// PANEL · EMBUDO — métricas de Graba tu Set, postulaciones a DJ JAM
+// y solicitudes que quedaron sin terminar. Solo lectura (equipo logueado).
+// ═══════════════════════════════════════════════════════════════
+async function renderAdminEmbudo(c){
+  if(!c) return;
+  var esc=function(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
+  var fmt=function(d){ try{ var x=new Date(d); return x.toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit'})+' '+x.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'}); }catch(e){ return ''; } };
+  c.innerHTML='<div style="padding:20px;font-size:11px;letter-spacing:.14em;color:var(--wd)">CARGANDO EMBUDO…</div>';
+  var desde=new Date(); desde.setDate(desde.getDate()-30);
+  var ev=[], jam=[], inc=[], res=[], falta=[];
+  try{ var r1=await sb.from('embudo_eventos').select('evento,sesion,creado').gte('creado',desde.toISOString()).limit(20000); if(r1.error) throw r1.error; ev=r1.data||[]; }catch(e){ falta.push('embudo_eventos'); }
+  try{ var r2=await sb.from('postulaciones_jam').select('*').order('creado',{ascending:false}).limit(500); if(r2.error) throw r2.error; jam=r2.data||[]; }catch(e){ falta.push('postulaciones_jam'); }
+  try{ var r3=await sb.from('solicitudes_incompletas').select('*').order('creado',{ascending:false}).limit(2000); if(r3.error) throw r3.error; inc=r3.data||[]; }catch(e){ falta.push('solicitudes_incompletas'); }
+  try{ var r4=await sb.from('reservas').select('email').limit(5000); res=(r4&&r4.data)||[]; }catch(e){}
+
+  // Embudo: sesiones únicas por paso
+  var pasos=[['vio_reserva','Vio la reserva'],['eligio_sesion','Eligió sesión'],['eligio_fecha','Eligió fecha y hora'],['envio','Envió la solicitud']];
+  var cnt={}; pasos.forEach(function(p){ var s={}; ev.forEach(function(e){ if(e.evento===p[0]) s[e.sesion]=1; }); cnt[p[0]]=Object.keys(s).length; });
+  var base=cnt.vio_reserva||0;
+  var barras=pasos.map(function(p){
+    var n=cnt[p[0]]||0, pct=base?Math.round(n*100/base):0;
+    return '<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-size:11px;letter-spacing:.1em;margin-bottom:5px"><span>'+p[1].toUpperCase()+'</span><span>'+n+(base?' · '+pct+'%':'')+'</span></div>'
+      +'<div style="height:8px;background:rgba(255,255,255,.06)"><div style="height:100%;width:'+pct+'%;background:#1b00e6"></div></div></div>';
+  }).join('');
+
+  // Incompletas: último registro por email, sin las que terminaron o ya tienen reserva
+  var conReserva={}; res.forEach(function(r){ if(r.email) conReserva[String(r.email).toLowerCase()]=1; });
+  var porMail={}, completos={};
+  inc.forEach(function(r){ var k=String(r.email||'').toLowerCase(); if(!k) return; if(r.completada) completos[k]=1; if(!porMail[k]) porMail[k]=r; });
+  var pend=Object.keys(porMail).filter(function(k){ return !completos[k] && !conReserva[k]; }).map(function(k){ return porMail[k]; });
+
+  var th='style="text-align:left;padding:8px 10px;font-size:9.5px;letter-spacing:.14em;color:var(--wd);border-bottom:1px solid rgba(255,255,255,.1)"';
+  var td='style="padding:8px 10px;font-size:11.5px;border-bottom:1px solid rgba(255,255,255,.05);vertical-align:top"';
+  var box='style="border:1px solid rgba(255,255,255,.1);padding:18px;margin-bottom:18px;overflow-x:auto"';
+  var h='<div style="padding:4px 0">';
+  if(falta.length){
+    h+='<div style="border:1px solid #f8502a;padding:14px;margin-bottom:18px;font-size:12px;line-height:1.7">Faltan crear estas tablas en Supabase: <b>'+falta.join(', ')+'</b>. Seguí el instructivo "Tablas de Graba tu Set" y volvé a abrir esta pestaña.</div>';
+  }
+  h+='<div '+box+'><div style="font-size:10px;letter-spacing:.2em;color:var(--wd);margin-bottom:14px">EMBUDO · ÚLTIMOS 30 DÍAS · VISITAS ÚNICAS</div>'+barras+'</div>';
+
+  h+='<div '+box+'><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap"><div style="font-size:10px;letter-spacing:.2em;color:var(--wd)">POSTULACIONES A DJ JAM · '+jam.length+'</div>'
+    +(jam.length?'<button class="tdbtn" id="emb-copy-jam">Copiar emails</button>':'')+'</div>';
+  h+= jam.length ? '<table style="width:100%;border-collapse:collapse"><tr><th '+th+'>ARTISTA</th><th '+th+'>EMAIL</th><th '+th+'>NOVEDADES</th><th '+th+'>CUÁNDO</th></tr>'
+    + jam.map(function(r){ return '<tr><td '+td+'>'+esc(r.nombre_artistico)+'</td><td '+td+'>'+esc(r.email)+'</td><td '+td+'>'+(r.acepta_novedades?'Sí':'No')+'</td><td '+td+'>'+fmt(r.creado)+'</td></tr>'; }).join('')+'</table>'
+    : '<div style="font-size:12px;color:var(--wd)">Todavía no hay postulaciones.</div>';
+  h+='</div>';
+
+  h+='<div '+box+'><div style="font-size:10px;letter-spacing:.2em;color:var(--wd);margin-bottom:6px">EMPEZARON Y NO TERMINARON · '+pend.length+'</div>'
+    +'<div style="font-size:11.5px;color:var(--wd);margin-bottom:12px;line-height:1.6">Dejaron su email pero no enviaron la solicitud. Un mensaje a tiempo puede recuperar la reserva.</div>';
+  h+= pend.length ? '<table style="width:100%;border-collapse:collapse"><tr><th '+th+'>ARTISTA</th><th '+th+'>CONTACTO</th><th '+th+'>QUERÍA</th><th '+th+'>LLEGÓ AL PASO</th><th '+th+'>CUÁNDO</th></tr>'
+    + pend.map(function(r){
+        var wa=String(r.whatsapp||'').replace(/\D/g,'');
+        return '<tr><td '+td+'>'+esc(r.nombre_artistico||'—')+'</td><td '+td+'>'+esc(r.email)+(wa?'<br><a href="https://wa.me/'+wa+'" target="_blank" rel="noopener" style="color:#6f63ff">WhatsApp '+esc(r.whatsapp)+'</a>':'')+(r.instagram?'<br>'+esc(r.instagram):'')+'</td>'
+          +'<td '+td+'>'+esc(r.tipo||'—')+(r.fecha?'<br>'+esc(r.fecha)+' '+esc(r.horario||''):'')+'</td><td '+td+'>'+esc(r.paso||'')+' de 3</td><td '+td+'>'+fmt(r.creado)+'</td></tr>';
+      }).join('')+'</table>'
+    : '<div style="font-size:12px;color:var(--wd)">Nadie quedó a mitad de camino.</div>';
+  h+='</div>';
+
+  h+='<div style="font-size:11px;color:var(--wd);line-height:1.7">Píxel de Meta: '+((_gtsHay('CFG')&&CFG.meta_pixel_id)?'activo ('+esc(CFG.meta_pixel_id)+')':'sin configurar')+'.</div></div>';
+  c.innerHTML=h;
+  var cp=document.getElementById('emb-copy-jam');
+  if(cp) cp.addEventListener('click', function(){
+    var t=jam.map(function(r){ return r.email; }).join(', ');
+    try{ navigator.clipboard.writeText(t); cp.textContent='Copiados ✓'; }catch(e){ prompt('Copiá los emails:', t); }
+  });
+}
 
 </script>
 </body>
