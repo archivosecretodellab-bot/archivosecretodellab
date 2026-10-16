@@ -433,17 +433,17 @@ background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0
    siempre visible y clickeable (el nav no puede subir por z-index porque
    #shell crea su propio contexto de apilamiento). El top exacto lo ajusta
    positionFichaBelowNav() por JS (desktop/mobile difieren). */
-#ficha{position:fixed;top:calc(var(--TH) + var(--NH));left:0;right:0;bottom:var(--TK);background:var(--k);z-index:750;display:none;flex-direction:column;opacity:0;transition:opacity .28s}
+#ficha{position:fixed;top:0;left:0;right:0;bottom:var(--TK);background:var(--k);z-index:7600;display:none;flex-direction:column;opacity:0;transition:opacity .28s}
 #ficha.on{display:flex}#ficha.show{opacity:1}
 .ftop{display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:var(--TH);border-bottom:1px solid var(--wf);flex-shrink:0}
 .back{display:flex;align-items:center;gap:9px;font-size:10px;letter-spacing:.22em;color:var(--wd);text-transform:uppercase;transition:color .2s;cursor:pointer}
 .back:hover{color:var(--w)}
 .fref{font-size:10px;letter-spacing:.22em;color:var(--wm);text-transform:uppercase}
 .fbody{flex:1;overflow-y:auto;display:grid;grid-template-columns:310px 1fr}
-.fleft{background:var(--b);padding:38px 34px;display:flex;flex-direction:column;position:sticky;top:0;height:calc(100vh - var(--TH) - var(--TH) - var(--NH) - var(--TK));overflow-y:auto}
+.fleft{background:var(--b);padding:38px 34px;display:flex;flex-direction:column;position:sticky;top:0;height:calc(100vh - var(--TH) - var(--TK));overflow-y:auto}
 .fleft.soon-l{background:var(--soon);border-right:1px solid var(--soon-br)}
 .pzone{width:100%;aspect-ratio:4/5;background:rgba(0,0,0,.3);margin-bottom:22px;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.12);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.pzone img{width:100%;height:100%;object-fit:cover;object-position:center top;position:absolute;inset:0}
+.pzone img{width:100%;height:100%;object-fit:cover;object-position:center 30%;position:absolute;inset:0}
 .pph{display:flex;flex-direction:column;align-items:center;gap:7px;font-size:9px;letter-spacing:.22em;color:rgba(255,255,255,.3);text-transform:uppercase;text-align:center}
 .pov{position:absolute;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;font-size:9px;letter-spacing:.28em;color:var(--w);text-transform:uppercase}
 .pzone:hover .pov{opacity:1}
@@ -456,13 +456,15 @@ input[type=file]{display:none}
 .redir:hover{background:rgba(27,0,230,.22)}
 .redir.soon-r{color:var(--el);border-color:var(--soon-br)}
 
-.fright{padding:44px 52px;display:flex;flex-direction:column;gap:0;overflow-y:auto}
+.fright{padding:clamp(32px,5vw,64px) clamp(24px,5vw,72px);display:flex;flex-direction:column;gap:0;overflow-y:auto;max-width:1040px}
 .fs{margin-bottom:36px}
 .fs:last-child{margin-bottom:0}
 .fsl{font-size:9px;letter-spacing:.34em;color:var(--b);text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:10px}
 .fsl::after{content:'';flex:1;height:1px;background:var(--wf)}
 .fsl.soon-lbl{color:var(--el)}
 .fsv{font-size:14px;letter-spacing:.04em;color:var(--w);line-height:1.9;font-weight:300}
+.fsv-larga{max-width:68ch;font-size:15px}
+.fsv-corta{font-family:'Space Mono',monospace;font-weight:700;font-size:clamp(20px,2.3vw,32px);line-height:1.3;letter-spacing:-.01em;max-width:30ch;text-wrap:balance}
 .fsv.mono{font-size:12px}
 .fsv a{color:var(--b)}.fsv a:hover{text-decoration:underline}
 .f2{display:grid;grid-template-columns:1fr 1fr;gap:20px 36px}
@@ -2258,7 +2260,63 @@ html, body{ overflow-x:clip; }
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
 <style>
-/* ═══ FOOTER (Grabá tu set y Alquiler de equipos) ═══ */
+
+/* ═══ FICHA DE DJ (expediente) ═══ */
+#ficha .ftop{gap:16px}
+#ficha .fx-brand{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.35)}
+#ficha .fx-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+#ficha .fx-wrap{max-width:1200px;margin:0 auto;padding:clamp(28px,5vw,64px) clamp(16px,4vw,48px) 0}
+#ficha .fx-hd{display:grid;grid-template-columns:5fr 7fr;gap:clamp(28px,5vw,72px);align-items:start}
+#ficha .fx-ph .pzone{margin:0;border:0;background:#111;aspect-ratio:4/5;cursor:default}
+#ficha .fx-ph .pzone img{object-position:center 30%}
+#ficha .fx-ph .redir{margin-top:14px}
+#ficha .fx-k{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:#5533ff}
+#ficha .fx-nm{font-family:'Space Mono',monospace;font-weight:700;font-size:clamp(40px,6vw,80px);line-height:.92;letter-spacing:-.04em;text-transform:uppercase;margin:18px 0 14px;color:#fff;word-break:break-word}
+#ficha .fx-alias{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.4);margin:-6px 0 12px}
+#ficha .fx-gn{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.55);line-height:1.8}
+#ficha .fx-bio{margin:34px 0 38px;font-size:16px;line-height:1.75;color:rgba(255,255,255,.86);max-width:46ch;font-weight:400}
+#ficha .fx-led{border-top:1px solid rgba(255,255,255,.12);margin:0}
+#ficha .fx-led > div{display:flex;justify-content:space-between;align-items:center;gap:24px;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.12);font-size:13px}
+#ficha .fx-led dt{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.38);flex-shrink:0}
+#ficha .fx-led dd{margin:0;text-align:right;color:#fff}
+#ficha .fx-redes > div{justify-content:flex-end;margin:0!important;gap:4px 16px}
+#ficha .fx-redes .slink,#ficha .fx-redes > div > span{display:inline-flex;align-items:center;gap:7px;padding:0!important;margin:0!important;background:none!important;border:0!important;color:#fff!important;font-size:13px!important;letter-spacing:.02em!important;text-decoration:none;border-bottom:1px solid #3a24ff!important}
+#ficha .fx-redes svg{width:14px;height:14px;opacity:.7}
+#ficha .fx-sec{margin-top:clamp(56px,7vw,96px)}
+#ficha .fx-sh{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid rgba(255,255,255,.12);padding-bottom:14px;margin-bottom:24px}
+#ficha .fx-sh b{font-family:'Space Mono',monospace;font-size:13px;letter-spacing:.2em;text-transform:uppercase}
+#ficha .fx-sh span{font-family:'Space Mono',monospace;font-size:13px;color:rgba(255,255,255,.5)}
+#ficha .fx-sets{display:grid;grid-template-columns:repeat(2,1fr);gap:28px 24px}
+#ficha .fx-set{display:block;color:#fff;text-decoration:none}
+#ficha .fx-set-im{position:relative;aspect-ratio:16/9;overflow:hidden;background:#1b00e6}
+#ficha .fx-set-im img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+#ficha a.fx-set:hover .fx-set-im img{transform:scale(1.03)}
+#ficha .fx-play{position:absolute;left:16px;bottom:16px;display:flex;align-items:center;gap:10px;background:#1b00e6;padding:10px 14px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;transition:background .2s}
+#ficha a.fx-set:hover .fx-play{background:#3a24ff}
+#ficha .fx-play i{width:0;height:0;border-left:9px solid #fff;border-top:6px solid transparent;border-bottom:6px solid transparent}
+#ficha .fx-soon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55);font-size:11px;letter-spacing:.24em;text-transform:uppercase}
+#ficha .fx-set-m{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding-top:12px}
+#ficha .fx-set-m b{font-family:'Space Mono',monospace;font-size:14px;letter-spacing:.04em}
+#ficha .fx-set-m span{color:rgba(255,255,255,.55);letter-spacing:.1em;text-transform:uppercase;font-size:10.5px;text-align:right}
+#ficha .fx-vacio{font-size:13px;color:rgba(255,255,255,.5)}
+#ficha .fx-cta{margin-top:clamp(64px,8vw,112px);border-top:1px solid rgba(255,255,255,.12);padding:clamp(40px,6vw,72px) 0 clamp(64px,8vw,104px);display:flex;justify-content:space-between;align-items:flex-end;gap:28px;flex-wrap:wrap}
+#ficha .fx-cta h3{font-family:'Space Mono',monospace;font-weight:700;font-size:clamp(26px,3.4vw,44px);line-height:1.04;letter-spacing:-.03em;margin:12px 0 0;max-width:18ch;color:#fff}
+#ficha .fx-cta p{margin:14px 0 0;font-size:14px;color:rgba(255,255,255,.55);max-width:44ch;line-height:1.7}
+#ficha .fx-btn{display:inline-flex;align-items:center;gap:12px;background:#1b00e6;color:#fff;border:0;padding:17px 26px;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;cursor:pointer;transition:background .2s}
+#ficha .fx-btn:hover{background:#3a24ff}
+/* Mientras la ficha está abierta, su footer trae la cinta: se oculta la cinta fija para no duplicarla */
+body:has(#ficha.on) #ticker{display:none!important}
+body:has(#ficha.on) #ficha{bottom:0!important}
+@media (max-width:700px){
+  #ficha .fx-brand{display:none}
+  #ficha .fx-hd{grid-template-columns:1fr}
+  #ficha .fx-nm{font-size:44px}
+  #ficha .fx-sets{grid-template-columns:1fr}
+  #ficha .fx-set-m{flex-direction:column;gap:4px}
+  #ficha .fx-set-m span{text-align:left}
+  #ficha .fx-led > div{align-items:flex-start}
+}
+/* ═══ FOOTER (Grabá tu set, Alquiler de equipos y fichas) ═══ */
 .asdl-foot{position:relative;z-index:2;background:#060606;border-top:1px solid rgba(27,0,230,.38);color:#fff;font-family:'IBM Plex Mono',monospace}
 .asdl-foot-in{max-width:1120px;margin:0 auto;padding:clamp(48px,7vw,80px) clamp(18px,4vw,40px) clamp(40px,6vw,64px);display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:clamp(24px,4vw,48px)}
 .asdl-foot-brand b{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase}
@@ -2628,6 +2686,9 @@ html, body{ overflow-x:clip; }
       .gts *{box-sizing:border-box}
       .gts-wrap{max-width:1120px;margin:0 auto;padding:0 clamp(18px,4vw,40px)}
       .gts-sec{padding:clamp(64px,8vw,96px) 0 0}
+      .gts-top{padding-top:clamp(40px,6vw,72px)}
+      .gts-wall-meta{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:16px;font-size:12px;letter-spacing:.08em;color:var(--g-w3)}
+      .gts-wall-meta b{color:var(--g-w);font-weight:400}
       .gts-eyebrow{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--g-b2);margin-bottom:14px}
       .gts-h1{font-family:'Space Mono',monospace;font-weight:700;font-size:clamp(44px,9vw,92px);line-height:.95;letter-spacing:-.04em;margin:0}
       .gts-h2{font-family:'Space Mono',monospace;font-weight:700;font-size:clamp(30px,5vw,48px);line-height:1.02;letter-spacing:-.03em;margin:0 0 14px}
@@ -2660,14 +2721,14 @@ html, body{ overflow-x:clip; }
       .gts-wall-faces{display:grid;grid-template-columns:repeat(10,1fr);gap:6px}
       .gts-face{position:relative;aspect-ratio:1;overflow:hidden;background:#0d0d14;cursor:pointer;border:none;padding:0;color:inherit;font:inherit;opacity:0;transition:opacity .5s}
       .gts-face.ok{opacity:1}
-      .gts-face img{width:100%;height:100%;object-fit:cover;object-position:center top;transition:transform .4s,filter .4s;filter:brightness(1.08) saturate(1.05)}
+      .gts-face img{width:100%;height:100%;object-fit:cover;object-position:center 30%;transition:transform .4s,filter .4s;filter:brightness(1.08) saturate(1.05)}
       .gts-face:hover img{transform:scale(1.05);filter:brightness(1.15) saturate(1.1)}
       .gts-face span{position:absolute;left:0;right:0;bottom:0;padding:16px 6px 5px;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;background:linear-gradient(transparent,rgba(0,0,0,.85));text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-      .gts-genres{margin-top:22px;font-size:12px;line-height:1.9;color:var(--g-w2)}
+      .gts-genres{margin-top:40px;font-size:12px;line-height:1.9;color:var(--g-w2)}
       .gts-genres b{color:var(--g-w)}
 
       /* RESERVA */
-      .gts-book{background:radial-gradient(ellipse at 50% 0%,rgba(27,0,230,.14),transparent 60%);border-top:1px solid var(--g-line)}
+      .gts-book{background:radial-gradient(ellipse at 50% 0%,rgba(27,0,230,.14),transparent 60%)}
       .gts-fmts{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:34px 0 46px}
       .gts-fmt{position:relative;background:var(--g-card);border:1px solid var(--g-line);padding:22px 18px 18px;display:flex;flex-direction:column;gap:10px;cursor:pointer;text-align:left;color:inherit;font:inherit;transition:border-color .2s,transform .2s}
       .gts-fmt:hover{border-color:rgba(43,26,255,.6)}
@@ -2761,9 +2822,11 @@ html, body{ overflow-x:clip; }
       .gts-sum-foot{padding:0 16px 16px;font-size:11px;line-height:1.6;color:var(--g-w3)}
       .gts-help{margin-top:12px;display:flex;flex-direction:column;gap:8px}
       .gts-wa{display:flex;align-items:center;justify-content:center;gap:9px;border:1px solid var(--g-line);padding:13px;color:var(--g-w);font-size:11px;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;transition:border-color .2s}
-      .gts-wa:hover{border-color:#25D366}
-      .gts-jamlink{font-size:12px;line-height:1.6;color:var(--g-w2);text-align:center}
-      .gts-jamlink button{background:none;border:none;color:var(--g-w);font:inherit;text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:0}
+      .gts-wa{background:#25D366;border-color:#25D366;color:#04210f;font-weight:700}
+      .gts-wa:hover{background:#1fb457;border-color:#1fb457}
+      .gts-jamlink{margin-top:4px;padding:18px 18px 16px;border:1px solid var(--g-line);font-size:12px;line-height:1.7;color:var(--g-w2);text-align:left}
+      .gts-jamlink button{display:block;margin-top:10px;background:none;border:none;color:var(--g-w);font:inherit;font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:11px;cursor:pointer;padding:0}
+      .gts-jamlink button:hover{color:var(--g-b2)}
 
       .gts-done{padding:clamp(28px,4vw,44px)}
       .gts-done-k{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--g-ok);margin-bottom:12px}
@@ -2822,12 +2885,11 @@ html, body{ overflow-x:clip; }
 
       /* TESTIMONIOS */
       .gts-tes-g{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(16px,3vw,32px);margin-top:30px}
-      .gts-tes{display:flex;flex-direction:column;background:var(--g-card);border:1px solid var(--g-line);transition:border-color .3s,transform .3s}
-      .gts-tes:hover{border-color:rgba(43,26,255,.6);transform:translateY(-3px)}
-      .gts-tes-ph{display:block;width:100%;aspect-ratio:1/1;object-fit:cover;object-position:center top;background:#14142a}
-      .gts-tes-tx{display:flex;flex-direction:column;flex:1;padding:22px 22px 20px}
-      .gts-tes q{display:block;flex:1;font-size:14px;line-height:1.75;color:var(--g-w);quotes:'«' '»'}
-      .gts-tes-who{display:flex;align-items:center;gap:12px;margin-top:18px;padding-top:14px;border-top:1px solid var(--g-line)}
+      .gts-tes{display:grid;grid-template-columns:56px 1fr;grid-template-rows:1fr auto;gap:20px 14px;align-items:end}
+      .gts-tes-tx{display:contents}
+      .gts-tes q{grid-column:1 / -1;grid-row:1;align-self:start;display:block;font-size:15px;line-height:1.7;color:var(--g-w);quotes:'«' '»';padding-left:16px;border-left:2px solid var(--g-b2)}
+      .gts-tes-ph{grid-column:1;grid-row:2;display:block;width:56px;height:56px;object-fit:cover;object-position:center 30%;background:#14142a}
+      .gts-tes-who{grid-column:2;grid-row:2;display:flex;align-items:center}
       .gts-tes-who b{display:block;font-size:12px;letter-spacing:.12em;text-transform:uppercase}
       .gts-tes-who small{font-size:10.5px;color:var(--g-w3);letter-spacing:.1em}
 
@@ -2868,6 +2930,7 @@ html, body{ overflow-x:clip; }
       .gts-fab.show{opacity:1;pointer-events:auto;transform:none}
       .gts-bar{display:none}
       body[data-pg="agenda"] #ticker,body[data-pg="renta"] #ticker{display:none!important}
+      body:has(#ficha.on) #gts-bar,body:has(#ficha.on) #gts-fab{display:none!important}
       body[data-pg="agenda"] #shell,body[data-pg="renta"] #shell,body[data-pg="agenda"] #ficha,body[data-pg="renta"] #ficha{bottom:0!important}
       body:not([data-pg="agenda"]) #gts-fab,body:not([data-pg="agenda"]) #gts-bar{display:none!important}
 
@@ -2884,9 +2947,7 @@ html, body{ overflow-x:clip; }
         body[data-pg="agenda"] .asdl-foot{padding-bottom:84px}
         .gts-inc-i{padding:22px 16px}
         .gts-inc-i svg{width:32px;height:32px;margin-bottom:14px}
-        .gts-tes{flex-direction:row}
-        .gts-tes-ph{width:96px;height:96px;flex-shrink:0;aspect-ratio:auto}
-        .gts-tes-tx{padding:16px}
+
         .gts-fab{display:none}
         .gts-wall-top{grid-template-columns:1fr}
         .gts-wall-faces{grid-template-columns:repeat(4,1fr);gap:4px}
@@ -2909,24 +2970,8 @@ html, body{ overflow-x:clip; }
       <div class="gts">
 
         <!-- 01 · ENCABEZADO -->
-        <section class="gts-hero" aria-label="Grabá tu set">
-          <div class="gts-hero-media" id="gts-hero-media"></div>
-          <div class="gts-wrap gts-hero-in">
-            <div class="gts-eyebrow">Archivo Secreto del Lab / Grabá tu set</div>
-            <h1 class="gts-h1">Grabá tu set<br>en el Archivo.</h1>
-            <p class="gts-p" style="margin-top:20px">Producimos tu set, lo editamos y lo publicamos. Te llevás video, fotos, clips y audio masterizado, y pasás a ser parte de un registro real de la escena.</p>
-            <div class="gts-hero-meta">
-              <span>Desde <b id="gts-desde">$45.000</b></span><span>Lun a dom · <b>11 a 19 hs</b></span><span>San Telmo, CABA</span>
-            </div>
-            <div class="gts-hero-ctas">
-              <button class="gts-btn" type="button" onclick="GTS.goBook('hero')">Ver fechas disponibles <span class="arr">→</span></button>
-              <button class="gts-link" type="button" onclick="document.getElementById('gts-asi').scrollIntoView({behavior:'smooth'})">Mirá cómo se vive ↓</button>
-            </div>
-          </div>
-        </section>
-
-        <!-- 02 · MURO DE CARAS -->
-        <section class="gts-sec" aria-label="Artistas del Archivo">
+        <!-- 01 · MURO DE CARAS (la página arranca acá) -->
+        <section class="gts-sec gts-top" id="gts-top" aria-label="Artistas del Archivo">
           <div class="gts-wrap">
             <div class="gts-wall-top">
               <div class="gts-wall-n" id="gts-count" aria-hidden="true">+200</div>
@@ -2934,6 +2979,7 @@ html, body{ overflow-x:clip; }
                 <div class="gts-eyebrow">Ellos ya están en el Archivo</div>
                 <h2 class="gts-h2">Más de 200 sets registrados.</h2>
                 <p class="gts-p">Cada cara es un set real, grabado en esta cabina. Tocá cualquiera para ver su registro.</p>
+                <div class="gts-wall-meta"><span>Video, fotos, clips y audio masterizado</span><span>Desde <b id="gts-desde">$45.000</b></span><span>Lun a dom · <b>11 a 19 hs</b></span><span>San Telmo, CABA</span></div>
               </div>
             </div>
             <div class="gts-wall-faces" id="gts-faces"></div>
@@ -2944,8 +2990,8 @@ html, body{ overflow-x:clip; }
         <!-- 03 · RESERVA -->
         <section class="gts-sec gts-book" id="gts-book" aria-label="Reservá tu sesión">
           <div class="gts-wrap">
-            <div class="gts-eyebrow">Tu sesión</div>
-            <h2 class="gts-h2">Reservá tu sesión.</h2>
+            <div class="gts-eyebrow">Elegí la que mejor se adapta a vos</div>
+            <h2 class="gts-h2">Reservá tu sesión hoy.</h2>
             <p class="gts-p">Elegí cómo querés grabar y cuándo. Nada queda confirmado hasta que el equipo te escriba.</p>
 
             <div class="gts-fmts" id="gts-fmts"></div>
@@ -2971,7 +3017,7 @@ html, body{ overflow-x:clip; }
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.26-.46-2.39-1.47-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.61-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.07 2.88 1.21 3.07.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.23 1.36.2 1.87.12.57-.09 1.76-.72 2.01-1.41.25-.69.25-1.29.17-1.41-.07-.12-.27-.2-.57-.35M12.05 21.79h-.01a9.87 9.87 0 01-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 01-1.51-5.26c0-5.45 4.44-9.88 9.89-9.88 2.64 0 5.12 1.03 6.99 2.9a9.82 9.82 0 012.89 6.99c0 5.45-4.44 9.88-9.88 9.88m8.41-18.3A11.82 11.82 0 0012.05 0C5.5 0 .16 5.34.16 11.89c0 2.1.55 4.14 1.59 5.95L.06 24l6.3-1.65a11.88 11.88 0 005.68 1.45h.01c6.55 0 11.89-5.34 11.89-11.89a11.82 11.82 0 00-3.48-8.41z"/></svg>
                     ¿Preferís hablar primero?
                   </a>
-                  <div class="gts-jamlink">¿Preferís grabar en una jornada con otros DJs? <button type="button" onclick="GTS.openJam()">Mirá la DJ JAM</button></div>
+                  <div class="gts-jamlink">¿Preferís grabar en una jornada con otros DJs? <button type="button" onclick="GTS.openJam()">Descubrí la DJ JAM →</button></div>
                 </div>
               </aside>
             </div>
@@ -3003,7 +3049,7 @@ html, body{ overflow-x:clip; }
           <div class="gts-wrap">
             <div class="gts-eyebrow">La experiencia</div>
             <h2 class="gts-h2">Así se vive una sesión.</h2>
-            <p class="gts-p">De la cabina al registro: así es grabar en el Archivo. Tocá una foto para verla grande.</p>
+            <p class="gts-p">De la cabina al registro. Tocá una foto para verla grande.</p>
             <div class="gts-exp" id="gts-exp"><div class="gts-exp-track" id="gts-exp-track"></div></div>
             <div class="gts-asi-cta">
               <div class="gts-h3" style="margin:0">¿Querés el tuyo?</div>
@@ -3173,11 +3219,26 @@ html, body{ overflow-x:clip; }
 <div id="ficha">
   <div class="ftop">
     <div class="back" id="back-btn">← Volver</div>
+    <div class="fx-brand">Archivo Secreto del Lab</div>
     <div class="fref" id="f-ref">SET_000</div>
   </div>
-  <div class="fbody">
-    <div class="fleft" id="f-left"></div>
-    <div class="fright" id="f-right"></div>
+  <div class="fx-scroll" id="fx-scroll">
+    <div class="fx-wrap">
+      <div class="fx-hd">
+        <div class="fx-ph" id="f-left"></div>
+        <div class="fx-info" id="f-right"></div>
+      </div>
+      <div class="fx-sec" id="f-sets"></div>
+      <div class="fx-cta">
+        <div>
+          <div class="fx-k">Próxima ficha</div>
+          <h3>Tu set puede ser el próximo en el Archivo.</h3>
+          <p>Grabá tu sesión con nosotros y sumá tu nombre, tu número y tu set al registro de la escena.</p>
+        </div>
+        <button type="button" class="fx-btn" onclick="asdlFootGo('agenda','gts-book')">Grabá tu set →</button>
+      </div>
+    </div>
+    <footer class="asdl-foot"></footer>
   </div>
 </div>
 
@@ -4270,7 +4331,7 @@ function fmtDjId(rawId, digits){
 // ── UTILIDAD: escape HTML para prevenir XSS ─────────────────────
 function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-var NAME_ALIAS = {"LUCIO KÁ": "LUCIO KA", "SATURE (B2B)": "SATURE", "FOMO / JORRON": "JORRÓN", "PAIVA B2B DELIYUS": "P4IVA B2B DELIYUS", "TINXXH": "TINXH", "ISHIT B2B ARIKA": "SPACEGIRLS", "BAKAN MUSIC": "BAKAN MUSIK", "AXEL MORALES": "AXEL MORALEZ", "SHMELLER": "SHMELER", "JORRON": "JORRÓN"};  // nombre del Excel -> nombre del perfil en DJS
+var NAME_ALIAS = {"LUCIO KÁ": "LUCIO KA", "SATURE (B2B)": "SATURE", "FOMO / JORRON": "JORRÓN", "PAIVA B2B DELIYUS": "P4IVA B2B DELIYUS", "TINXXH": "TINXH", "ISHIT B2B ARIKA": "SPACEGIRLS", "BAKAN MUSIC": "BAKAN MUSIK", "AXEL MORALES": "AXEL MORALEZ", "SHMELLER": "SHMELER", "JORRON": "JORRÓN", "TABORDA": "FELIPE TABORDA", "SAFI": "AGUS SAFI", "HARDFEMUR": "HARD FEMUR", "ZOEN": "ZOE"};  // nombre del Excel -> nombre del perfil en DJS
 const DJS = [
  {i:'179',artist:'Zoen',alias:'Zoen',genre:'',exp:'',bio:'',type:'DJ JAM',links:'',session:'Solo',reg:'jul 2026'},
  {i:'180',artist:'Cuy Cosmico',alias:'Cuy Cosmico',genre:'',exp:'',bio:'',type:'DJ JAM',links:'',session:'Solo',reg:'sep 2026'},
@@ -4870,9 +4931,11 @@ function updateTickerTag(){
 // la altura del header/nav cambia entre desktop y mobile.
 function positionFichaBelowNav(){
   var f=document.getElementById('ficha'), nav=document.getElementById('nav');
-  if(f && nav){ f.style.top = Math.round(nav.getBoundingClientRect().bottom) + 'px'; }
+  // Ficha inmersiva: ocupa toda la pantalla (tapa el menú y el fondo del inicio). Se sale con "← Volver" o Esc.
+  if(f){ f.style.top = '0px'; }
 }
 window.addEventListener('resize', positionFichaBelowNav);
+document.addEventListener('keydown', function(e){ if(e.key==='Escape' && typeof fichaIsOpen==='function' && fichaIsOpen() && typeof closeFicha==='function'){ var lbx=document.querySelector('.gts-lb.on'); if(!lbx) closeFicha(); } });
 function tickerTagClick(){
   if(fichaIsOpen() && typeof closeFicha==='function'){ closeFicha(); }
   goHome();
@@ -6102,17 +6165,13 @@ window.openFicha = async function openFicha(id){
   const photoHTML = buildPhotoHTML(id, dj);
 
   const soonClass=soon?' soon-l':'';
-  document.getElementById('f-left').className='fleft'+soonClass;
+  document.getElementById('f-left').className='fx-ph'+(soon?' soon':'');
   document.getElementById('f-left').innerHTML=`
     <div class="pzone"${currentUser?` onclick="document.getElementById('fi_${id}').click()"`:``}>
       ${photoHTML}
       ${currentUser?'<div class="pov">Cambiar foto</div>':''}
     </div>
     ${currentUser?`<input type="file" id="fi_${id}" accept="image/*" onchange="handlePhoto('${id}',this)">`:''}
-    <div class="fa-name">${dj.artist}</div>
-    ${dj.alias && dj.alias!==dj.artist?'<div class="fa-alias">'+dj.alias+'</div>':''}
-    <div class="fa-genre">${cap3genres(dj.genre)||'Por confirmar'}</div>
-    <div class="fa-foot">${dj.isLead?'Pendiente de grabación':dj.type||''}${dj.session&&!dj.isLead?' · '+dj.session:''}</div>
     ${dj.redirect?`<div class="redir${soon?' soon-r':''}" onclick="openFicha('${dj.redirect.id}')">→ Ver también: ${dj.redirect.name}</div>`:''}
   `;
 
@@ -6186,33 +6245,51 @@ window.openFicha = async function openFicha(id){
   }
 
   const soonLbl=soon?' soon-lbl':'';
+  // ── Ficha (diseño "expediente", oct 2026): datos a la derecha de la foto y sets en una grilla pareja ──
+  const _fxFecha = function(f){ if(!f) return ''; var p=String(f).split('-'); return p.length===3 ? p[2]+'.'+p[1]+'.'+p[0] : String(f); };
+  const _fxTipo = {COMMON:'Common Liveset', CUSTOM:'Custom Liveset', DJ_JAM:'DJ JAM', ARCHIVO_PUBLICO:'Archivo Público', BASICO:'Set Básico', B2B:'B2B'};
+  const _fxPub = _artistSets.filter(function(s){ return s.estado!=='Pendiente'; });
+  const _fxFormatos = _artistSets.map(function(s){ return _fxTipo[s.tipo] || ''; }).filter(function(t,i,a){ return t && a.indexOf(t)===i; });
+  const _fxFormato = _fxFormatos.length ? _fxFormatos.join(' · ') : (dj.type || '—');
+  const _fxPrimero = _artistSets.length ? _fxFecha(_artistSets[0].fecha) : (dj.reg || '—');
+  const _fxRedes = dj.links ? parseSocialLinks(dj.links) : '';
+  const _fxNum = _posId ? fmtDjId(_posId,3) : '';
   document.getElementById('f-right').innerHTML=`
-    <div class="fs">
-      <div class="fsl${soonLbl}">Su propuesta</div>
-      <div class="fsv">${dj.bio||'—'}</div>
-    </div>
-    <div class="fs">
-      <div class="fsl${soonLbl}">Datos</div>
-      <div class="f2">
-        
-        
-        <div><div class="fi-l">ID Archivo</div><div class="fi-v">${_posId ? fmtDjId(_posId,3) : '—'}</div></div>
-        ${dj.reg?`<div><div class="fi-l">Registro</div><div class="fi-v">${dj.reg}</div></div>`:''}
-        
-      </div>
-    </div>
-    ${dj.links?`<div class="fs">
-      <div class="fsl${soonLbl}">Redes y plataformas</div>
-      ${parseSocialLinks(dj.links)}
-    </div>`:''}
-    ${!dj.isLead?`<div class="fs">
-      <div class="fsl${soonLbl}">Set en YouTube</div>
-      ${ytThumb}
-      ${fichaFrom==='admin'?`<div style="margin-top:14px">
-        <input class="url-inp" id="yt_${id}" placeholder="https://youtube.com/..." value="${ytUrl}">
+    <div class="fx-k">${soon?'Próximamente':('Ficha '+(_fxNum||''))}${_fxFormatos.length||dj.type?' · '+esc(_fxFormatos[0]||dj.type):''}</div>
+    <h1 class="fx-nm">${esc(dj.artist)}</h1>
+    ${dj.alias && String(dj.alias).toUpperCase()!==String(dj.artist).toUpperCase()?`<div class="fx-alias">${esc(dj.alias)}</div>`:''}
+    <div class="fx-gn">${cap3genres(dj.genre)||'Por confirmar'}</div>
+    ${dj.bio && dj.bio!=='—'?`<p class="fx-bio">${dj.bio}</p>`:'<div style="height:36px"></div>'}
+    <dl class="fx-led">
+      <div><dt>Formato</dt><dd>${esc(_fxFormato)}</dd></div>
+      <div><dt>Primer registro</dt><dd>${esc(_fxPrimero)}</dd></div>
+      <div><dt>Sets en el archivo</dt><dd>${String(_fxPub.length).padStart(2,'0')}</dd></div>
+      ${_fxRedes?`<div><dt>Redes</dt><dd class="fx-redes">${_fxRedes}</dd></div>`:''}
+    </dl>
+  `;
+
+  const _fxTile = function(s){
+    const yt = s.url_yt || videos[s.id] || '';
+    const cover = imgURL('img/covers', getCoverFilename(s.artista, smCoverChronoNum(s.artista, s.id)));
+    const partes = _b2bPartes(s.artista);
+    const con = partes.length > 1 ? partes.filter(function(pn){ var q=_nomNorm(pn); return q !== _nomNorm(_artistName) && (!_artistAlias || q !== _nomNorm(_artistAlias)); }).join(' & ') : '';
+    const etiqueta = (con ? 'B2B con '+con : (s.categoria || _fxTipo[s.tipo] || 'Set')) + (s.fecha ? ' · '+_fxFecha(s.fecha) : '');
+    const img = '<img src="'+cover+'" alt="'+esc(_artistName)+' · '+esc(s.id)+'" loading="lazy" decoding="async" onerror="this.style.display=&quot;none&quot;">';
+    if(yt){
+      return '<a class="fx-set" href="'+esc(yt)+'" target="_blank" rel="noopener"><div class="fx-set-im">'+img
+        + '<span class="fx-play"><i></i>Ver set</span></div>'
+        + '<div class="fx-set-m"><b>'+esc(s.id)+'</b><span>'+esc(etiqueta)+'</span></div></a>';
+    }
+    return '<div class="fx-set pend"><div class="fx-set-im">'+img+'<span class="fx-soon">Próximamente</span></div>'
+      + '<div class="fx-set-m"><b>'+esc(s.id)+'</b><span>'+esc(etiqueta)+'</span></div></div>';
+  };
+  document.getElementById('f-sets').innerHTML=`
+    <div class="fx-sh"><b>Sets en el archivo</b><span>${String(_artistSets.length).padStart(2,'0')}</span></div>
+    ${_artistSets.length ? '<div class="fx-sets">'+_artistSets.map(_fxTile).join('')+'</div>' : '<p class="fx-vacio">Su set todavía no está publicado. Muy pronto en el archivo.</p>'}
+    ${fichaFrom==='admin'?`<div style="margin-top:18px">
+        <input class="url-inp" id="yt_${id}" placeholder="https://youtube.com/..." value="${esc((typeof videos!=='undefined'&&videos[id])||'')}">
         <button class="url-save" onclick="saveYT('${id}')">Guardar enlace</button>
       </div>`:''}
-    </div>`:''}
     ${fichaFrom==='admin'?buildAdminFichaPanel(id,dj):''}
     ${buildJamLineup(id, soonLbl)}
   `;
@@ -6220,6 +6297,7 @@ window.openFicha = async function openFicha(id){
   const f=document.getElementById('ficha');
   f.style.display='flex';
   if(typeof positionFichaBelowNav==='function') positionFichaBelowNav();
+  var _fxs=document.getElementById('fx-scroll'); if(_fxs) _fxs.scrollTop=0; // cada ficha arranca arriba
   f.classList.add('on');
   requestAnimationFrame(()=>f.classList.add('show'));
   if(typeof updateTickerTag==='function') updateTickerTag();
@@ -6246,7 +6324,7 @@ function closeFicha(){
 function saveYT(id){
   const val=(document.getElementById('yt_'+id)||{}).value||'';
   videos[id]=val;
-  const btn=document.querySelector('#f-right .url-save');
+  const btn=document.querySelector('#ficha .url-save');
   if(btn){btn.textContent='✓ Guardado';btn.style.background='#0a6e0a';setTimeout(()=>{btn.textContent='Guardar enlace';btn.style.background='';},2000);}
   // re-render thumb
   openFicha(id);
@@ -9963,7 +10041,7 @@ window.GTS = (function(){
       items:['Desde 90 minutos','Desde 3 cámaras','Edición y publicación','Más de 20 fotos y clips verticales','La idea la coordinamos con vos']}
   };
   var ORDEN = ['Basico','Common','B2B','Custom'];
-  var APERTURA = 11*60, CIERRE = 20*60, PASO = 30, ANTICIPACION_H = 48, DIAS = 60;
+  var APERTURA = 11*60, CIERRE = 20*60, PASO = 30, ANTICIPACION_H = 48, DIAS = 30;
   var MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
   var DIAS_N = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
 
@@ -9975,7 +10053,8 @@ window.GTS = (function(){
   // ── utilidades ──
   function $(id){ return document.getElementById(id); }
   function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-  function precio(t){ var f=FMT[t]; if(!f) return 0; var v=Number((_gtsHay('CFG')&&CFG)?CFG[f.cfg]:NaN); return v>0?v:f.def; }
+  // f.def es el valor del Manual de Marca V3 y funciona como piso: si la tabla config trae un número menor, se ignora.
+  function precio(t){ var f=FMT[t]; if(!f) return 0; var v=Number((_gtsHay('CFG')&&CFG)?CFG[f.cfg]:NaN); return v>0?Math.max(v,f.def):f.def; }
   function plata(n){ return '$'+Number(n||0).toLocaleString('es-AR'); }
   function pad(n){ return String(n).padStart(2,'0'); }
   function hhmm(m){ return pad(Math.floor(m/60))+':'+pad(m%60); }
@@ -10460,16 +10539,17 @@ window.GTS = (function(){
   // Galería de la experiencia: fotos de img/galeria-horizontal (ya están en GitHub). Para cambiar una foto o su texto, editá esta lista.
   var GALERIA = [
     {n:24,  c:'La cabina, lista antes de que llegues.'},
-    {n:66,  c:'Las cámaras graban desde el primer track.'},
-    {n:93,  c:'Cada mezcla, en detalle.'},
-    {n:6,   c:'Tus manos también cuentan la historia.'},
-    {n:44,  c:'B2B: dos DJs, un mismo registro.'},
+    {n:151, c:'Cuando el set prende, se nota.'},
     {n:17,  c:'Retratos de la jornada, incluidos.'},
+    {n:44,  c:'B2B: dos DJs, un mismo registro.'},
+    {n:196, c:'Tu set, de frente a la cámara.'},
+    {n:132, c:'Tu estética también queda en el registro.'},
     {n:74,  c:'Luz pensada para el video.'},
+    {n:93,  c:'Cada mezcla, en detalle.'},
     {n:52,  c:'Se toca entre amigos.'},
+    {n:174, c:'Cada uno trae lo suyo a la cabina.'},
+    {n:211, c:'Una sesión entera, tuya.'},
     {n:108, c:'Tu set, en un archivo que no se borra.'},
-    {n:101, c:'Tu ficha y tus fotos, para compartir.'},
-    {n:119, c:'Del deck al archivo.'},
     {n:88,  c:'Así se sale de grabar.'}
   ];
   function fotoGaleria(n){ return (_gtsHay('IMG_BASE')?IMG_BASE:'') + '/img/galeria-horizontal/' + n + '.jpg'; }
@@ -10634,7 +10714,7 @@ window.GTS = (function(){
       if(bar) bar.classList.toggle('show', mostrar);
       if(fab) fab.classList.toggle('show', mostrar);
     };
-    var hero=document.querySelector('.gts-hero'), wiz=$('gts-wiz'), book=$('gts-book');
+    var hero=document.querySelector('.gts-hero') || $('gts-top'), wiz=$('gts-wiz'), book=$('gts-book');
     var io=new IntersectionObserver(function(es){
       es.forEach(function(e){
         if(e.target===hero) vis.hero=e.isIntersecting;
