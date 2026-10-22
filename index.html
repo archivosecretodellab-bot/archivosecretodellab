@@ -4169,8 +4169,8 @@ async function mergeSupabaseSets(){
 // la web sigue con lo que ya tenía (Supabase o la copia interna).
 // Sets grabados que todavía se están editando (se muestran en "Próximamente", sin número ni fecha).
 // Esta lista es el respaldo de hoy; cuando el Sheet carga, se reemplaza por lo que diga el Sheet.
-var ASDL_EDICION = ['SIMON RULEZ','RAMA RAIA','BRVCE','GRECIA','NOZZ','NAN CAPTOR','VIVI MUSIC','MADEMOISELLE CHERRY','ISHIT','ANA BRUSSO','BLXNDINESE']
-  .map(function(n){ return { artista:n, categoria:'COMMON LIVESET' }; });
+var ASDL_EDICION = ['SIMON RULEZ','RAMA RAIA','BRVCE','GRECIA','NOZZ','NAN CAPTOR','VIVI MUSIC','MADEMOISELLE CHÉRIE','ISHIT','ANA BRUSSO','BLXNDINESE']
+  .map(function(n){ return { artista:n, categoria: /^(ISHIT|VIVI MUSIC|ANA BRUSSO|BLXNDINESE|NAN CAPTOR|MADEMOISELLE CH)/.test(n) ? 'FEMALE DJ JAM 002' : 'COMMON LIVESET' }; });
 function _shNorm(t){ return String(t||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toUpperCase().replace(/\s+/g,' ').trim(); }
 function _shYt(u){ var m=/(?:v=|youtu\.be\/|shorts\/|live\/)([A-Za-z0-9_-]{11})/.exec(String(u||'')); return m?m[1]:''; }
 function _shFecha(f){
@@ -5858,8 +5858,9 @@ function initCards(){
   laneLastSpawn = {};
   // Spawnar 3 cards iniciales con offset para que no aparezcan todas juntas
   spawnCard();
-  setTimeout(spawnCard, 600);
-  setTimeout(spawnCard, 1200);
+  setTimeout(spawnCard, 200);
+  setTimeout(spawnCard, 400);
+  setTimeout(spawnCard, 650);
   setInterval(()=>{
     var onScreen = document.querySelectorAll('#cl .fc').length + _cardsPendientes;
     var maxCards = window.innerWidth <= 700 ? 3 : 6;
@@ -5871,7 +5872,7 @@ function initCards(){
       for(let i=cardQueue.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[cardQueue[i],cardQueue[j]]=[cardQueue[j],cardQueue[i]];}
       cardActive.clear();
     }
-  }, 1800); // spawn cada 1.8s
+  }, 1200); // spawn cada 1.2s
 }
 
 // ── Perfil completo: solo estos DJs pueden aparecer en el Inicio ──
@@ -7547,7 +7548,7 @@ async function checkComunidad(nombre){
 
 // INIT — arranque directo (sin pantalla de carga)
 setTimeout(() => { runCounter(); }, 100);
-setTimeout(() => { initCards(); }, 200);
+setTimeout(() => { initCards(); }, 0);
 
 // Cargar config y disponibilidad desde Supabase
 (async()=>{
@@ -8368,7 +8369,6 @@ function buildSoonCard(s){
     +'<div class="sc-row"><span class="sc-l">ID</span><span class="sc-v">'+esc(s.id)+'</span></div>'
     +'<div class="sc-row"><span class="sc-l">Tipo</span><span class="sc-v">'+esc(s.categoria||'—')+'</span></div>'
     +'<div class="sc-row"><span class="sc-l">Estreno</span><span class="sc-v">'+fStr+'</span></div>';
-  _soonFicha(el, s.artista);
   return el;
 }
 function buildEdicionCard(e){
@@ -8378,7 +8378,6 @@ function buildEdicionCard(e){
     +'<div class="sc-row"><span class="sc-l">Tipo</span><span class="sc-v">'+esc(e.categoria||'—')+'</span></div>'
     +'<div class="sc-row"><span class="sc-l">Estado</span><span class="sc-v">En edición</span></div>'
     +'<div class="sc-row"><span class="sc-l">Estreno</span><span class="sc-v">A confirmar</span></div>';
-  _soonFicha(el, e.artista);
   return el;
 }
 function buildSoonCTA(){
