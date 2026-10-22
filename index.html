@@ -873,6 +873,11 @@ input[type=file]{display:none}
 /* PRÓXIMAMENTE: cards informativas reducidas (no clickeables, hover → azul) */
 .soon-card{ border:1px solid rgba(27,0,230,.4); background:#0a0a14; padding:18px 20px; min-height:128px; box-sizing:border-box; font-family:'IBM Plex Mono',monospace; display:flex; flex-direction:column; justify-content:center; transition:background .35s, border-color .35s; }
 .soon-card:hover{ background:#1B00E6; border-color:#1B00E6; }
+.soon-card{ position:relative; }
+.soon-card .sc-lock{ position:absolute; top:16px; right:18px; width:20px; height:20px; color:#5533ff; }
+.soon-card .sc-title{ padding-right:34px; }
+.soon-card.sc-link{ cursor:pointer; }
+.soon-card.sc-link:hover{ border-color:#5533ff; }
 .soon-card .sc-title{ font-family:'Space Mono',monospace; font-weight:700; font-size:14px; letter-spacing:1px; color:var(--ivory); margin-bottom:14px; }
 .soon-card .sc-row{ display:flex; justify-content:space-between; gap:10px; font-size:10px; letter-spacing:1px; margin-bottom:6px; }
 .soon-card .sc-l{ color:rgba(255,255,255,.4); text-transform:uppercase; }
@@ -2685,13 +2690,13 @@ body:has(#ficha.on) #ficha{bottom:0!important}
         color:var(--g-w);font-family:'IBM Plex Mono',monospace;padding-bottom:0}
       .gts *{box-sizing:border-box}
       .gts-wrap{max-width:1120px;margin:0 auto;padding:0 clamp(18px,4vw,40px)}
-      .gts-sec{padding:clamp(64px,8vw,96px) 0 0}
-      .gts-top{padding-top:clamp(40px,6vw,72px)}
+      .gts-sec{padding:clamp(96px,12vw,160px) 0 0}
+      .gts-top{padding-top:clamp(48px,7vw,96px)}
       .gts-wall-meta{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:16px;font-size:12px;letter-spacing:.08em;color:var(--g-w3)}
       .gts-wall-meta b{color:var(--g-w);font-weight:400}
-      .gts-eyebrow{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--g-b2);margin-bottom:14px}
+      .gts-eyebrow{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--g-b2);margin-bottom:18px}
       .gts-h1{font-family:'Space Mono',monospace;font-weight:700;font-size:clamp(44px,9vw,92px);line-height:.95;letter-spacing:-.04em;margin:0}
-      .gts-h2{font-family:'Space Mono',monospace;font-weight:700;font-size:clamp(30px,5vw,48px);line-height:1.02;letter-spacing:-.03em;margin:0 0 14px}
+      .gts-h2{font-family:'Space Mono',monospace;font-weight:700;font-size:clamp(30px,5vw,48px);line-height:1.02;letter-spacing:-.03em;margin:0 0 20px}
       .gts-h3{font-family:'Space Mono',monospace;font-weight:700;font-size:clamp(20px,3vw,26px);letter-spacing:-.02em;margin:0 0 6px}
       .gts-p{font-size:14px;line-height:1.75;color:var(--g-w2);max-width:none;margin:0}
       .gts-hero .gts-p{max-width:620px}
@@ -2716,8 +2721,8 @@ body:has(#ficha.on) #ficha{bottom:0!important}
       .gts-hero-ctas{display:flex;flex-wrap:wrap;align-items:center;gap:18px}
 
       /* MURO DE CARAS */
-      .gts-wall-top{display:grid;grid-template-columns:auto 1fr;gap:clamp(18px,4vw,48px);align-items:end;margin-bottom:28px}
-      .gts-wall-n{font-family:'Space Mono',monospace;font-weight:700;font-size:clamp(96px,20vw,200px);line-height:.78;letter-spacing:-.06em;color:transparent;-webkit-text-stroke:2px var(--g-b2)}
+      .gts-wall-top{display:grid;grid-template-columns:auto 1fr;gap:clamp(18px,4vw,48px);align-items:end;margin-bottom:clamp(36px,4.5vw,56px)}
+      .gts-wall-n{font-family:'Space Mono',monospace;font-weight:700;font-size:clamp(96px,20vw,200px);line-height:.78;letter-spacing:-.06em;color:var(--g-b);-webkit-text-stroke:0}
       .gts-wall-faces{display:grid;grid-template-columns:repeat(10,1fr);gap:6px}
       .gts-face{position:relative;aspect-ratio:1;overflow:hidden;background:#0d0d14;cursor:pointer;border:none;padding:0;color:inherit;font:inherit;opacity:0;transition:opacity .5s}
       .gts-face.ok{opacity:1}
@@ -2729,7 +2734,7 @@ body:has(#ficha.on) #ficha{bottom:0!important}
 
       /* RESERVA */
       .gts-book{background:radial-gradient(ellipse at 50% 0%,rgba(27,0,230,.14),transparent 60%)}
-      .gts-fmts{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:34px 0 46px}
+      .gts-fmts{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:clamp(40px,5vw,56px) 0 clamp(48px,6vw,72px)}
       .gts-fmt{position:relative;background:var(--g-card);border:1px solid var(--g-line);padding:22px 18px 18px;display:flex;flex-direction:column;gap:10px;cursor:pointer;text-align:left;color:inherit;font:inherit;transition:border-color .2s,transform .2s}
       .gts-fmt:hover{border-color:rgba(43,26,255,.6)}
       .gts-fmt.rec{border:1px solid rgba(43,26,255,.55)}
@@ -2836,7 +2841,7 @@ body:has(#ficha.on) #ficha{bottom:0!important}
       .gts-done li b{color:var(--g-w);font-weight:400}
 
       /* QUÉ TE LLEVÁS */
-      .gts-inc-g{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--g-line);border:1px solid var(--g-line);margin-top:30px}
+      .gts-inc-g{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--g-line);border:1px solid var(--g-line);margin-top:clamp(36px,4.5vw,56px)}
       .gts-inc-i{position:relative;background:#060606;padding:28px 24px 26px;transition:background .3s}
       .gts-inc-i::before{content:'';position:absolute;left:0;top:0;height:2px;width:0;background:var(--g-b2);transition:width .45s cubic-bezier(.2,.8,.2,1)}
       .gts-inc-i:hover{background:#0b0b14}
@@ -2845,12 +2850,12 @@ body:has(#ficha.on) #ficha{bottom:0!important}
       .gts-inc-i:hover svg{transform:translateY(-3px)}
       .gts-inc-i b{display:block;font-family:'Space Mono',monospace;font-size:17px;margin-bottom:8px}
       .gts-inc-i p{font-size:12px;line-height:1.65;color:var(--g-w2);margin:0}
-      .gts-gear{margin-top:14px;display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center;border:1px solid var(--g-line);padding:18px 20px}
+      .gts-gear{margin-top:24px;display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center;border:1px solid var(--g-line);padding:18px 20px}
       .gts-gear-n{font-family:'Space Mono',monospace;font-weight:700;font-size:clamp(20px,3vw,28px);color:var(--g-b2);letter-spacing:-.02em}
       .gts-gear p{font-size:12px;line-height:1.7;color:var(--g-w2);margin:0}
 
       /* ASÍ QUEDA */
-      .gts-exp{position:relative;overflow:hidden;margin-top:30px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+      .gts-exp{position:relative;overflow:hidden;margin-top:clamp(36px,4.5vw,56px);-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
       .gts-exp-track{display:flex;width:max-content;animation:gtsMarq 80s linear infinite}
       .gts-exp:hover .gts-exp-track,.gts-exp:focus-within .gts-exp-track{animation-play-state:paused}
       @keyframes gtsMarq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
@@ -2881,10 +2886,10 @@ body:has(#ficha.on) #ficha{bottom:0!important}
       .gts-asi-i span em{font-style:normal;color:var(--g-w3)}
       .gts-asi-i.a{grid-column:span 4;grid-row:span 3}.gts-asi-i.b{grid-column:span 2;grid-row:span 2}.gts-asi-i.c{grid-column:span 2;grid-row:span 1}
       .gts-asi-i.d{grid-column:span 3;grid-row:span 2}.gts-asi-i.e{grid-column:span 3;grid-row:span 2}
-      .gts-asi-cta{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;margin-top:28px;padding-top:24px;border-top:1px solid var(--g-line)}
+      .gts-asi-cta{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;margin-top:clamp(36px,4.5vw,56px);padding-top:32px;border-top:1px solid var(--g-line)}
 
       /* TESTIMONIOS */
-      .gts-tes-g{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(16px,3vw,32px);margin-top:30px}
+      .gts-tes-g{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(28px,4vw,56px);margin-top:clamp(36px,4.5vw,56px)}
       .gts-tes{display:grid;grid-template-columns:56px 1fr;grid-template-rows:1fr auto;gap:20px 14px;align-items:end}
       .gts-tes-tx{display:contents}
       .gts-tes q{grid-column:1 / -1;grid-row:1;align-self:start;display:block;font-size:15px;line-height:1.7;color:var(--g-w);quotes:'«' '»';padding-left:16px;border-left:2px solid var(--g-b2)}
@@ -2908,7 +2913,7 @@ body:has(#ficha.on) #ficha{bottom:0!important}
       .gts-jam-next{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--g-b2);margin-bottom:16px}
 
       /* FAQ */
-      .gts-faq{margin-top:26px;border-top:1px solid var(--g-line)}
+      .gts-faq{margin-top:clamp(32px,4vw,48px);border-top:1px solid var(--g-line)}
       .gts-faq details{border-bottom:1px solid var(--g-line)}
       .gts-faq summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:44px 1fr 24px;gap:8px;align-items:center;padding:18px 4px;font-size:14px}
       .gts-faq summary::-webkit-details-marker{display:none}
@@ -2918,7 +2923,7 @@ body:has(#ficha.on) #ficha{bottom:0!important}
       .gts-faq details p{margin:0 0 18px 52px;font-size:13px;line-height:1.75;color:var(--g-w2);max-width:680px}
 
       /* CIERRE */
-      .gts-end{text-align:left;padding:clamp(64px,8vw,96px) 0;margin-top:clamp(64px,8vw,96px);border-top:1px solid var(--g-line)}
+      .gts-end{text-align:left;padding:clamp(96px,12vw,160px) 0;margin-top:clamp(96px,12vw,160px);border-top:1px solid var(--g-line)}
       /* Micro-animaciones: entrada suave al hacer scroll (solo si la persona no pidió menos movimiento) */
       @media (prefers-reduced-motion:no-preference){
         .gts.anim .gts-rv{opacity:0;transform:translateY(18px);transition:opacity .7s cubic-bezier(.2,.8,.2,1),transform .7s cubic-bezier(.2,.8,.2,1)}
@@ -2983,14 +2988,12 @@ body:has(#ficha.on) #ficha{bottom:0!important}
               </div>
             </div>
             <div class="gts-wall-faces" id="gts-faces"></div>
-            <div class="gts-genres"><b>Open format.</b> Breaks, dub, reggaetón, electro, pop, drum and bass, dembow, techno, house, psytrance… lo que aparezca, se registra.</div>
           </div>
         </section>
 
         <!-- 03 · RESERVA -->
         <section class="gts-sec gts-book" id="gts-book" aria-label="Reservá tu sesión">
           <div class="gts-wrap">
-            <div class="gts-eyebrow">Elegí la que mejor se adapta a vos</div>
             <h2 class="gts-h2">Reservá tu sesión hoy.</h2>
             <p class="gts-p">Elegí cómo querés grabar y cuándo. Nada queda confirmado hasta que el equipo te escriba.</p>
 
@@ -3047,7 +3050,6 @@ body:has(#ficha.on) #ficha{bottom:0!important}
         <!-- 05 · LA EXPERIENCIA (galería que corre de derecha a izquierda) -->
         <section class="gts-sec" id="gts-asi" aria-label="Cómo se vive una sesión">
           <div class="gts-wrap">
-            <div class="gts-eyebrow">La experiencia</div>
             <h2 class="gts-h2">Así se vive una sesión.</h2>
             <p class="gts-p">De la cabina al registro. Tocá una foto para verla grande.</p>
             <div class="gts-exp" id="gts-exp"><div class="gts-exp-track" id="gts-exp-track"></div></div>
@@ -3061,7 +3063,6 @@ body:has(#ficha.on) #ficha{bottom:0!important}
         <!-- 06 · TESTIMONIOS -->
         <section class="gts-sec" aria-label="Testimonios">
           <div class="gts-wrap">
-            <div class="gts-eyebrow">Artistas del Archivo</div>
             <h2 class="gts-h2">Descubrí lo que opinan quienes ya tocaron acá.</h2>
             <div class="gts-tes-g" id="gts-tes"></div>
           </div>
@@ -3124,7 +3125,6 @@ body:has(#ficha.on) #ficha{bottom:0!important}
         <!-- 09 · CIERRE -->
         <section class="gts-end" aria-label="Reservá">
           <div class="gts-wrap">
-            <div class="gts-eyebrow">Próximo registro</div>
             <h2 class="gts-h1" style="font-size:clamp(40px,8vw,84px)">Volvete parte.</h2>
             <p class="gts-p" style="margin:22px 0 28px">Grabá tu set en el Archivo.</p>
             <button class="gts-btn" type="button" onclick="GTS.goBook('cierre')">Reservar mi set <span class="arr">→</span></button>
@@ -4150,6 +4150,8 @@ async function mergeSupabaseSets(){
       }
     });
     console.log('[ASDL] Supabase ' + (remoteWins ? 'al dia (manda Supabase)' : 'desactualizado (solo se agregan faltantes)') + ' · +' + added + ' nuevos · ' + updated + ' actualizados');
+    // Si el Sheet ya llegó, se vuelve a aplicar encima: el Sheet siempre manda
+    if(window._sheetTxt && typeof _aplicarSheet === 'function') _aplicarSheet(window._sheetTxt);
     if(added > 0 || updated > 0){
       if(typeof renderDjs === 'function') renderDjs();
       if(typeof renderCommon === 'function') renderCommon();
@@ -4158,6 +4160,96 @@ async function mergeSupabaseSets(){
       updateAllCounters();
     }
   }catch(e){ console.warn('[ASDL] mergeSupabaseSets error:', e); }
+}
+
+// ═══ SETS DESDE EL GOOGLE SHEET (fuente de verdad, oct 2026) ═══
+// El equipo carga cada set en el Sheet "SETS GRABADOS…". La web lo lee al abrir y actualiza sola:
+//   PUBLICADO → se muestra publicado · PROGRAMADO → "Próximamente" con su fecha · EN EDICIÓN → no se muestra.
+// Se identifica cada fila por la columna ASDL; si está vacía, por el link de YouTube. Si el Sheet no responde,
+// la web sigue con lo que ya tenía (Supabase o la copia interna).
+// Sets grabados que todavía se están editando (se muestran en "Próximamente", sin número ni fecha).
+// Esta lista es el respaldo de hoy; cuando el Sheet carga, se reemplaza por lo que diga el Sheet.
+var ASDL_EDICION = ['SIMON RULEZ','RAMA RAIA','BRVCE','GRECIA','NOZZ','NAN CAPTOR','VIVI MUSIC','MADEMOISELLE CHERRY','ISHIT','ANA BRUSSO','BLXNDINESE']
+  .map(function(n){ return { artista:n, categoria:'COMMON LIVESET' }; });
+function _shNorm(t){ return String(t||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toUpperCase().replace(/\s+/g,' ').trim(); }
+function _shYt(u){ var m=/(?:v=|youtu\.be\/|shorts\/|live\/)([A-Za-z0-9_-]{11})/.exec(String(u||'')); return m?m[1]:''; }
+function _shFecha(f){
+  f=String(f||'').trim(); var m=/^(\d{1,2})\/(\d{1,2})\/(\d{4})/.exec(f);
+  if(m) return m[3]+'-'+('0'+m[2]).slice(-2)+'-'+('0'+m[1]).slice(-2);
+  m=/^(\d{4})-(\d{2})-(\d{2})/.exec(f); return m ? m[0] : '';
+}
+function _shTipo(cat){
+  var c=_shNorm(cat);
+  if(/DJ JAM/.test(c)) return {tipo:'DJ_JAM', categoria:c.replace(/\s+/g,' ')};
+  if(/PUBLICO/.test(c)) return {tipo:'ARCHIVO_PUBLICO', categoria:'ARCHIVO PUBLICO'};
+  if(/CUSTOM/.test(c)) return {tipo:'CUSTOM', categoria:'CUSTOM LIVESET'};
+  if(/BASICO/.test(c)) return {tipo:'BASICO', categoria:'SET BASICO'};
+  if(/COMMON/.test(c)) return {tipo:'COMMON', categoria:'COMMON LIVESET'};
+  return {tipo:'', categoria:c};
+}
+async function mergeSheetSets(){
+  try{
+    if(typeof SM === 'undefined') return;
+    var urls=['https://docs.google.com/spreadsheets/d/' + ASDL_SHEET_ID + '/gviz/tq?tqx=out:csv'];
+    try{ if(SHEET_SYNC_URL) urls.push(SHEET_SYNC_URL); }catch(e){}
+    var text=null;
+    for(var u=0; u<urls.length && !text; u++){
+      try{
+        var r=await fetch(urls[u], {cache:'no-store'});
+        if(r.ok){ var t=await r.text(); if(/NOMBRE/i.test(t.slice(0,400))) text=t; }
+      }catch(e){}
+    }
+    if(!text){ console.warn('[ASDL] Sheet de sets: no se pudo leer, se usa lo que ya había'); return; }
+    window._sheetTxt=text;
+    _aplicarSheet(text);
+  }catch(e){ console.warn('[ASDL] mergeSheetSets error:', e); }
+}
+function _aplicarSheet(text){
+  try{
+    var lines=text.replace(/\r/g,'').split('\n').filter(function(l){ return l.trim(); });
+    var head=splitCSVRow(lines[0], ',').map(function(x){ return _shNorm(String(x).replace(/^"|"$/g,'')); });
+    var col=function(re){ return head.findIndex(function(x){ return re.test(x); }); };
+    var C={ asdl:col(/^ASDL/), nombre:col(/NOMBRE|ARTISTA/), cat:col(/TIPO|REGISTRO/), yt:col(/YOUTUBE|LINK/), fecha:col(/FECHA/), estado:col(/ESTADO/) };
+    if(C.nombre<0 || C.estado<0){ console.warn('[ASDL] Sheet de sets: columnas no reconocidas'); return; }
+    var idx={}, porYt={}, max=0;
+    SM.forEach(function(s,i){ idx[s.id]=i; var y=_shYt(s.url_yt); if(y) porYt[y]=s.id; var n=parseInt(String(s.id).replace(/\D/g,''),10); if(n>max) max=n; });
+    var nuevos=0, cambios=0, edicion=[];
+    for(var i=1;i<lines.length;i++){
+      var p=splitCSVRow(lines[i], ',').map(function(x){ return String(x||'').replace(/^"|"$/g,'').trim(); });
+      var g=function(k){ return C[k]>=0 ? (p[C[k]]||'') : ''; };
+      var nombre=g('nombre'); if(!nombre) continue;
+      var est=_shNorm(g('estado'));
+      if(est==='EN EDICION'){ edicion.push({ artista:nombre, categoria:_shTipo(g('cat')).categoria }); continue; }
+      var estado = est==='PUBLICADO' ? 'Publicado' : (est==='PROGRAMADO' ? 'Pendiente' : (est==='OCULTO' ? 'Oculto' : null));
+      if(!estado) continue;                                   // EN EDICIÓN o vacío: todavía no se muestra
+      var url=g('yt'), fecha=_shFecha(g('fecha')), tc=_shTipo(g('cat'));
+      var id=String(g('asdl')||'').toUpperCase().replace(/\s/g,'');
+      if(/^\d+$/.test(id)) id='ASDL'+('00'+id).slice(-3);
+      if(!/^ASDL\d{3,}$/.test(id)) id=porYt[_shYt(url)] || '';
+      if(!id && estado==='Publicado'){ max++; id='ASDL'+('00'+max).slice(-3); }   // set nuevo sin número: toma el siguiente
+      if(!id) continue;
+      var fila={ fecha:fecha, url_yt:url, estado:estado, categoria:tc.categoria, tipo:tc.tipo };
+      if(idx[id]===undefined){
+        SM.push(Object.assign({ id:id, artista:nombre, set_num:1 }, fila)); idx[id]=SM.length-1; nuevos++;
+      } else {
+        var s=SM[idx[id]];
+        if(s.estado==='Oculto') fila.estado='Oculto';           // lo ocultado desde el Panel sigue oculto
+        if(!fila.url_yt) delete fila.url_yt;
+        if(!fila.fecha) delete fila.fecha;
+        if(!fila.tipo){ delete fila.tipo; delete fila.categoria; }
+        var antes=JSON.stringify(s); Object.assign(s, fila); if(JSON.stringify(s)!==antes) cambios++;
+      }
+    }
+    var edAntes=JSON.stringify(ASDL_EDICION); ASDL_EDICION=edicion;
+    console.log('[ASDL] Sheet de sets: +' + nuevos + ' nuevos · ' + cambios + ' actualizados · ' + edicion.length + ' en edición');
+    if(nuevos || cambios || edAntes!==JSON.stringify(edicion)){
+      if(typeof renderDjs === 'function') renderDjs();
+      if(typeof renderCommon === 'function') renderCommon();
+      if(typeof renderCustom === 'function') renderCustom();
+      if(typeof renderPublic === 'function') renderPublic();
+      updateAllCounters();
+    }
+  }catch(e){ console.warn('[ASDL] Sheet de sets: error al aplicar', e); }
 }
 
 const photos = {}, videos = {}, notes = {};
@@ -6283,7 +6375,9 @@ window.openFicha = async function openFicha(id){
     const cover = imgURL('img/covers', getCoverFilename(s.artista, smCoverChronoNum(s.artista, s.id)));
     const partes = _b2bPartes(s.artista);
     const con = partes.length > 1 ? partes.filter(function(pn){ var q=_nomNorm(pn); return q !== _nomNorm(_artistName) && (!_artistAlias || q !== _nomNorm(_artistAlias)); }).join(' & ') : '';
-    const etiqueta = (con ? 'B2B con '+con : (s.categoria || _fxTipo[s.tipo] || 'Set')) + (s.fecha ? ' · '+_fxFecha(s.fecha) : '');
+    const _ord = ['1er','2do','3er','4to','5to','6to','7mo','8vo','9no','10mo'];
+    const _n = _artistSets.indexOf(s);
+    const etiqueta = (_artistSets.length>1 && _n>-1 ? (_ord[_n]||(_n+1)+'º')+' set · ' : '') + (con ? 'B2B con '+con : (s.categoria || _fxTipo[s.tipo] || 'Set')) + (s.fecha ? ' · '+_fxFecha(s.fecha) : '');
     const img = '<img src="'+cover+'" alt="'+esc(_artistName)+' · '+esc(s.id)+'" loading="lazy" decoding="async" onerror="this.style.display=&quot;none&quot;">';
     if(yt){
       return '<a class="fx-set" href="'+esc(yt)+'" target="_blank" rel="noopener"><div class="fx-set-im">'+img
@@ -8238,16 +8332,31 @@ function renderDjs(filter){
   else list.sort(function(a,b){return a.fecha>b.fecha?-1:1;}); // newest primero por defecto
   var rc=document.getElementById('rc-djs');
   var grid=document.getElementById('grid-djs');
-  if(rc) rc.textContent=list.length+' sets';
+  var _ed = (djFilter==='soon' && typeof ASDL_EDICION!=='undefined') ? ASDL_EDICION.filter(function(e){ return !q || e.artista.toLowerCase().indexOf(q.toLowerCase())!==-1; }) : [];
+  if(rc) rc.textContent=(list.length+_ed.length)+' sets';
   if(grid){
     grid.innerHTML='';
     if(djFilter==='soon'){
-      list.forEach(function(s){ grid.appendChild(buildSoonCard(s)); });
+      list.sort(function(a,b){ return a.fecha<b.fecha?-1:1; }).forEach(function(s){ grid.appendChild(buildSoonCard(s)); });
+      _ed.forEach(function(e){ grid.appendChild(buildEdicionCard(e)); });
       grid.appendChild(buildSoonCTA());
     } else {
       list.forEach(function(s,i){ grid.appendChild(smBuildCard(s, Math.min(i * 0.05, 1.2).toFixed(2))); });
     }
   }
+}
+// Candado de "bloqueado hasta el estreno" (líneas rectas, sin curvas, según el manual)
+var SOON_LOCK='<svg class="sc-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 11V5h10v6"/><rect x="4" y="11" width="16" height="10"/><path d="M12 15v2"/></svg>';
+function _soonFicha(el, nombre){
+  // Si el artista ya tiene ficha, la tarjeta la abre
+  try{
+    var N=function(t){ return _nomNorm(String(t||'').replace(/[Øø]/g,'O').replace(/[Ξξ]/g,'E')); };
+    var n=N(nombre), al=(typeof NAME_ALIAS!=='undefined' && NAME_ALIAS[String(nombre).toUpperCase()]) ? N(NAME_ALIAS[String(nombre).toUpperCase()]) : '';
+    var dj=DJS.find(function(d){ var a=N(d.artist), b=N(d.alias||''); return !d.hidden && (a===n || b===n || (al && (a===al || b===al))); });
+    if(dj){ el.classList.add('sc-link'); el.setAttribute('role','button'); el.tabIndex=0;
+      el.onclick=function(){ fichaFrom='djs'; openFicha(dj.i); };
+      el.onkeydown=function(ev){ if(ev.key==='Enter'){ fichaFrom='djs'; openFicha(dj.i); } }; }
+  }catch(e){}
 }
 function buildSoonCard(s){
   var el=document.createElement('div');
@@ -8255,10 +8364,21 @@ function buildSoonCard(s){
   var meses=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
   var p=(s.fecha||'').split('-');
   var fStr=p.length===3?(parseInt(p[2],10)+'.'+((meses[parseInt(p[1],10)-1]||'').toUpperCase())+'.'+p[0]):(s.fecha||'—');
-  el.innerHTML='<div class="sc-title">PRÓXIMO SET</div>'
-    +'<div class="sc-row"><span class="sc-l">ID</span><span class="sc-v">'+s.id+'</span></div>'
-    +'<div class="sc-row"><span class="sc-l">Tipo</span><span class="sc-v">'+s.categoria+'</span></div>'
-    +'<div class="sc-row"><span class="sc-l">Fecha de grabación</span><span class="sc-v">'+fStr+'</span></div>';
+  el.innerHTML=SOON_LOCK+'<div class="sc-title">'+esc(s.artista||'Próximo set')+'</div>'
+    +'<div class="sc-row"><span class="sc-l">ID</span><span class="sc-v">'+esc(s.id)+'</span></div>'
+    +'<div class="sc-row"><span class="sc-l">Tipo</span><span class="sc-v">'+esc(s.categoria||'—')+'</span></div>'
+    +'<div class="sc-row"><span class="sc-l">Estreno</span><span class="sc-v">'+fStr+'</span></div>';
+  _soonFicha(el, s.artista);
+  return el;
+}
+function buildEdicionCard(e){
+  var el=document.createElement('div');
+  el.className='soon-card';
+  el.innerHTML=SOON_LOCK+'<div class="sc-title">'+esc(e.artista)+'</div>'
+    +'<div class="sc-row"><span class="sc-l">Tipo</span><span class="sc-v">'+esc(e.categoria||'—')+'</span></div>'
+    +'<div class="sc-row"><span class="sc-l">Estado</span><span class="sc-v">En edición</span></div>'
+    +'<div class="sc-row"><span class="sc-l">Estreno</span><span class="sc-v">A confirmar</span></div>';
+  _soonFicha(el, e.artista);
   return el;
 }
 function buildSoonCTA(){
@@ -9741,6 +9861,7 @@ window.addEventListener('load', function(){
   loadTotalFromSupabase();
   // 2b. Merge sets nuevos desde Supabase
   mergeSupabaseSets();
+  mergeSheetSets();      // el Google Sheet manda sobre Supabase y la copia interna
   // 2c. Merge bios/géneros/redes editadas desde el Panel del equipo
   mergeDjsFromSupabase();
   // 3. Sync desde Google Sheet (links YT de los sets)
@@ -10646,7 +10767,8 @@ window.GTS = (function(){
       var hoy=iso(new Date());
       var prox=(_gtsHay('JAMS')?JAMS:[]).filter(function(j){ return j.dateISO && j.dateISO>=hoy && (j.upcoming || j.estado==='Proxima'); })
         .sort(function(a,b){ return a.dateISO.localeCompare(b.dateISO); })[0];
-      nx.textContent = prox ? 'Próxima jornada · '+fechaLarga(prox.dateISO) : 'Todos los domingos · convocatoria por Instagram';
+      nx.textContent = prox ? 'Próxima jornada · '+fechaLarga(prox.dateISO) : '';
+      nx.style.display = prox ? '' : 'none';
     }
     var c=$('gts-jam-faces'); if(!c || c._ok || !_gtsHay('SM')) return; c._ok=true;
     var jam=SM.filter(function(s){ return s.tipo==='DJ_JAM' && s.estado==='Publicado'; });
