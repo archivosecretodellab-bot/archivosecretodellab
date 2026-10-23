@@ -4109,7 +4109,8 @@ async function mergeDjsFromSupabase(){
   // y lo aplica sobre el DJS de memoria — sin esto, lo que se "guarda" en el panel
   // nunca se ve en la web pública ni en una recarga nueva de la página.
   try{
-    var res = await sb.from('djs').select('*');
+    // Lee la vista pública (sin mail ni WhatsApp): la tabla djs solo la puede leer el equipo logueado.
+    var res = await sb.from('djs_publicos').select('nombre_artistico,genero,bio,links');
     if(res.error || !res.data || !res.data.length) return;
     var byName = {};
     DJS.forEach(function(d){ byName[(d.artist||'').trim().toUpperCase()] = d; });
@@ -4118,12 +4119,9 @@ async function mergeDjsFromSupabase(){
       var key = (row.nombre_artistico||'').trim().toUpperCase();
       if(!key) return;
       var dj = byName[key];
-      if(!dj){
-        // Artista nuevo, cargado solo en Supabase (ej. vía formulario de leads)
-        dj = { i: String(9000 + Object.keys(byName).length), artist: row.nombre_artistico };
-        DJS.push(dj);
-        byName[key] = dj;
-      }
+      // Solo actualiza fichas que ya existen: en djs también entran quienes reservaron y todavía no grabaron
+      // (y las reservas de prueba). Una ficha nueva se crea a propósito, no por una reserva.
+      if(!dj) return;
       // Solo pisa un campo si en Supabase tiene un valor real (no vacío)
       if(row.genero)  dj.genre = row.genero;
       if(row.bio)      dj.bio    = row.bio;
