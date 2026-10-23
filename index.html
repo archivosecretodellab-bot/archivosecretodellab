@@ -2245,7 +2245,7 @@ fbq('track', 'PageView');
             <div class="gts-eyebrow">Preguntas frecuentes</div>
             <h2 class="gts-h2">Antes de venir.</h2>
             <div class="gts-faq">
-              <details><summary><em>01</em>¿Qué tengo que traer?</summary><p>Tus tracks en USB (analizados en Rekordbox) y tus auriculares. Si no tenés, te alquilamos unos por $10.000. Llegá mínimo 10 minutos antes.</p></details>
+              <details><summary><em>01</em>¿Qué tengo que traer?</summary><p>Tus tracks en USB (analizados en Rekordbox) y tus auriculares. Si no tenés, te alquilamos unos por $10.000. Llegá mínimo 10 minutos antes. La tolerancia es de 10 minutos: si llegás más tarde, hay que reagendar.</p></details>
               <details><summary><em>02</em>¿Qué equipo hay en cabina?</summary><p>Pioneer XDJ-RX2 con monitores Pioneer DM-40. Si tocás con vinilos, controlador o tu propio mixer, avisanos antes de la sesión para coordinarlo.</p></details>
               <details><summary><em>03</em>¿Cuándo confirman mi reserva?</summary><p>En menos de 24 hs te escribimos por WhatsApp. Ahí te pasamos el link de Mercado Pago para la seña de $20.000, que deja tu fecha reservada. La seña no es reembolsable, se descuenta del total y con ella te pasamos la dirección.</p></details>
               <details><summary><em>04</em>¿Cómo pago el resto?</summary><p>La seña se descuenta del total. El resto lo pagás el día de la grabación, en efectivo o por transferencia.</p></details>
@@ -7863,6 +7863,8 @@ window.GTS = (function(){
   };
   var ORDEN = ['Basico','Common','B2B','Custom'];
   var APERTURA = 11*60, CIERRE = 20*60, PASO = 30, ANTICIPACION_H = 48, DIAS = 30;
+  // 10 minutos libres entre un set y el siguiente (cambio de DJ y prueba de sonido). La base de datos aplica la misma regla.
+  var MARGEN = 10;
   var MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
   var DIAS_N = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
 
@@ -7949,19 +7951,21 @@ window.GTS = (function(){
     });
     S.cargado = true;
   }
+  function noSePisa(s, dur, oc){ return oc.every(function(iv){ return s+dur+MARGEN<=iv[0] || s>=iv[1]+MARGEN; }); }
   function horarios(fecha, tipo){
-    var dur = (FMT[tipo]||FMT.Common).min, oc = S.ocupados[fecha]||[], out=[];
-    for(var s=APERTURA; s+dur<=CIERRE; s+=PASO){
-      var libre = oc.every(function(iv){ return s+dur<=iv[0] || s>=iv[1]; });
-      out.push({min:s, ok: libre && horasHasta(fecha,s) >= ANTICIPACION_H});
-    }
-    return out;
+    var dur = (FMT[tipo]||FMT.Common).min, oc = S.ocupados[fecha]||[], ini={};
+    for(var s=APERTURA; s+dur<=CIERRE; s+=PASO) ini[s]=1;
+    // Además de las medias horas, se ofrece el horario justo después (o antes) de cada sesión tomada, respetando el margen.
+    oc.forEach(function(iv){ [iv[1]+MARGEN, iv[0]-MARGEN-dur].forEach(function(x){ if(x>=APERTURA && x+dur<=CIERRE) ini[x]=1; }); });
+    return Object.keys(ini).map(Number).sort(function(a,b){return a-b;}).map(function(s){
+      return {min:s, ok: noSePisa(s,dur,oc) && horasHasta(fecha,s) >= ANTICIPACION_H};
+    });
   }
   function libre(fecha, horaMin, tipo){
     if(!fecha || horaMin==null) return false;
     var dur=(FMT[tipo]||FMT.Common).min;
     if(horaMin+dur>CIERRE) return false;
-    return (S.ocupados[fecha]||[]).every(function(iv){ return horaMin+dur<=iv[0] || horaMin>=iv[1]; }) && horasHasta(fecha,horaMin)>=ANTICIPACION_H;
+    return noSePisa(horaMin, dur, S.ocupados[fecha]||[]) && horasHasta(fecha,horaMin)>=ANTICIPACION_H;
   }
   function estadoDia(fecha){
     var d=parseIso(fecha), hoy=new Date(); hoy.setHours(0,0,0,0);
@@ -8132,7 +8136,7 @@ window.GTS = (function(){
       + '<ol>'
       + '<li><span><b>En menos de 24 hs te escribimos por WhatsApp</b> para confirmar '+(custom?'la propuesta y la fecha':'tu fecha')+'.</span></li>'
       + '<li><span>Ahí te pasamos los datos para la <b>seña de '+plata(senia())+'</b> por Mercado Pago (no reembolsable). Se descuenta del total y con la seña te pasamos la dirección.</span></li>'
-      + '<li><span>El día de tu sesión, <b>llegá mínimo 10 minutos antes</b> con tus tracks en USB y tus auriculares (si no tenés, te alquilamos unos por $10.000). El resto se paga en efectivo o transferencia.</span></li>'
+      + '<li><span>El día de tu sesión, <b>llegá mínimo 10 minutos antes</b> con tus tracks en USB y tus auriculares (si no tenés, te alquilamos unos por $10.000). El resto se paga en efectivo o transferencia. La tolerancia es de 10 minutos: si llegás más tarde, hay que reagendar.</span></li>'
       + '<li><span>Entre <b>10 y 15 días hábiles</b> te llega el link de descarga. Vence a los 10 días: bajalo apenas lo recibas.</span></li>'
       + '</ol><p class="gts-fine"><b>Te mandamos todo esto a tu mail</b> ('+esc(D.email||'')+'). Si no lo ves, revisá spam o promociones.</p>'
       + '<p class="gts-fine">Podés reprogramar hasta 48 hs antes. Si cancelás con menos de 48 hs, perdés la seña.</p>'
@@ -8262,7 +8266,15 @@ window.GTS = (function(){
       S.enviado=true; render();
       var w=$('gts-wiz'); if(w) w.scrollIntoView({behavior:'smooth',block:'start'});
     }catch(e){
-      if(errEl) errEl.innerHTML='No pudimos enviar tu solicitud. Probá de nuevo o <a href="'+$('gts-wa').href+'" target="_blank" rel="noopener" style="color:inherit">escribinos por WhatsApp</a>.';
+      var em=String((e&&e.message)||'');
+      if(em.indexOf('ASDL_OCUPADO')>-1){
+        try{ await cargarOcupacion(); }catch(e2){}
+        S.hora=null; S.paso=1; S.avisoHora='Alguien acaba de pedir ese horario. Elegí otro y seguimos: tus datos quedan guardados.';
+        S.enviando=false; render(); return;
+      }
+      if(errEl) errEl.innerHTML = em.indexOf('ASDL_LIMITE')>-1
+        ? 'Ya recibimos varias solicitudes con este mail hoy. Si necesitás cambiar algo, <a href="'+$('gts-wa').href+'" target="_blank" rel="noopener" style="color:inherit">escribinos por WhatsApp</a>.'
+        : 'No pudimos enviar tu solicitud. Probá de nuevo o <a href="'+$('gts-wa').href+'" target="_blank" rel="noopener" style="color:inherit">escribinos por WhatsApp</a>.';
       if(btn){ btn.disabled=false; btn.innerHTML='Enviar solicitud <span class="arr">→</span>'; }
     }
     S.enviando=false;
