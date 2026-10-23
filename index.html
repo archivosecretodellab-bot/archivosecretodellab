@@ -3110,7 +3110,7 @@ body:has(#ficha.on) #ficha{bottom:0!important}
             <div class="gts-eyebrow">Preguntas frecuentes</div>
             <h2 class="gts-h2">Antes de venir.</h2>
             <div class="gts-faq">
-              <details><summary><em>01</em>¿Qué tengo que traer?</summary><p>Tus tracks en USB (analizados en Rekordbox) y tus auriculares. Si no tenés, te alquilamos unos por $10.000. Llegá al menos 15 minutos antes.</p></details>
+              <details><summary><em>01</em>¿Qué tengo que traer?</summary><p>Tus tracks en USB (analizados en Rekordbox) y tus auriculares. Si no tenés, te alquilamos unos por $10.000. Llegá mínimo 10 minutos antes.</p></details>
               <details><summary><em>02</em>¿Qué equipo hay en cabina?</summary><p>Pioneer XDJ-RX2 con monitores Pioneer DM-40. Si tocás con vinilos, controlador o tu propio mixer, avisanos antes de la sesión para coordinarlo.</p></details>
               <details><summary><em>03</em>¿Cuándo confirman mi reserva?</summary><p>En menos de 24 hs te escribimos por WhatsApp. Ahí te pasamos el link de Mercado Pago para la seña de $20.000, que deja tu fecha reservada. La seña no es reembolsable, se descuenta del total y con ella te pasamos la dirección.</p></details>
               <details><summary><em>04</em>¿Cómo pago el resto?</summary><p>La seña se descuenta del total. El resto lo pagás el día de la grabación, en efectivo o por transferencia.</p></details>
@@ -10441,12 +10441,14 @@ window.GTS = (function(){
       + '<ol>'
       + '<li><span><b>En menos de 24 hs te escribimos por WhatsApp</b> para confirmar '+(custom?'la propuesta y la fecha':'tu fecha')+'.</span></li>'
       + '<li><span>Ahí te pasamos los datos para la <b>seña de '+plata(senia())+'</b> por Mercado Pago (no reembolsable). Se descuenta del total y con la seña te pasamos la dirección.</span></li>'
-      + '<li><span>El día de tu sesión, <b>llegá 15 minutos antes</b> con tus tracks en USB y tus auriculares (si no tenés, te alquilamos unos por $10.000). El resto se paga en efectivo o transferencia.</span></li>'
+      + '<li><span>El día de tu sesión, <b>llegá mínimo 10 minutos antes</b> con tus tracks en USB y tus auriculares (si no tenés, te alquilamos unos por $10.000). El resto se paga en efectivo o transferencia.</span></li>'
       + '<li><span>Entre <b>10 y 15 días hábiles</b> te llega el link de descarga. Vence a los 10 días: bajalo apenas lo recibas.</span></li>'
-      + '</ol><p class="gts-fine">Podés reprogramar hasta 48 hs antes. Si cancelás con menos de 48 hs, perdés la seña.</p>'
+      + '</ol><p class="gts-fine"><b>Te mandamos todo esto a tu mail</b> ('+esc(D.email||'')+'). Si no lo ves, revisá spam o promociones.</p>'
+      + '<p class="gts-fine">Podés reprogramar hasta 48 hs antes. Si cancelás con menos de 48 hs, perdés la seña.</p>'
       + '<div class="gts-nav"><button type="button" class="gts-link" onclick="navTo(\'djsets\',document.querySelector(\'[data-pg=djsets]\'))">Mirá el registro mientras tanto →</button></div></div>';
   }
-  function senia(){ return (_gtsHay('CFG') && Number(CFG.senia)>0) ? Number(CFG.senia) : 20000; }
+  // La seña nunca baja de $20.000 (Manual de Marca V3), aunque la tabla config tenga un número viejo
+  function senia(){ var v=(_gtsHay('CFG') ? Number(CFG.senia) : NaN); return v>0 ? Math.max(v,20000) : 20000; }
 
   function enlazar(){
     var st=$('gts-stage'); if(!st) return;
