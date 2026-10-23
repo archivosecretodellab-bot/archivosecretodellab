@@ -4170,7 +4170,7 @@ async function mergeSupabaseSets(){
 // Sets grabados que todavía se están editando (se muestran en "Próximamente", sin número ni fecha).
 // Esta lista es el respaldo de hoy; cuando el Sheet carga, se reemplaza por lo que diga el Sheet.
 var ASDL_EDICION = ['SIMON RULEZ','RAMA RAIA','BRVCE','GRECIA','NOZZ','NAN CAPTOR','VIVI MUSIC','MADEMOISELLE CHÉRIE','ISHIT','ANA BRUSSO','BLXNDINESE']
-  .map(function(n){ return { artista:n, categoria: /^(ISHIT|VIVI MUSIC|ANA BRUSSO|BLXNDINESE|NAN CAPTOR|MADEMOISELLE CH)/.test(n) ? 'FEMALE DJ JAM 002' : 'COMMON LIVESET' }; });
+  .map(function(n){ return { artista:n, categoria: /^(ISHIT|VIVI MUSIC|ANA BRUSSO|BLXNDINESE|NAN CAPTOR|MADEMOISELLE CH)/.test(n) ? 'DJ JAM 017 (FEMALE DJ JAM 2)' : 'COMMON LIVESET' }; });
 function _shNorm(t){ return String(t||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toUpperCase().replace(/\s+/g,' ').trim(); }
 function _shYt(u){ var m=/(?:v=|youtu\.be\/|shorts\/|live\/)([A-Za-z0-9_-]{11})/.exec(String(u||'')); return m?m[1]:''; }
 function _shFecha(f){
@@ -4178,6 +4178,8 @@ function _shFecha(f){
   if(m) return m[3]+'-'+('0'+m[2]).slice(-2)+'-'+('0'+m[1]).slice(-2);
   m=/^(\d{4})-(\d{2})-(\d{2})/.exec(f); return m ? m[0] : '';
 }
+// Número de jornada tal como está escrito ("DJ JAM 017 (FEMALE DJ JAM 2)" → "017"). Ignora lo que va entre paréntesis.
+function _jamNum(cat){ var m=/DJ JAM\s*(\d+)/i.exec(String(cat||'')); return m ? m[1] : String(cat||'').replace(/\D/g,''); }
 function _shTipo(cat){
   var c=_shNorm(cat);
   if(/DJ JAM/.test(c)) return {tipo:'DJ_JAM', categoria:c.replace(/\s+/g,' ')};
@@ -8401,8 +8403,8 @@ function renderJamsInto(c){
   });
   // Ordenar categorías por número de JAM, newest-first (DJ JAM 013 antes que 012)
   var cats=Object.keys(groups).sort(function(a,b){
-    var na = parseInt(a.replace(/\D/g,''),10) || 0;
-    var nb = parseInt(b.replace(/\D/g,''),10) || 0;
+    var na = parseInt(_jamNum(a),10) || 0;
+    var nb = parseInt(_jamNum(b),10) || 0;
     return nb - na;
   });
   c.innerHTML='';
@@ -9009,7 +9011,7 @@ async function jamSave(jamId){
   // Propagar fechas a SM
   var catNum = jamId.replace('ASDL','').replace(/^0+/,'');
   SM.forEach(function(s){
-    if(s.categoria && s.categoria.replace(/\D/g,'') === catNum){
+    if(s.categoria && _jamNum(s.categoria) === catNum){
       if(j.dateISO) s.fecha = j.dateISO;
     }
   });
@@ -9083,7 +9085,7 @@ function getJamDateLabel(jamEntry){
   var catNum = (jamEntry.id || '').replace('ASDL','').replace(/^0+/,'');
   var jamSets = SM.filter(function(s){
     if(s.tipo !== 'DJ_JAM' || !s.fecha) return false;
-    var smCatNum = (s.categoria || '').replace(/\D/g,'');
+    var smCatNum = _jamNum(s.categoria);
     return smCatNum === catNum && s.estado === 'Publicado';
   });
   if(jamSets.length === 0) return jamEntry.date || '';
@@ -9097,7 +9099,7 @@ function buildJamLineup(id, soonLbl){
   try{
     var smEntry = (typeof SM !== 'undefined') && SM.find(function(s){ return s.id === id; });
     if(!smEntry || smEntry.tipo !== 'DJ_JAM') return '';
-    var catNum = (smEntry.categoria || '').replace(/\D/g, '');
+    var catNum = _jamNum(smEntry.categoria);
     var jamEntry = (typeof JAMS !== 'undefined') && JAMS.find(function(j){
       return j.id === 'ASDL' + catNum.padStart(3,'0') || j.id === 'ASDL' + catNum;
     });
