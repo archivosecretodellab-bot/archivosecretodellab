@@ -9708,116 +9708,8 @@ async function fetchYouTubeStats(){
   }
 }
 
-// ═══════════════════════════════════════════════════════
-// Sync de DJs desde el Google Sheet del formulario
-// ═══════════════════════════════════════════════════════
-// Trae info de DJs nuevos que el cliente ya publicó en SM pero todavía
-// no agregamos a DJS[]. Nunca pisa entradas existentes (las curadas a mano
-// mantienen su info). Ignora email/nombre real/cumpleaños (privados).
-const DJ_FORM_SHEET_ID = '1admYkp9bi1DSxM8MrOx6tySuFHs3lHgnEM5jIGxFqLQ';
-const DJ_FORM_CSV_URL = 'https://docs.google.com/spreadsheets/d/' + DJ_FORM_SHEET_ID + '/export?format=csv';
-
-// Parser CSV mínimo (maneja comillas y saltos dentro de celdas)
-function _parseCSV(text){
-  var rows = [], row = [], cell = '', inQ = false, i = 0;
-  while(i < text.length){
-    var c = text[i];
-    if(inQ){
-      if(c === '"' && text[i+1] === '"'){ cell += '"'; i += 2; continue; }
-      if(c === '"'){ inQ = false; i++; continue; }
-      cell += c; i++; continue;
-    }
-    if(c === '"'){ inQ = true; i++; continue; }
-    if(c === ','){ row.push(cell); cell = ''; i++; continue; }
-    if(c === '\n'){ row.push(cell); rows.push(row); row = []; cell = ''; i++; continue; }
-    if(c === '\r'){ i++; continue; }
-    cell += c; i++;
-  }
-  if(cell || row.length){ row.push(cell); rows.push(row); }
-  return rows;
-}
-
-async function syncDjsFromForm(){
-  try{
-    console.log('[FORM] → Sincronizando DJs desde Google Sheet...');
-    const res = await fetch(DJ_FORM_CSV_URL);
-    console.log('[FORM] ← Status HTTP:', res.status);
-    if(!res.ok) throw new Error('HTTP ' + res.status);
-    const csv = await res.text();
-    const rows = _parseCSV(csv);
-    if(rows.length < 2){ console.warn('[FORM] Sheet vacía'); return; }
-    const headers = rows[0].map(function(h){ return (h || '').toLowerCase(); });
-    const findCol = function(substr){ return headers.findIndex(function(h){ return h.indexOf(substr.toLowerCase()) > -1; }); };
-    const ci = {
-      aka:    findCol('artístico'),
-      genres: findCol('género'),
-      trayec: findCol('cuánto tiempo'),
-      estilo: findCol('describirías'),
-      bio:    findCol('público supiera'),
-      session:findCol('solitario'),
-      redes:  findCol('encontrarte'),
-      yt:     findCol('youtube'),
-      sc:     findCol('soundcloud'),
-      ig:     headers.findIndex(function(h){ return h.indexOf('instagram') > -1 && h.indexOf('usuario') > -1; })
-    };
-    if(ci.aka < 0){ console.warn('[FORM] ✗ No se encontró la columna AKA. Headers:', headers); return; }
-
-    // Conjunto de artistas con set Publicado (incluye participantes de B2B)
-    const published = new Set();
-    if(typeof SM !== 'undefined'){
-      SM.forEach(function(s){
-        if(s.estado !== 'Publicado') return;
-        const a = (s.artista || '').toUpperCase().trim();
-        published.add(a);
-        a.split(/\s+B2B\s+/).forEach(function(p){ published.add(p.trim()); });
-      });
-    }
-
-    // Conjunto de DJs ya en DJS[] (para no duplicar/pisar)
-    const existing = new Set();
-    if(typeof DJS !== 'undefined'){
-      DJS.forEach(function(d){
-        if(d.artist) existing.add(d.artist.toUpperCase().trim());
-        if(d.alias)  existing.add(d.alias.toUpperCase().trim());
-      });
-    }
-
-    // Procesar filas
-    let added = 0, skippedNoSet = 0, skippedExisting = 0;
-    for(let r = 1; r < rows.length; r++){
-      const row = rows[r];
-      const aka = (row[ci.aka] || '').trim();
-      if(!aka) continue;
-      const akaUp = aka.toUpperCase();
-      if(!published.has(akaUp)){ skippedNoSet++; continue; }
-      if(existing.has(akaUp)){ skippedExisting++; continue; }
-      const genres = (row[ci.genres] || '').split(',')
-        .map(function(g){ return g.trim().split(' (')[0]; })
-        .filter(Boolean).join(' · ');
-      const ig = (row[ci.ig] || '').trim();
-      const sc = (row[ci.sc] || '').trim();
-      const yt = (row[ci.yt] || '').trim();
-      const links = [ig, sc, yt].filter(Boolean).join(' · ');
-      const bioRaw = (row[ci.estilo] || row[ci.bio] || '').trim();
-      const bio = bioRaw.split('\n')[0].substring(0, 280);
-      DJS.push({
-        i: 'F' + String(r).padStart(3,'0'),
-        artist: aka, alias: aka,
-        genre: genres || 'Por confirmar',
-        exp: (row[ci.trayec] || '').trim(),
-        bio: bio || 'Grabó en el Archivo.',
-        type: 'Common Liveset', session: 'Solo',
-        links: links, reg: 'Sync'
-      });
-      existing.add(akaUp);
-      added++;
-    }
-    console.log('[FORM] ✓ Sync OK — agregados: ' + added + ' · ya existían: ' + skippedExisting + ' · sin set publicado: ' + skippedNoSet);
-    if(added > 0 && typeof renderDjs === 'function') renderDjs();
-  }catch(e){
-    console.error('[FORM] ✗ Error sync:', e);
-  }
-}
+// (oct 2026) Se quitó la lectura del formulario de DJs: esa planilla tiene datos personales y es privada.
+// Las fichas nuevas se cargan con Claude o desde el Panel.
 
 // ═══════════════════════════════════════════════════════
 // Terminal cursor parpadeante (sólo desktop con mouse)
@@ -9870,8 +9762,6 @@ window.addEventListener('load', function(){
   // if(location.protocol==='https:') setTimeout(syncFromSheet, 2000);
   // 4. Stats automáticas desde YouTube Data API
   fetchYouTubeStats();
-  // 5. Sync DJs nuevos desde el form (Google Sheet) — sólo agrega, no pisa
-  setTimeout(syncDjsFromForm, 1500);
 });
 
 
