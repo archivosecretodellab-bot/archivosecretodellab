@@ -8360,11 +8360,11 @@ window.GTS = (function(){
     var m=jMin(h); if(m==null) return false;
     return noSePisa(m, 60, S.ocupados[j.fecha]||[]) && horasHasta(j.fecha, m) >= 12;
   }
-  // Descuento por reservar antes; si es de la comunidad, se aplica el mayor de los dos (no se suman)
+  // Descuento por reservar antes. El 10% de comunidad no aplica a la DJ JAM ni a las jornadas (Manual de Marca V3)
   function jPrecio(j){
     var base=Number(j.precio)||precio('Common'), hoy=iso(new Date());
     var antes=(Number(j.descuento)>0 && j.descuento_hasta && hoy<=j.descuento_hasta) ? Number(j.descuento) : 0;
-    var com=S.grabo ? ((_gtsHay('CFG') && CFG.descuento_comunidad) ? Number(CFG.descuento_comunidad) : 10) : 0;
+    var com=0;
     var dto=Math.max(antes, com);
     return {base:base, final:Math.round(base*(1-dto/100)), dto:dto, motivo: dto ? (dto===com && com>=antes ? 'comunidad' : 'antes') : ''};
   }
@@ -8473,7 +8473,7 @@ window.GTS = (function(){
       var res = await guardarReserva({
         nombre_artistico:D.nombre, email:D.email, whatsapp:D.wa, genero:'', links:D.ig,
         tipo:j.tipo, fecha:j.fecha, horario:hora, jornada_id:j.id,
-        ya_registrado:S.grabo, mensaje:'Jornada: '+jLabel(j), es_comunidad:S.grabo, descuento:!!t.dto,
+        ya_registrado:S.grabo, mensaje:'Jornada: '+jLabel(j), es_comunidad:false, descuento:!!t.dto,
         precio_base:t.final, senia:senia(), estado:'Pendiente'
       });
       if(!res || !res.ok) throw new Error((res&&res.error)||'error');
