@@ -4985,6 +4985,13 @@ window.openFicha = async function openFicha(id){
     }
   }
 
+  // "N:NOMBRE": ficha pedida por nombre (botones del B2B, donde el dúo y sus integrantes comparten número)
+  if(!dj && /^N:/.test(id)){
+    const _nm = _nomNorm(id.slice(2));
+    const _d = DJS.find(d=>_nomNorm(d.artist)===_nm) || DJS.find(d=>d.alias && _nomNorm(d.alias)===_nm);
+    if(_d){ dj = _d; id = _d.i; }
+  }
+
   // IDs sin prefijo ASDL (numéricos puros): buscar en DJS
   if(!dj && !isASDL){
     dj = DJS.find(d=>d.i===id)
@@ -8182,7 +8189,7 @@ function openEncuentro(set){
       + '<div class="enc-n">'+esc(dj?dj.artist:nombre)+'</div>'
       + '<div class="enc-g">'+esc(genero)+'</div>'
       + '<div class="enc-s">'+(pos&&sets.length?'Su set '+pos+' de '+sets.length+' en el Archivo':'')+'</div>'
-      + (dj && dj.soloDuo ? '' : dj ? '<button type="button" class="enc-btn" data-dj="'+esc(dj.i)+'">Ver su ficha →</button>' : '<div class="enc-g" style="margin-top:auto">Todavía sin ficha propia</div>')
+      + (dj && dj.soloDuo ? '' : dj ? '<button type="button" class="enc-btn" data-dj="N:'+esc(dj.artist)+'">Ver su ficha →</button>' : '<div class="enc-g" style="margin-top:auto">Todavía sin ficha propia</div>')
       + '</div>';
   };
 
