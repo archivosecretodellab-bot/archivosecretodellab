@@ -1961,6 +1961,19 @@ fbq('track', 'PageView');
       .gts-jor-p{font-size:13px;margin:0 0 14px}
       .gts-jor-p s{opacity:.5;margin-right:6px}
       .gts-jor-form{margin-top:16px}
+      /* Modo jornada: quien está reservando un horario ve solo eso */
+      #gts-jam-sec.gts-jmode #gts-jam-h,#gts-jam-sec.gts-jmode #gts-jam-p,#gts-jam-sec.gts-jmode #gts-jam-form,#gts-jam-sec.gts-jmode #gts-jam-next{display:none!important}
+      #gts-jam-sec.gts-jpick .gts-jor:not(.sel){display:none}
+      .gts-jor-otras{display:inline-block;margin-top:14px}
+      /* Link directo a una jornada (?jornada=N): la página se vuelve el flyer de esa jornada */
+      #pg-agenda.jor-solo .gts-sec:not(#gts-jam-sec),#pg-agenda.jor-solo .gts-end,#pg-agenda.jor-solo .asdl-foot,#pg-agenda.jor-solo .gts-fab{display:none!important}
+      #pg-agenda.jor-solo .gts-jor:not([data-solo]){display:none}
+      #pg-agenda.jor-solo .gts-jam-body>div:last-child{order:-1}
+      #pg-agenda.jor-solo.jor-np .gts-jam-body>div:first-child{display:none}
+      #pg-agenda.jor-solo .gts-jam-body{grid-template-columns:1fr 1fr}
+      #pg-agenda.jor-solo.jor-np .gts-jam-body{grid-template-columns:1fr;max-width:640px}
+      @media (max-width:900px){ #pg-agenda.jor-solo .gts-jam-body{grid-template-columns:1fr} }
+      .gts-jor-all{display:block;margin:0 0 14px}
       .gts-hi{padding:12px 14px;border:1px solid rgba(43,26,255,.5);background:rgba(27,0,230,.12);font-size:12px;line-height:1.6;margin-bottom:14px}
       .gts-check{display:flex;gap:10px;align-items:flex-start;font-size:12px;line-height:1.6;color:var(--g-w2);cursor:pointer;margin:6px 0 14px}
       .gts-check input{margin-top:3px;accent-color:var(--g-b);width:16px;height:16px;flex-shrink:0}
@@ -3915,6 +3928,18 @@ function asdlPrivacidad(){
 document.addEventListener('DOMContentLoaded', function(){ try{ if(location.hash==='#privacidad') setTimeout(asdlPrivacidad, 400); }catch(err){} });
 document.addEventListener('DOMContentLoaded', function(){ try{ if(new URLSearchParams(location.search).get('jornada')) setTimeout(function(){ navTo('agenda', document.querySelector('.nt[data-pg="agenda"]')); }, 300); }catch(err){} });
 
+// ═══ Mails mal tipeados (gmail.con, gmial.com, hotmal.com…): sugiere la corrección antes de enviar ═══
+function asdlMailFix(mail){
+  var m=String(mail||'').trim().toLowerCase().match(/^([^\s@]+)@([^\s@]+)$/); if(!m) return '';
+  var dom=m[2], orig=dom;
+  var fixDom={'gmial.com':'gmail.com','gmal.com':'gmail.com','gmai.com':'gmail.com','gamil.com':'gmail.com','gnail.com':'gmail.com','gmaill.com':'gmail.com','gmail.co':'gmail.com','gmail.cm':'gmail.com','gmail.om':'gmail.com','gmail.comm':'gmail.com','gmail.com.ar':'gmail.com',
+    'hotmial.com':'hotmail.com','hotmal.com':'hotmail.com','hotmai.com':'hotmail.com','hotmil.com':'hotmail.com','hotmail.co':'hotmail.com','hotmail.cm':'hotmail.com',
+    'yaho.com':'yahoo.com','yahoo.co':'yahoo.com','yahooo.com':'yahoo.com','outlok.com':'outlook.com','outloo.com':'outlook.com','outlook.co':'outlook.com','icloud.co':'icloud.com','iclod.com':'icloud.com'};
+  dom=dom.replace(/\.con$/,'.com').replace(/\.cmo$/,'.com').replace(/\.vom$/,'.com').replace(/\.xom$/,'.com').replace(/\.cpm$/,'.com').replace(/\.comn$/,'.com');
+  if(fixDom[dom]) dom=fixDom[dom];
+  return dom!==orig ? m[1]+'@'+dom : '';
+}
+
 // ═══ FOOTER: se arma igual en Grabá tu set y en Alquiler de equipos ═══
 function asdlFootGo(pg, ancla){
   navTo(pg, document.querySelector('.nt[data-pg="'+pg+'"]'));
@@ -5367,108 +5392,13 @@ function adminTab(tab){
   else if(tab==='embudo') renderAdminEmbudo(cont);
 }
 
+// ═══ PANEL · RESUMEN — números reales del mes, se actualiza solo cada minuto ═══
 function renderAdminOverview(c){
-  const grabados=DJS.filter(d=>!d.hidden&&!d.isSoon&&!SOON.includes(d.artist)).length;
-  const proximos=DJS.filter(d=>!d.hidden&&(d.isSoon||SOON.includes(d.artist))).length;
-  const conVideo=Object.keys(videos).length;
-  const sinVideo=grabados-conVideo;
-  const pctVideo=Math.round((conVideo/Math.max(grabados,1))*100);
-  const pctGrabados=Math.round((grabados/DJS.length)*100);
-
-  // Timeline jams
-  const jamTimeline=JAMS.map((j,idx)=>{
-    const isNext=!!j.upcoming;
-    const isPast=!j.upcoming;
-    return `<div class="tl-item ${isNext?'tl-next':isPast?'tl-past':''}">
-      <div class="tl-dot"></div>
-      <div class="tl-body">
-        <div class="tl-id">${j.id}</div>
-        <div class="tl-meta">${j.sets.length} sets${isNext?' · <span style="color:var(--el)">Por confirmar — PRÓXIMA</span>':''}</div>
-      </div>
-    </div>`;
-  }).join('');
-
-  // Últimos 5 registros
-  const recientes=[...DJS].reverse().slice(0,5);
-  const recentHTML=recientes.map(d=>`
-    <div class="recent-item">
-      <div class="ri-num">${d.i}</div>
-      <div class="ri-info">
-        <div class="ri-name">${d.artist}</div>
-        <div class="ri-meta">${d.type||'DJ JAM'} · ${d.reg||'—'}</div>
-      </div>
-      <div class="ri-tag ${d.isSoon||SOON.includes(d.artist)?'ri-soon':'ri-ok'}">${d.isSoon||SOON.includes(d.artist)?'Pronto':'Grabado'}</div>
-    </div>`).join('');
-
-  c.innerHTML=`
-  <div class="dash-grid">
-
-    <!-- STAT CARDS -->
-    <div class="dash-stats">
-      <div class="dstat">
-        <div class="dstat-n anim-count" data-target="${TOTAL}">0</div>
-        <div class="dstat-l">Sets grabados</div>
-        <div class="dstat-bar"><div class="dstat-fill" style="width:100%;background:var(--b)"></div></div>
-      </div>
-      <div class="dstat">
-        <div class="dstat-n anim-count" data-target="${DJS.length}">0</div>
-        <div class="dstat-l">Artistas en catálogo</div>
-        <div class="dstat-bar"><div class="dstat-fill" style="width:${pctGrabados}%;background:var(--b)"></div></div>
-      </div>
-      <div class="dstat">
-        <div class="dstat-n anim-count" data-target="${JAMS.length}">0</div>
-        <div class="dstat-l">Dj Jams realizadas</div>
-        <div class="dstat-bar"><div class="dstat-fill" style="width:${Math.round(JAMS.length/15*100)}%;background:var(--b)"></div></div>
-      </div>
-      <div class="dstat" style="border-color:var(--soon-br)">
-        <div class="dstat-n anim-count" style="color:var(--el)" data-target="${proximos}">0</div>
-        <div class="dstat-l">Próximamente</div>
-        <div class="dstat-bar"><div class="dstat-fill" style="width:${Math.round(proximos/DJS.length*100)}%;background:var(--el)"></div></div>
-      </div>
-    </div>
-
-    <!-- PRÓXIMA JAM HIGHLIGHT -->
-    <div class="dash-next-jam">
-      <div class="nj-label">Próxima Dj Jam</div>
-      <div class="nj-title">ASDL012 — Por confirmar</div>
-      <div class="nj-artists">Spacegirls · Celes Ronda · Magma · Majo Mushi · Adhila</div>
-      <a class="nj-btn" onclick="navTo('agenda')" style="cursor:pointer">→ Agendar sesión</a>
-    </div>
-
-    <!-- PROGRESS VIDEOS -->
-    <div class="dash-panel">
-      <div class="dp-title">Sets con video vinculado</div>
-      <div class="dp-big">${conVideo} <span style="font-size:16px;font-weight:400;color:var(--wd)">/ ${grabados}</span></div>
-      <div class="dp-track">
-        <div class="dp-fill" style="width:${pctVideo}%"></div>
-      </div>
-      <div class="dp-sub">${pctVideo}% del archivo tiene set en YouTube</div>
-      <div style="margin-top:16px;font-size:10px;letter-spacing:.15em;color:var(--wd)">${sinVideo} artistas sin video asignado</div>
-    </div>
-
-    <!-- TIMELINE -->
-    <div class="dash-panel">
-      <div class="dp-title">Timeline Dj Jams</div>
-      <div class="tl-wrap">${jamTimeline}</div>
-    </div>
-
-    <!-- TIPOS DE SET -->
-    <div class="dash-panel">
-      <div class="dp-title">Distribución por tipo</div>
-      ${['DJ JAM','Common Liveset','Custom Liveset','Public Liveset'].map(tipo=>{
-        const count=DJS.filter(d=>d.type===tipo).length;
-        const pct=Math.round(count/DJS.length*100);
-        return `<div class="dtype-row">
-          <div class="dtype-name">${tipo}</div>
-          <div class="dtype-bar-wrap"><div class="dtype-bar" style="width:${pct}%"></div></div>
-          <div class="dtype-num">${count}</div>
-        </div>`;
-      }).join('')}
-    </div>
-
-    <!-- TICKER TAPE -->
-    <div class="dash-panel" style="grid-column:span 2">
-      <div class="dp-title">Ticker Tape — texto inferior</div>
+  if(!c) return;
+  c.innerHTML=_rzCSS()+'<div id="rz-live"><div class="jz-empty">Cargando el mes…</div></div>'
+    +'<div class="rz-grid" style="margin-top:2px">'+`    <!-- TICKER TAPE -->
+    <div class="rz-panel rz-span">
+      <div class="rz-k">Ticker Tape — texto inferior</div>
       <div style="font-size:9px;color:var(--wd);margin-bottom:12px;letter-spacing:.1em">Separá los segmentos con <code style="background:rgba(255,255,255,.06);padding:1px 5px">|</code>. Prefijá con <code style="background:rgba(255,255,255,.06);padding:1px 5px">!</code> para texto destacado (ej: <code style="background:rgba(255,255,255,.06);padding:1px 5px">!PRÓXIMA DJ JAM</code>)</div>
       <textarea id="ticker-edit" style="width:100%;box-sizing:border-box;background:#050505;border:1px solid var(--wf);color:var(--w);font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;padding:12px;resize:vertical;min-height:72px;outline:none;line-height:1.7">${getTickerText()||'!PRÓXIMA DJ JAM | Por confirmar | !CUPOS AGOTADOS | ¿Te vemos en la próxima? | !¡Inscribite! | —— | Archivo Secreto del Lab | Buenos Aires | Digital Electronic Archive | 147 Sets Grabados | ——'}</textarea>
       <div style="display:flex;gap:8px;margin-top:10px;align-items:center">
@@ -5478,58 +5408,8 @@ function renderAdminOverview(c){
       </div>
     </div>
 
-    <!-- ÚLTIMOS REGISTROS -->
-    <div class="dash-panel">
-      <div class="dp-title">Últimos registros</div>
-      <div class="recent-list">${recentHTML}</div>
-      <button class="tdbtn" style="margin-top:14px" onclick="adminTab('artists')">Ver todos →</button>
-    </div>
-
-  </div>
-  <style>
-  .dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;align-content:start}
-  .dash-stats{grid-column:span 2;display:grid;grid-template-columns:repeat(4,1fr);gap:2px}
-  .dash-next-jam{grid-column:span 2;background:var(--soon);border:1px solid var(--soon-br);padding:28px 32px;display:flex;align-items:center;gap:32px;flex-wrap:wrap}
-  .nj-label{font-size:8px;letter-spacing:.35em;color:var(--el);text-transform:uppercase;width:100%;margin-bottom:-12px}
-  .nj-title{font-family:'Space Mono',monospace;font-size:22px;font-weight:700;color:var(--w)}
-  .nj-artists{font-size:10px;letter-spacing:.1em;color:var(--wd);flex:1}
-  .nj-btn{font-size:9px;letter-spacing:.25em;text-transform:uppercase;background:var(--el);color:#fff;padding:10px 20px;white-space:nowrap;transition:background .2s}
-  .nj-btn:hover{background:#4422ee}
-  .dstat{background:rgba(255,255,255,.04);border:1px solid var(--wf);padding:22px 24px}
-  .dstat-n{font-family:'Space Mono',monospace;font-size:42px;font-weight:700;color:var(--b);line-height:1;margin-bottom:6px}
-  .dstat-l{font-size:9px;letter-spacing:.22em;color:var(--wd);text-transform:uppercase;margin-bottom:14px}
-  .dstat-bar{height:2px;background:rgba(255,255,255,.06);width:100%}
-  .dstat-fill{height:100%;transition:width 1.2s cubic-bezier(.16,1,.3,1)}
-  .dash-panel{background:rgba(255,255,255,.03);border:1px solid var(--wf);padding:24px 28px}
-  .dp-title{font-size:9px;letter-spacing:.3em;color:var(--b);text-transform:uppercase;margin-bottom:18px}
-  .dp-big{font-family:'Space Mono',monospace;font-size:44px;font-weight:700;color:var(--w);line-height:1;margin-bottom:12px}
-  .dp-track{height:3px;background:rgba(255,255,255,.06);margin-bottom:8px}
-  .dp-fill{height:100%;background:var(--b);transition:width 1.4s cubic-bezier(.16,1,.3,1)}
-  .dp-sub{font-size:10px;letter-spacing:.12em;color:var(--wd)}
-  .tl-wrap{display:flex;flex-direction:column;gap:0;max-height:240px;overflow-y:auto}
-  .tl-item{display:flex;align-items:center;gap:14px;padding:8px 0;border-bottom:1px solid var(--wf)}
-  .tl-item:last-child{border-bottom:none}
-  .tl-dot{width:8px;height:8px;border-radius:0;flex-shrink:0;background:var(--b)}
-  .tl-next .tl-dot{background:var(--el);box-shadow:0 0 8px var(--el);animation:dp 1.8s ease-in-out infinite}
-  .tl-id{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--w)}
-  .tl-meta{font-size:9px;letter-spacing:.12em;color:var(--wd)}
-  .dtype-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
-  .dtype-name{font-size:9px;letter-spacing:.1em;color:var(--wd);width:130px;flex-shrink:0;text-overflow:ellipsis;overflow:hidden;white-space:nowrap}
-  .dtype-bar-wrap{flex:1;height:3px;background:rgba(255,255,255,.06)}
-  .dtype-bar{height:100%;background:var(--b);transition:width 1.2s cubic-bezier(.16,1,.3,1)}
-  .dtype-num{font-size:11px;font-family:'Space Mono',monospace;color:var(--w);min-width:24px;text-align:right}
-  .recent-list{display:flex;flex-direction:column;gap:0}
-  .recent-item{display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid var(--wf)}
-  .recent-item:last-child{border-bottom:none}
-  .ri-num{font-size:9px;letter-spacing:.2em;color:var(--wm);min-width:32px}
-  .ri-name{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--w)}
-  .ri-meta{font-size:9px;letter-spacing:.1em;color:var(--wd)}
-  .ri-info{flex:1}
-  .ri-tag{font-size:7px;letter-spacing:.18em;text-transform:uppercase;padding:3px 9px}
-  .ri-ok{background:rgba(0,201,103,.1);color:var(--green)}
-  .ri-soon{background:rgba(85,51,255,.15);color:#a080ff}
-  </style>
-  <!-- CONTADOR MANUAL OVERRIDE -->
+    `+'</div>'
+    +`  <!-- CONTADOR MANUAL OVERRIDE -->
     <div class="dash-card" style="grid-column:1/-1;padding:20px 24px;background:rgba(27,0,230,.06);border:1px solid rgba(27,0,230,.2);margin-top:4px">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px">
         <div>
@@ -5555,18 +5435,110 @@ function renderAdminOverview(c){
         </div>
       </div>
     </div>
-  `;
-
-  // Animate counters
-  setTimeout(()=>{
-    document.querySelectorAll('.anim-count').forEach(el=>{
-      const target=parseInt(el.dataset.target)||0;
-      let n=0; const step=()=>{n=Math.min(n+Math.ceil((target-n)/5),target);el.textContent=n;if(n<target)setTimeout(step,40);};
-      step();
-    });
-  },80);
+`;
+  rzCargar();
+  clearInterval(window._rzTimer);
+  window._rzTimer=setInterval(function(){
+    var on=document.querySelector('[data-at=overview].on'), live=document.getElementById('rz-live');
+    if(!on || !live || !live.isConnected){ clearInterval(window._rzTimer); return; }
+    if(document.visibilityState==='visible') rzCargar();
+  }, 60000);
 }
-
+function _rzCSS(){
+  return _jzCSS()+'<style>'
+  +'.rz-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px}'
+  +'.rz-panel{background:rgba(255,255,255,.03);border:1px solid var(--wf);padding:22px 24px;min-width:0}'
+  +'.rz-span{grid-column:1/-1}.rz-half{grid-column:span 2}'
+  +'.rz-k{font-size:9px;letter-spacing:.3em;color:#5533ff;text-transform:uppercase;margin-bottom:14px}'
+  +'.rz-n{font-family:"Space Mono",monospace;font-weight:700;font-size:clamp(30px,3.4vw,44px);line-height:1;color:#fff;letter-spacing:-.03em}'
+  +'.rz-n small{font-size:.45em;color:var(--wd);letter-spacing:0}'
+  +'.rz-s{font-size:11px;line-height:1.6;color:var(--wd);margin-top:10px}.rz-s b{color:#fff}'
+  +'.rz-hero{grid-column:1/-1;border:1px solid rgba(85,51,255,.5);background:linear-gradient(120deg,rgba(27,0,230,.35),rgba(5,5,12,.7) 60%);padding:clamp(22px,3vw,34px);display:grid;grid-template-columns:1.4fr 1fr;gap:28px;align-items:end}'
+  +'.rz-meta{font-family:"Space Mono",monospace;font-weight:700;font-size:clamp(56px,9vw,112px);line-height:.85;letter-spacing:-.05em;color:#fff}'
+  +'.rz-meta small{font-size:.32em;color:var(--wd);letter-spacing:0}'
+  +'.rz-bar{display:flex;height:12px;background:rgba(255,255,255,.08);margin:18px 0 10px}.rz-bar i{display:block;height:100%}'
+  +'.rz-bar .g{background:#fff}.rz-bar .a{background:repeating-linear-gradient(135deg,#5533ff 0 6px,rgba(85,51,255,.35) 6px 12px)}'
+  +'.rz-list{display:flex;flex-direction:column}.rz-row{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px solid var(--wf);font-size:11px;color:var(--wd)}'
+  +'.rz-row b{color:#fff;font-family:"Space Mono",monospace;text-transform:uppercase}'
+  +'.rz-chip{display:inline-block;font-size:9px;letter-spacing:.12em;padding:4px 8px;border:1px solid rgba(255,255,255,.2);margin:0 6px 6px 0;color:#fff}'
+  +'.rz-fun{margin-bottom:10px}.rz-fun div{display:flex;justify-content:space-between;font-size:10px;letter-spacing:.1em;color:var(--wd);margin-bottom:5px;text-transform:uppercase}.rz-fun div b{color:#fff}'
+  +'.rz-fun span{display:block;height:6px;background:rgba(255,255,255,.07)}.rz-fun span i{display:block;height:100%;background:#1b00e6}'
+  +'.rz-upd{font-size:9px;letter-spacing:.2em;color:var(--wd);text-transform:uppercase;text-align:right;margin:0 0 8px}'
+  +'@media (max-width:900px){.rz-grid{grid-template-columns:1fr 1fr}.rz-hero{grid-template-columns:1fr}}'
+  +'@media (max-width:560px){.rz-grid{grid-template-columns:1fr}.rz-half{grid-column:1/-1}}'
+  +'</style>';
+}
+async function rzCargar(){
+  var box=document.getElementById('rz-live'); if(!box) return;
+  var e=function(x){ return String(x==null?'':x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
+  var pad=function(n){ return String(n).padStart(2,'0'); };
+  var now=new Date(), hoy=now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate());
+  var mes=hoy.slice(0,7), finMes=new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
+  var mesNom=_JZ_MES[now.getMonth()], META=25;
+  var R=[], J=[], EV=[];
+  try{ var a=await sb.from('reservas').select('id,nombre_artistico,fecha,horario,estado,tipo,origen,created_at,senia_recibida_at,senia_monto,jornada_id').order('created_at',{ascending:false}).limit(2000); R=(a&&a.data)||[]; }catch(x){}
+  try{ var b=await sb.from('jornadas').select('*').gte('fecha',hoy).neq('estado','Borrador').order('fecha').limit(3); J=(b&&b.data)||[]; }catch(x){}
+  try{ var d30=new Date(); d30.setDate(d30.getDate()-30); var cq=await sb.from('embudo_eventos').select('evento,sesion,creado').gte('creado',d30.toISOString()).limit(20000); EV=(cq&&cq.data)||[]; }catch(x){}
+  var vivas=R.filter(function(r){ return r.estado!=='Cancelada'; });
+  var delMes=vivas.filter(function(r){ return r.estado==='Confirmada' && String(r.fecha||'').slice(0,7)===mes; });
+  var grabados=delMes.filter(function(r){ return r.fecha<=hoy; }).length, agendados=delMes.filter(function(r){ return r.fecha>hoy; }).length;
+  var falta=Math.max(META-grabados-agendados,0);
+  var habiles=0; for(var dd=now.getDate()+1; dd<=finMes; dd++){ var wd=new Date(now.getFullYear(),now.getMonth(),dd).getDay(); if(wd!==0 && wd!==6) habiles++; }
+  var w=function(n){ return Math.min(n*100/META,100).toFixed(2)+'%'; };
+  // señas del mes
+  var senMes=R.filter(function(r){ return r.senia_recibida_at && String(r.senia_recibida_at).slice(0,7)===mes; });
+  var senMonto=senMes.reduce(function(a,r){ return a+(Number(r.senia_monto)||0); },0);
+  var esperando=vivas.filter(function(r){ return r.estado==='Pendiente' && (!r.fecha || r.fecha>=hoy); });
+  var vencenHoy=esperando.filter(function(r){ return r.jornada_id && (Date.now()-new Date(r.created_at).getTime())>18*36e5; }).length;
+  // publicación (Sheet)
+  var SMx=(typeof SM!=='undefined')?SM:[], pubMes=SMx.filter(function(x){ return x.estado==='Publicado' && String(x.fecha||'').slice(0,7)===mes; }).length;
+  var prog=SMx.filter(function(x){ return x.estado==='Pendiente' && x.fecha>=hoy; }).sort(function(a,b){ return String(a.fecha).localeCompare(String(b.fecha)); });
+  var edic=(typeof ASDL_EDICION!=='undefined' && Array.isArray(ASDL_EDICION))?ASDL_EDICION:[];
+  // reservas que entraron este mes, por canal
+  var nuevas=R.filter(function(r){ return String(r.created_at||'').slice(0,7)===mes; });
+  var canal={}; nuevas.forEach(function(r){ var k=({web:'Web',instagram:'Instagram',whatsapp:'WhatsApp',presencial:'En persona',otro:'Otro'})[r.origen||'web']||r.origen; canal[k]=(canal[k]||0)+1; });
+  var conf=nuevas.filter(function(r){ return r.estado==='Confirmada'; }).length;
+  // próximas sesiones (7 días)
+  var en7=new Date(); en7.setDate(en7.getDate()+7); var lim=en7.getFullYear()+'-'+pad(en7.getMonth()+1)+'-'+pad(en7.getDate());
+  var prox=vivas.filter(function(r){ return r.fecha && r.fecha>=hoy && r.fecha<=lim; }).sort(function(a,b){ return (a.fecha+a.horario).localeCompare(b.fecha+b.horario); });
+  // embudo 30 días
+  var pasos=[['vio_reserva','Vio la reserva'],['eligio_fecha','Eligió día y hora'],['envio','Envió la reserva']], cnt={};
+  pasos.forEach(function(p){ var u={}; EV.forEach(function(x){ if(x.evento===p[0]) u[x.sesion]=1; }); cnt[p[0]]=Object.keys(u).length; });
+  var baseF=cnt.vio_reserva||0;
+  // próxima jornada
+  var jn=J[0], jHTML='<div class="rz-s">No hay jornadas abiertas. <button class="jz-btn" onclick="adminTab(\'jornadas\')" style="margin-left:6px">Abrir una →</button></div>';
+  if(jn){
+    var jr=R.filter(function(r){ return r.jornada_id===jn.id && r.estado!=='Cancelada'; }), jt=(jn.horarios||[]).length, jok=jr.filter(function(r){ return r.estado==='Confirmada'; }).length;
+    jHTML='<div class="rz-n">'+e(jn.tipo+(jn.numero?' '+String(jn.numero).padStart(3,'0'):''))+'</div>'
+      +'<div class="rz-s">'+_jzFecha(jn.fecha)+' · <b>'+_jzFaltan(jn.fecha)+'</b></div>'
+      +'<div class="jz-bar" style="margin:14px 0 8px"><i class="s" style="width:'+(jt?jok*100/jt:0)+'%"></i><i class="p" style="width:'+(jt?(jr.length-jok)*100/jt:0)+'%"></i></div>'
+      +'<div class="rz-s" style="margin-top:0"><b>'+jok+'</b> señados · <b>'+(jr.length-jok)+'</b> esperando · <b>'+Math.max(jt-jr.length,0)+'</b> libres</div>'
+      +'<div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap"><button class="jz-cta" onclick="adminTab(\'jornadas\')">Ver jornada →</button></div>';
+  }
+  box.innerHTML='<div class="rz-upd">Datos en vivo · actualizado '+pad(now.getHours())+':'+pad(now.getMinutes())+'</div><div class="rz-grid">'
+    +'<div class="rz-hero"><div><div class="rz-k">'+mesNom+' · meta '+META+' sets</div>'
+    +'<div class="rz-meta">'+(grabados+agendados)+'<small> / '+META+'</small></div>'
+    +'<div class="rz-bar"><i class="g" style="width:'+w(grabados)+'"></i><i class="a" style="width:'+w(agendados)+'"></i></div>'
+    +'<div class="jz-legend"><span><i style="background:#fff"></i><b>'+grabados+'</b> grabados</span><span><i style="background:#5533ff"></i><b>'+agendados+'</b> confirmados por grabar</span><span><b>'+falta+'</b> por llenar</span></div></div>'
+    +'<div class="rz-s" style="font-size:12px">'+(falta? 'Faltan <b>'+falta+' sets</b> y quedan <b>'+habiles+' días hábiles</b>. Una jornada de 6 cupos llena el '+Math.round(600/META)+'% de la meta.' : '<b>¡Meta cumplida!</b> Todo lo que entre ahora suma al próximo mes.')
+    +'<br><span style="opacity:.7">Cuenta las reservas confirmadas del Panel. Cargá también las de chat para que el número sea real.</span></div></div>'
+    +'<div class="rz-panel"><div class="rz-k">Señas de '+mesNom+'</div><div class="rz-n">$'+senMonto.toLocaleString('es-AR')+'</div><div class="rz-s"><b>'+senMes.length+'</b> señas cobradas</div></div>'
+    +'<div class="rz-panel"><div class="rz-k">Esperando seña</div><div class="rz-n">'+esperando.length+'</div><div class="rz-s">'+(vencenHoy?'<b>'+vencenHoy+'</b> cupos de jornada vencen en menos de 6 h':'Nadie por vencer')+'</div></div>'
+    +'<div class="rz-panel"><div class="rz-k">Publicados en '+mesNom+'</div><div class="rz-n">'+pubMes+'</div><div class="rz-s"><b>'+edic.length+'</b> en edición · <b>'+prog.length+'</b> programados</div></div>'
+    +'<div class="rz-panel"><div class="rz-k">Reservas nuevas</div><div class="rz-n">'+nuevas.length+'</div><div class="rz-s"><b>'+conf+'</b> ya señaron · '+(nuevas.length?Math.round(conf*100/nuevas.length):0)+'%</div></div>'
+    +'<div class="rz-panel rz-half"><div class="rz-k">Próxima jornada</div>'+jHTML+'</div>'
+    +'<div class="rz-panel rz-half"><div class="rz-k">Próximos 7 días · '+prox.length+' sesiones</div><div class="rz-list">'
+    +(prox.length?prox.slice(0,8).map(function(r){ return '<div class="rz-row"><span><b>'+e(r.nombre_artistico)+'</b> · '+e(r.tipo||'')+'</span><span>'+_jzFecha(r.fecha).split(' ').slice(0,2).join(' ')+' · '+e(r.horario)+' · '+(r.estado==='Confirmada'?'<span style="color:var(--green)">✓ señado</span>':'esperando seña')+'</span></div>'; }).join(''):'<div class="rz-s">Nada agendado esta semana.</div>')
+    +'</div></div>'
+    +'<div class="rz-panel rz-half"><div class="rz-k">¿Por dónde llegan? · '+mesNom+'</div>'
+    +(Object.keys(canal).length?Object.keys(canal).sort(function(a,b){ return canal[b]-canal[a]; }).map(function(k){ return '<span class="rz-chip">'+e(k)+' · '+canal[k]+'</span>'; }).join(''):'<div class="rz-s">Sin reservas nuevas este mes.</div>')
+    +'<div class="rz-k" style="margin-top:18px">Embudo de la web · 30 días</div>'
+    +pasos.map(function(p){ var n=cnt[p[0]]||0, pc=baseF?Math.round(n*100/baseF):0; return '<div class="rz-fun"><div><span>'+p[1]+'</span><b>'+n+(baseF?' · '+pc+'%':'')+'</b></div><span><i style="width:'+pc+'%"></i></span></div>'; }).join('')+'</div>'
+    +'<div class="rz-panel rz-half"><div class="rz-k">Fila de publicación</div><div class="rz-list">'
+    +(prog.length?prog.slice(0,6).map(function(x){ return '<div class="rz-row"><span><b>'+e(x.artista)+'</b></span><span>sale el '+_jzFecha(x.fecha).split(' ').slice(1,4).join(' ')+'</span></div>'; }).join(''):'<div class="rz-s">Nada programado en el Sheet.</div>')
+    +(edic.length?'<div class="rz-s" style="margin-top:12px">En edición: '+edic.slice(0,14).map(function(x){ return '<span class="rz-chip">'+e(x.artista||x)+'</span>'; }).join('')+'</div>':'')
+    +'</div></div></div>';
+}
 
 function renderAdminArtistsMerged(c){
   if(!c) return;
@@ -6026,66 +5998,146 @@ function _jorPrecio(j){
   return Math.round((Number(j.precio)||70000)*(1-d/100));
 }
 async function renderAdminJornadas(c){
-  var inp='width:100%;box-sizing:border-box;background:rgba(255,255,255,.04);border:1px solid var(--wf);color:#fff;padding:9px 10px;font-family:inherit;font-size:12px';
-  var lab='display:block;font-size:8.5px;letter-spacing:.2em;color:var(--wd);text-transform:uppercase;margin:0 0 5px';
+  var inp='width:100%;box-sizing:border-box;background:rgba(255,255,255,.04);border:1px solid var(--wf);color:#fff;padding:10px 11px;font-family:inherit;font-size:12px';
+  var lab='display:block;font-size:8.5px;letter-spacing:.2em;color:var(--wd);text-transform:uppercase;margin:0 0 6px';
   var base=Math.max(Number((typeof CFG!=='undefined'&&CFG.precio_solo))||0, 70000);
-  c.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:10px;flex-wrap:wrap">'
-    +'<div><div style="font-size:9px;letter-spacing:.28em;color:#fff;text-transform:uppercase">Jornadas</div><div style="font-size:11px;color:var(--wd);margin-top:4px">Abrí la jornada, copiá el link y mandalo con la convocatoria. Cada DJ elige su horario; el cupo sin seña se libera solo a las 24 hs.</div></div>'
-    +'<button class="tdbtn" onclick="jorForm()" style="color:#fff;border-color:var(--b)">+ Nueva jornada</button></div>'
-    +'<div id="jor-box" style="display:none;margin:0 0 18px;padding:16px;border:1px solid var(--b);background:rgba(27,0,230,.06)">'
-    +'<input type="hidden" id="jf-id">'
-    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'
+  c.innerHTML=_jzCSS()
+    +'<div class="jz-top"><div><div class="jz-kick">Panel · Jornadas</div><div class="jz-h1">Llenemos la cabina.</div>'
+    +'<div class="jz-sub">Abrí la jornada, copiá el link y mandalo con la convocatoria. Cada DJ elige su horario; el que no seña en 24 hs lo libera solo.</div></div>'
+    +'<button class="jz-cta" onclick="jorForm()">+ Nueva jornada</button></div>'
+    +'<div id="jor-box" class="jz-formbox" style="display:none">'
+    +'<input type="hidden" id="jf-id"><div class="jz-kick" style="margin-bottom:14px">Datos de la jornada</div>'
+    +'<div class="jz-fgrid">'
     +'<div><label style="'+lab+'">Tipo</label><select id="jf-tipo" style="'+inp+'" onchange="jorLugar()"><option>DJ JAM</option><option>Archivo Público</option><option>Home Based</option></select></div>'
     +'<div style="display:grid;grid-template-columns:1fr 2fr;gap:10px"><div><label style="'+lab+'">Número</label><input id="jf-num" type="number" min="1" style="'+inp+'" placeholder="18"></div><div><label style="'+lab+'">Nombre (opcional)</label><input id="jf-nom" style="'+inp+'" placeholder="FEMALE DJ JAM 3"></div></div>'
-    +'<div><label style="'+lab+'">Día</label><input id="jf-fecha" type="date" style="'+inp+'"></div>'
+    +'<div><label style="'+lab+'">Día</label><input id="jf-fecha" type="date" style="'+inp+'" oninput="jorDia()"><div id="jf-dia" style="font-size:10px;color:var(--wd);margin-top:5px"></div></div>'
     +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><label style="'+lab+'">Primer set</label><input id="jf-ini" type="time" step="300" value="15:00" style="'+inp+'" oninput="jorAuto()"></div><div><label style="'+lab+'">Cupos</label><input id="jf-n" type="number" min="1" max="12" value="6" style="'+inp+'" oninput="jorAuto()"></div></div>'
-    +'<div style="grid-column:1/-1"><label style="'+lab+'">Horarios (60 min + 10 de cambio · se pueden editar, separados por coma)</label><input id="jf-hs" style="'+inp+'"></div>'
+    +'<div style="grid-column:1/-1"><label style="'+lab+'">Horarios · 60 min de set + 10 de cambio (se pueden editar, separados por coma)</label><input id="jf-hs" style="'+inp+'"></div>'
     +'<div><label style="'+lab+'">Valor del cupo</label><input id="jf-precio" type="number" step="1000" value="'+base+'" style="'+inp+'"></div>'
     +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><label style="'+lab+'">% OFF por reservar antes</label><input id="jf-dto" type="number" min="0" max="50" value="10" style="'+inp+'"></div><div><label style="'+lab+'">Hasta el día</label><input id="jf-hasta" type="date" style="'+inp+'"></div></div>'
     +'<div id="jf-lugar-w" style="grid-column:1/-1;display:none"><label style="'+lab+'">Lugar (se manda en la confirmación)</label><input id="jf-lugar" style="'+inp+'" placeholder="Ache Paraje · Calle 123, CABA"></div>'
-    +'<div><label style="'+lab+'">Estado</label><select id="jf-estado" style="'+inp+'"><option value="Abierta">Abierta (se ve en la web)</option><option value="Borrador">Borrador (solo el equipo)</option><option value="Cerrada">Cerrada (no recibe más)</option></select></div>'
-    +'</div><div id="jf-msg" style="font-size:11px;min-height:16px;margin:12px 0 10px;color:var(--wd)"></div>'
-    +'<div style="display:flex;gap:8px"><button class="tdbtn" onclick="jorGuardar()" style="color:#fff;border-color:var(--b)">Guardar jornada</button><button class="tdbtn" onclick="document.getElementById(\'jor-box\').style.display=\'none\'">Cancelar</button></div></div>'
-    +'<div id="jor-list" style="font-size:11px;color:var(--wd)">Cargando…</div>';
+    +'<div><label style="'+lab+'">Estado</label><select id="jf-estado" style="'+inp+'"><option value="Abierta">Abierta · se ve en la web</option><option value="Borrador">Borrador · solo el equipo</option><option value="Cerrada">Cerrada · no recibe más</option></select></div>'
+    +'</div><div id="jf-msg" style="font-size:11px;min-height:16px;margin:14px 0 10px;color:var(--wd)"></div>'
+    +'<div style="display:flex;gap:8px"><button class="jz-cta" onclick="jorGuardar()">Guardar jornada</button><button class="jz-btn" onclick="document.getElementById(\'jor-box\').style.display=\'none\'">Cancelar</button></div></div>'
+    +'<div id="jor-list"><div class="jz-empty">Cargando jornadas…</div></div>';
   await jorCargar();
 }
+function _jzCSS(){
+  return '<style>'
+  +'.jz-top{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin:6px 0 22px}'
+  +'.jz-kick{font-size:9px;letter-spacing:.3em;color:#5533ff;text-transform:uppercase}'
+  +'.jz-h1{font-family:"Space Mono",monospace;font-weight:700;font-size:clamp(26px,3.4vw,40px);line-height:1.05;color:#fff;margin:8px 0 8px;letter-spacing:-.02em}'
+  +'.jz-sub{font-size:12px;line-height:1.6;color:var(--wd);max-width:620px}'
+  +'.jz-cta{background:#1b00e6;color:#fff;border:0;padding:13px 20px;font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;cursor:pointer;transition:background .2s}'
+  +'.jz-cta:hover{background:#2b1aff}'
+  +'.jz-btn{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.22);padding:11px 16px;font-family:"Space Mono",monospace;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;cursor:pointer;transition:border-color .2s,background .2s;text-decoration:none;display:inline-flex;align-items:center;gap:6px}'
+  +'.jz-btn:hover{border-color:#fff;background:rgba(255,255,255,.05)}'
+  +'.jz-formbox{margin:0 0 22px;padding:20px;border:1px solid #1b00e6;background:rgba(27,0,230,.07)}'
+  +'.jz-fgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}'
+  +'.jz-card{position:relative;border:1px solid rgba(85,51,255,.45);background:linear-gradient(135deg,rgba(27,0,230,.22),rgba(5,5,12,.6) 55%);padding:clamp(18px,2.6vw,30px);margin-bottom:18px;overflow:hidden}'
+  +'.jz-card.off{border-color:var(--wf);background:rgba(255,255,255,.02)}'
+  +'.jz-head{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:start}'
+  +'.jz-chip{display:inline-block;font-size:8.5px;letter-spacing:.24em;text-transform:uppercase;padding:5px 9px;border:1px solid currentColor;margin-right:6px}'
+  +'.jz-name{font-family:"Space Mono",monospace;font-weight:700;font-size:clamp(28px,4vw,48px);line-height:.95;letter-spacing:-.03em;color:#fff;margin:14px 0 8px}'
+  +'.jz-when{font-size:13px;color:#fff}.jz-when span{color:var(--wd)}'
+  +'.jz-big{text-align:right}.jz-big b{display:block;font-family:"Space Mono",monospace;font-size:clamp(40px,6vw,72px);line-height:.9;color:#fff;letter-spacing:-.04em}.jz-big b small{font-size:.42em;color:var(--wd);letter-spacing:0}'
+  +'.jz-big span{font-size:9px;letter-spacing:.24em;color:var(--wd);text-transform:uppercase}'
+  +'.jz-bar{display:flex;height:10px;background:rgba(255,255,255,.07);margin:22px 0 10px}'
+  +'.jz-bar i{display:block;height:100%}.jz-bar .s{background:#1b00e6}.jz-bar .p{background:repeating-linear-gradient(135deg,#5533ff 0 6px,rgba(85,51,255,.35) 6px 12px)}'
+  +'.jz-legend{display:flex;gap:18px;flex-wrap:wrap;font-size:10px;letter-spacing:.1em;color:var(--wd)}.jz-legend b{color:#fff}'
+  +'.jz-legend i{display:inline-block;width:9px;height:9px;margin-right:6px;vertical-align:-1px}'
+  +'.jz-acts{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0 22px}'
+  +'.jz-slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}'
+  +'.jz-slot{border:1px dashed rgba(255,255,255,.2);padding:14px;min-height:128px;display:flex;flex-direction:column;gap:6px;background:rgba(0,0,0,.25)}'
+  +'.jz-slot .t{font-family:"Space Mono",monospace;font-size:22px;font-weight:700;color:#fff;letter-spacing:-.02em}'
+  +'.jz-slot .n{font-family:"Space Mono",monospace;font-size:14px;font-weight:700;color:#fff;text-transform:uppercase;word-break:break-word}'
+  +'.jz-slot .e{font-size:10px;letter-spacing:.08em;color:var(--wd)}'
+  +'.jz-slot .b{margin-top:auto;display:flex;gap:6px;flex-wrap:wrap}'
+  +'.jz-slot .b button,.jz-slot .b a{background:transparent;border:1px solid rgba(255,255,255,.25);color:#fff;font-family:"Space Mono",monospace;font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;padding:7px 9px;cursor:pointer;text-decoration:none}'
+  +'.jz-slot .b button:hover,.jz-slot .b a:hover{border-color:#fff}'
+  +'.jz-slot.pend{border:1px solid #5533ff;background:rgba(85,51,255,.12)}'
+  +'.jz-slot.pend .b .ok{background:#fff;color:#000;border-color:#fff}'
+  +'.jz-slot.ok{border:1px solid #1b00e6;background:#1b00e6}.jz-slot.ok .e{color:rgba(255,255,255,.85)}'
+  +'.jz-slot.libre .t{color:rgba(255,255,255,.55)}'
+  +'.jz-cf{grid-column:1/-1;border:1px solid #1b00e6;padding:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px;background:rgba(27,0,230,.08)}'
+  +'.jz-empty{border:1px dashed rgba(255,255,255,.18);padding:34px;text-align:center;font-size:12px;color:var(--wd)}'
+  +'.jz-past{margin-top:26px}.jz-past summary{cursor:pointer;font-size:9px;letter-spacing:.28em;color:var(--wd);text-transform:uppercase;padding:10px 0}'
+  +'.jz-prow{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid var(--wf);font-size:11px;color:var(--wd)}.jz-prow b{color:#fff;font-family:"Space Mono",monospace}'
+  +'@media (max-width:700px){.jz-head{grid-template-columns:1fr}.jz-big{text-align:left}.jz-fgrid,.jz-cf{grid-template-columns:1fr}}'
+  +'</style>';
+}
+var _JZ_DIAS=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'], _JZ_MES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+function _jzFecha(f){ var p=String(f||'').split('-'); if(p.length<3) return f||''; var d=new Date(+p[0],+p[1]-1,+p[2]); return _JZ_DIAS[d.getDay()]+' '+d.getDate()+' de '+_JZ_MES[d.getMonth()]; }
+function _jzFaltan(f){ var p=String(f||'').split('-'); var d=new Date(+p[0],+p[1]-1,+p[2]); var h=new Date(); h.setHours(0,0,0,0); var n=Math.round((d-h)/864e5); return n<0?'ya pasó':n===0?'es hoy':n===1?'es mañana':'faltan '+n+' días'; }
+function _jzWa(num){ var d=String(num||'').replace(/\D/g,''); if(!d) return ''; if(d.indexOf('54')!==0){ if(d.indexOf('15')===0) d=d.slice(2); d='549'+d.replace(/^0/,''); } return d; }
 async function jorCargar(){
   var L=document.getElementById('jor-list'); if(!L) return;
   try{
-    var r=await sb.from('jornadas').select('*').order('fecha',{ascending:false}).limit(40);
+    var r=await sb.from('jornadas').select('*').order('fecha',{ascending:true}).limit(60);
     if(r.error) throw r.error; JOR_ADMIN=r.data||[];
     var ids=JOR_ADMIN.map(function(j){ return j.id; });
     JOR_RES=[];
-    if(ids.length){ var q=await sb.from('reservas').select('id,nombre_artistico,whatsapp,horario,estado,jornada_id,created_at,senia_recibida_at').in('jornada_id',ids).neq('estado','Cancelada'); JOR_RES=(q&&q.data)||[]; }
+    if(ids.length){ var q=await sb.from('reservas').select('id,nombre_artistico,whatsapp,email,horario,estado,jornada_id,created_at,senia,senia_monto,senia_recibida_at').in('jornada_id',ids).neq('estado','Cancelada'); JOR_RES=(q&&q.data)||[]; }
   }catch(e){
-    L.innerHTML='<div style="color:var(--red)">No se pudieron leer las jornadas. ¿Ya corriste ASDL_jornadas.sql en Supabase?</div>'; return;
+    L.innerHTML='<div class="jz-empty" style="color:var(--red)">No se pudieron leer las jornadas. ¿Ya corriste ASDL_jornadas.sql en Supabase?</div>'; return;
   }
-  if(!JOR_ADMIN.length){ L.innerHTML='Todavía no hay jornadas. Tocá "+ Nueva jornada".'; return; }
   var hoy=new Date().toISOString().slice(0,10);
-  L.innerHTML=JOR_ADMIN.map(function(j){
-    var res=JOR_RES.filter(function(x){ return x.jornada_id===j.id; });
-    var tomados=res.length, pasada=j.fecha<hoy;
-    var col={Abierta:'#5533ff',Borrador:'var(--wd)',Cerrada:'var(--wd)'}[j.estado]||'var(--wd)';
-    var filas=(j.horarios||[]).map(function(h){
-      var x=res.find(function(r){ return r.horario===h; });
-      if(!x) return '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-top:1px solid var(--wf)"><span style="color:#fff;font-family:\'Space Mono\',monospace">'+h+'</span><span>libre'+(pasada?'':' · <button class="tdbtn" style="padding:3px 8px" onclick="jorCupoForm('+j.id+',\''+h+'\')">Cargar por chat</button>')+'</span></div><div id="jc-'+j.id+'-'+h.replace(':','')+'"></div>';
-      var vence='';
-      if(x.estado==='Pendiente' && !x.senia_recibida_at){ var hs=24-Math.floor((Date.now()-new Date(x.created_at).getTime())/36e5); vence=' · sin seña, se libera en '+Math.max(hs,0)+' h'; }
-      return '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-top:1px solid var(--wf)"><span style="color:#fff;font-family:\'Space Mono\',monospace">'+h+'</span><span style="color:'+(x.estado==='Confirmada'?'var(--green)':'#fff')+'">'+_jorEsc(x.nombre_artistico)+' · '+(x.estado==='Confirmada'?'✓ Señado':'Pendiente'+vence)+'</span></div>';
-    }).join('');
-    return '<div style="border:1px solid var(--wf);padding:14px;margin-bottom:12px">'
-      +'<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start">'
-      +'<div><div style="font-size:9px;letter-spacing:.24em;color:'+col+';text-transform:uppercase">'+_jorEsc(j.estado)+(pasada?' · ya pasó':'')+'</div>'
-      +'<div style="font-size:14px;color:#fff;margin:4px 0">'+_jorEsc(_jorLabel(j))+'</div>'
-      +'<div>'+j.fecha+' · '+tomados+' de '+(j.horarios||[]).length+' cupos tomados · $'+Number(j.precio).toLocaleString('es-AR')+(Number(j.descuento)>0&&j.descuento_hasta?' ('+j.descuento+'% OFF hasta '+j.descuento_hasta+')':'')+(j.lugar?' · '+_jorEsc(j.lugar):'')+'</div></div>'
-      +'<div style="display:flex;gap:6px;flex-wrap:wrap">'
-      +'<button class="tdbtn" onclick="jorCopiar('+j.id+',this)">Copiar link</button>'
-      +'<button class="tdbtn" onclick="jorForm('+j.id+')">Editar</button>'
-      +(j.estado==='Abierta'?'<button class="tdbtn" onclick="jorEstado('+j.id+',\'Cerrada\')">Cerrar</button>':'<button class="tdbtn" onclick="jorEstado('+j.id+',\'Abierta\')">Abrir</button>')
-      +'</div></div><div style="margin-top:10px">'+filas+'</div></div>';
-  }).join('');
+  var vivas=JOR_ADMIN.filter(function(j){ return j.fecha>=hoy; }), pasadas=JOR_ADMIN.filter(function(j){ return j.fecha<hoy; }).reverse();
+  if(!vivas.length && !pasadas.length){ L.innerHTML='<div class="jz-empty">Todavía no hay jornadas.<br><br><button class="jz-cta" onclick="jorForm()">+ Abrir la primera</button></div>'; return; }
+  var html = vivas.length ? vivas.map(_jzCard).join('') : '<div class="jz-empty">No hay jornadas por delante. <button class="jz-btn" onclick="jorForm()" style="margin-left:8px">+ Nueva jornada</button></div>';
+  if(pasadas.length) html+='<details class="jz-past"><summary>Jornadas pasadas ('+pasadas.length+')</summary>'+pasadas.map(function(j){
+      var n=JOR_RES.filter(function(x){ return x.jornada_id===j.id; }).length;
+      return '<div class="jz-prow"><span><b>'+_jorEsc(_jorLabel(j))+'</b> · '+_jzFecha(j.fecha)+'</span><span>'+n+' de '+(j.horarios||[]).length+' cupos</span></div>'; }).join('')+'</details>';
+  L.innerHTML=html;
 }
-function jorLugar(){ var t=document.getElementById('jf-tipo').value, w=document.getElementById('jf-lugar-w'); if(w) w.style.display = t==='DJ JAM' ? 'none' : 'block'; }
+function _jzCard(j){
+  var res=JOR_RES.filter(function(x){ return x.jornada_id===j.id; });
+  var tot=(j.horarios||[]).length, ok=res.filter(function(x){ return x.estado==='Confirmada'; }), pe=res.filter(function(x){ return x.estado!=='Confirmada'; });
+  var libres=Math.max(tot-res.length,0), cobrado=ok.reduce(function(a,x){ return a+(Number(x.senia_monto)||0); },0);
+  var estCol={Abierta:'#5533ff',Borrador:'rgba(255,255,255,.6)',Cerrada:'rgba(255,255,255,.6)'}[j.estado]||'#fff';
+  var estTxt={Abierta:'● Abierta · se ve en la web',Borrador:'Borrador · solo el equipo',Cerrada:'Cerrada · no recibe más'}[j.estado]||j.estado;
+  var pct=function(n){ return tot ? (n*100/tot).toFixed(2)+'%' : '0'; };
+  var slots=(j.horarios||[]).map(function(h){
+    var x=res.find(function(r){ return r.horario===h; }), k=j.id+'-'+h.replace(':','');
+    if(!x) return '<div class="jz-slot libre"><div class="t">'+h+'</div><div class="e">Libre</div><div class="b"><button onclick="jorCupoForm('+j.id+',\''+h+'\')">+ Cargar por chat</button></div></div>';
+    var nom=_jorEsc(x.nombre_artistico);
+    if(x.estado==='Confirmada') return '<div class="jz-slot ok"><div class="t">'+h+'</div><div class="n">'+nom+'</div><div class="e">✓ Señado'+(x.senia_monto?' · $'+Number(x.senia_monto).toLocaleString('es-AR'):'')+'</div></div>';
+    var hs=Math.max(24-Math.floor((Date.now()-new Date(x.created_at).getTime())/36e5),0);
+    var wa=_jzWa(x.whatsapp), txt='¡Hola '+String(x.nombre_artistico||'')+'! Te guardamos las '+h+' hs en la '+_jorLabel(j)+' ('+_jzFecha(j.fecha)+'). Para quedártelas, la seña es de $'+Math.max(Number(x.senia)||0,20000).toLocaleString('es-AR')+' por Mercado Pago. ¿Te paso los datos?';
+    return '<div class="jz-slot pend" id="jzs-'+k+'"><div class="t">'+h+'</div><div class="n">'+nom+'</div><div class="e">⏳ Sin seña · se libera en '+hs+' h</div>'
+      +'<div class="b"><button class="ok" onclick="jorSenia(\''+x.id+'\')">✓ Seña recibida</button>'
+      +(wa?'<a href="https://wa.me/'+wa+'?text='+encodeURIComponent(txt)+'" target="_blank" rel="noopener">💬 Pedir seña</a>':'')
+      +'<button onclick="jorLiberar(\''+x.id+'\',this)">Liberar</button></div></div>';
+  }).join('');
+  return '<div class="jz-card'+(j.estado==='Abierta'?'':' off')+'" id="jz-'+j.id+'">'
+    +'<div class="jz-head"><div><span class="jz-chip" style="color:'+estCol+'">'+estTxt+'</span><span class="jz-chip" style="color:#fff">'+_jorEsc(j.tipo)+'</span>'
+    +'<div class="jz-name">'+_jorEsc(j.tipo+(j.numero?' '+String(j.numero).padStart(3,'0'):''))+'</div>'
+    +'<div class="jz-when">'+(j.nombre?_jorEsc(j.nombre)+' · ':'')+_jzFecha(j.fecha).replace(/^./,function(m){ return m.toUpperCase(); })+' <span>· '+_jzFaltan(j.fecha)+(j.lugar?' · '+_jorEsc(j.lugar):'')+'</span></div>'
+    +'<div class="jz-when" style="margin-top:6px"><span>$'+Number(j.precio).toLocaleString('es-AR')+' el cupo'+(Number(j.descuento)>0&&j.descuento_hasta?' · '+j.descuento+'% OFF hasta el '+_jzFecha(j.descuento_hasta):'')+'</span></div></div>'
+    +'<div class="jz-big"><b>'+res.length+'<small>/'+tot+'</small></b><span>cupos tomados</span>'+(cobrado?'<div style="margin-top:10px;font-size:11px;color:#fff">$'+cobrado.toLocaleString('es-AR')+' en señas</div>':'')+'</div></div>'
+    +'<div class="jz-bar"><i class="s" style="width:'+pct(ok.length)+'"></i><i class="p" style="width:'+pct(pe.length)+'"></i></div>'
+    +'<div class="jz-legend"><span><i style="background:#1b00e6"></i><b>'+ok.length+'</b> señados</span><span><i style="background:#5533ff"></i><b>'+pe.length+'</b> esperando seña</span><span><i style="background:rgba(255,255,255,.15)"></i><b>'+libres+'</b> libres</span></div>'
+    +'<div class="jz-acts"><button class="jz-cta" onclick="jorCopiar('+j.id+',this)">⧉ Copiar link</button>'
+    +'<a class="jz-btn" href="'+_jorLink(j)+'" target="_blank" rel="noopener">Ver en la web ↗</a>'
+    +'<button class="jz-btn" onclick="jorForm('+j.id+')">Editar</button>'
+    +(j.estado==='Abierta'?'<button class="jz-btn" onclick="jorEstado('+j.id+',\'Cerrada\')">Cerrar</button>':'<button class="jz-btn" onclick="jorEstado('+j.id+',\'Abierta\')">Abrir</button>')+'</div>'
+    +'<div class="jz-slots" id="jzg-'+j.id+'">'+slots+'</div></div>';
+}
+async function jorSenia(id){
+  var x=JOR_RES.find(function(r){ return String(r.id)===String(id); })||{};
+  var monto=Math.max(Number(x.senia)||0, 20000);
+  var r=await sb.from('reservas').update({estado:'Confirmada', senia_recibida_at:new Date().toISOString(), senia_monto:monto}).eq('id',id);
+  if(r && r.error) await sb.from('reservas').update({estado:'Confirmada'}).eq('id',id);
+  await jorCargar();
+}
+async function jorLiberar(id, btn){
+  if(btn && btn.textContent!=='¿Seguro? Liberar'){ btn.textContent='¿Seguro? Liberar'; btn.style.borderColor='var(--red)'; setTimeout(function(){ if(btn.isConnected){ btn.textContent='Liberar'; btn.style.borderColor=''; } }, 4000); return; }
+  await sb.from('reservas').update({estado:'Cancelada'}).eq('id',id);
+  await jorCargar();
+}
+function jorDia(){ var v=(document.getElementById('jf-fecha')||{}).value, o=document.getElementById('jf-dia'); if(!o) return; if(!v){ o.textContent=''; return; } var t=_jzFecha(v); var dom=new Date(v+'T12:00').getDay()===0; o.innerHTML=t.charAt(0).toUpperCase()+t.slice(1)+(document.getElementById('jf-tipo').value==='DJ JAM'&&!dom?' · <span style="color:#ffb020">ojo: la DJ JAM es los domingos</span>':''); }
+
+function jorLugar(){ var t=document.getElementById('jf-tipo').value, w=document.getElementById('jf-lugar-w'); if(w) w.style.display = t==='DJ JAM' ? 'none' : 'block'; try{ jorDia(); }catch(e){} }
 function jorAuto(){ var hs=_jorHorarios(document.getElementById('jf-ini').value, +document.getElementById('jf-n').value||0); document.getElementById('jf-hs').value=hs.join(', '); }
 function jorForm(id){
   var b=document.getElementById('jor-box'); if(!b) return; b.style.display='block';
@@ -6101,7 +6153,7 @@ function jorForm(id){
     set('jf-tipo','DJ JAM'); set('jf-num',prox?prox+1:''); set('jf-nom',''); set('jf-fecha',''); set('jf-hasta',''); set('jf-lugar',''); set('jf-estado','Abierta');
     jorAuto();
   }
-  jorLugar(); document.getElementById('jf-msg').textContent='';
+  jorLugar(); jorDia(); document.getElementById('jf-msg').textContent='';
   b.scrollIntoView({behavior:'smooth',block:'start'});
 }
 async function jorGuardar(){
@@ -6129,17 +6181,19 @@ function jorCopiar(id, btn){
   try{ navigator.clipboard.writeText(t).then(ok, function(){ btn.textContent=t; }); }catch(e){ btn.textContent=t; }
 }
 function jorCupoForm(id, h){
-  var box=document.getElementById('jc-'+id+'-'+h.replace(':','')); if(!box) return;
-  if(box.innerHTML){ box.innerHTML=''; return; }
-  var inp='width:100%;box-sizing:border-box;background:rgba(255,255,255,.04);border:1px solid var(--wf);color:#fff;padding:8px;font-family:inherit;font-size:12px';
+  var g=document.getElementById('jzg-'+id); if(!g) return;
+  var prev=document.getElementById('jz-cf'); var mismo=prev && prev.getAttribute('data-k')===id+'-'+h; if(prev) prev.remove(); if(mismo) return;
+  var inp='width:100%;box-sizing:border-box;background:rgba(0,0,0,.4);border:1px solid var(--wf);color:#fff;padding:10px;font-family:inherit;font-size:12px';
   var k=id+'-'+h.replace(':','');
-  box.innerHTML='<div style="padding:10px;margin:4px 0 8px;border:1px solid var(--b);display:grid;grid-template-columns:1fr 1fr;gap:8px">'
+  var d=document.createElement('div'); d.id='jz-cf'; d.className='jz-cf'; d.setAttribute('data-k', id+'-'+h);
+  d.innerHTML='<div style="grid-column:1/-1" class="jz-kick">Cargar el cupo de las '+h+' hs</div>'
     +'<input id="jcn-'+k+'" style="'+inp+'" placeholder="NOMBRE ARTÍSTICO *">'
-    +'<select id="jco-'+k+'" style="'+inp+'"><option value="instagram">Instagram</option><option value="whatsapp">WhatsApp</option><option value="presencial">En persona</option><option value="otro">Otro</option></select>'
+    +'<select id="jco-'+k+'" style="'+inp+'"><option value="instagram">Llegó por Instagram</option><option value="whatsapp">Llegó por WhatsApp</option><option value="presencial">En persona</option><option value="otro">Otro</option></select>'
     +'<input id="jce-'+k+'" type="email" style="'+inp+'" placeholder="Mail (para que le lleguen los mails)">'
     +'<input id="jcw-'+k+'" style="'+inp+'" placeholder="WhatsApp">'
-    +'<label style="grid-column:1/-1;display:flex;gap:8px;align-items:center;color:#fff;font-size:11px"><input id="jcs-'+k+'" type="checkbox"> Ya pagó la seña (entra confirmado)</label>'
-    +'<div style="grid-column:1/-1;display:flex;gap:8px;align-items:center"><button class="tdbtn" style="color:#fff;border-color:var(--b)" onclick="jorCupoGuardar('+id+',\''+h+'\')">Guardar cupo</button><span id="jcm-'+k+'" style="font-size:11px"></span></div></div>';
+    +'<label style="grid-column:1/-1;display:flex;gap:8px;align-items:center;color:#fff;font-size:11px"><input id="jcs-'+k+'" type="checkbox"> Ya pagó la seña (entra confirmado y le llega el mail con la dirección)</label>'
+    +'<div style="grid-column:1/-1;display:flex;gap:8px;align-items:center;flex-wrap:wrap"><button class="jz-cta" onclick="jorCupoGuardar('+id+',\''+h+'\')">Guardar cupo</button><button class="jz-btn" onclick="document.getElementById(\'jz-cf\').remove()">Cancelar</button><span id="jcm-'+k+'" style="font-size:11px"></span></div>';
+  g.appendChild(d); var n=document.getElementById('jcn-'+k); if(n) n.focus();
 }
 async function jorCupoGuardar(id, h){
   var k=id+'-'+h.replace(':',''), g=function(p){ var e=document.getElementById(p+k); return e ? (e.type==='checkbox' ? e.checked : String(e.value||'').trim()) : ''; };
@@ -6147,6 +6201,7 @@ async function jorCupoGuardar(id, h){
   var nombre=String(g('jcn-')).toUpperCase(), email=g('jce-'), pago=g('jcs-');
   if(!nombre){ m.textContent='Falta el nombre.'; m.style.color='var(--red)'; return; }
   if(email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)){ m.textContent='Ese mail no parece válido.'; m.style.color='var(--red)'; return; }
+  if(email && asdlMailFix(email)){ m.textContent='¿Quisiste decir '+asdlMailFix(email)+'?'; m.style.color='var(--red)'; return; }
   var senia=Math.max(Number((typeof CFG!=='undefined'&&CFG.senia))||0, 20000);
   var fila={ nombre_artistico:nombre, email:email||null, whatsapp:g('jcw-')||null, genero:'', links:'', tipo:j.tipo, fecha:j.fecha, horario:h,
     jornada_id:j.id, origen:g('jco-'), ya_registrado:false, mensaje:'Jornada: '+_jorLabel(j), es_comunidad:false, descuento:_jorPrecio(j)<Number(j.precio),
@@ -6196,6 +6251,7 @@ async function nrGuardar(forzar){
   var aviso=function(t,col){ if(msg){ msg.textContent=t; msg.style.color=col||'var(--red)'; } };
   if(!nombre) return aviso('Falta el nombre artístico.');
   if(email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return aviso('Ese mail no parece válido. Revisalo o dejalo vacío.');
+  if(email && asdlMailFix(email)) return aviso('¿Quisiste decir '+asdlMailFix(email)+'? Corregilo y guardá de nuevo.');
   if(tipo!=='Custom' && (!fecha || !hora)) return aviso('Falta el día o la hora.');
   // ¿Se pisa con otra sesión? (mismo margen de 10 minutos que la web)
   if(!forzar && fecha && hora){
@@ -8325,12 +8381,12 @@ window.GTS = (function(){
     if(nx && hay) nx.style.display='none';
     c.innerHTML = S.jornadas.map(function(j){
       var listo=S.jHecha[j.id];
-      if(listo) return '<div class="gts-jor sel" id="jor-'+j.id+'"><div class="gts-jor-k">✓ Horario reservado · '+esc(jLabel(j))+'</div>'
+      if(listo) return '<div class="gts-jor sel" id="jor-'+j.id+'"'+(String(S.jSolo)===String(j.id)?' data-solo="1"':'')+'><div class="gts-jor-k">✓ Horario reservado · '+esc(jLabel(j))+'</div>'
         + '<div class="gts-jor-f">'+mayus(fechaLarga(j.fecha))+' · '+esc(listo.hora)+' hs</div>'
         + '<p class="gts-jor-m"><b>Te guardamos el horario por 24 hs.</b> Se lo queda quien seña primero: te escribimos por WhatsApp con los datos para la seña de '+plata(senia())+' por Mercado Pago. Si en 24 hs no hay seña, el horario se libera para otro DJ.</p>'
         + '<p class="gts-fine" style="margin:0">Te mandamos todo esto a tu mail ('+esc(listo.email)+'). Si no lo ves, revisá spam o promociones.</p></div>';
       var libres=j.horarios.filter(function(x){ return jLibre(j,x); }).length, sel=(S.jSel && S.jSel.id===j.id) ? S.jSel.hora : null;
-      var out='<div class="gts-jor'+(sel?' sel':'')+'" id="jor-'+j.id+'"><div class="gts-jor-k">'+esc(jLabel(j))+'</div>'
+      var out='<div class="gts-jor'+(sel?' sel':'')+'" id="jor-'+j.id+'"'+(String(S.jSolo)===String(j.id)?' data-solo="1"':'')+'><div class="gts-jor-k">'+esc(jLabel(j))+'</div>'
         + '<div class="gts-jor-f">'+mayus(fechaLarga(j.fecha))+'</div>'
         + '<p class="gts-jor-m">'+(libres ? '<b>Quedan '+libres+' de '+j.horarios.length+' horarios</b>' : '<b>Jornada completa</b>')+' · sets de 60 minutos'+(j.lugar ? ' · '+esc(String(j.lugar).split('·')[0].trim()) : '')+'</p>'
         + '<p class="gts-jor-p" id="gj-precio-'+j.id+'">'+jPrecioHTML(j)+'</p>'
@@ -8347,9 +8403,46 @@ window.GTS = (function(){
           + '<div class="gts-err" id="gj-send-err" role="alert"></div>'
           + '<p class="gts-fine" style="margin-top:6px">Al enviar, aceptás nuestra <button type="button" class="gts-priv" onclick="asdlPrivacidad()">Política de privacidad</button>.</p>'
           + '<p class="gts-fine">Te guardamos el horario 24 hs. <b>Se lo queda quien seña primero</b> ('+plata(senia())+' por Mercado Pago, se descuenta del total). Podés reprogramar hasta 48 hs antes.</p></div>';
+        if(S.jornadas.length>1 && !S.jSolo) out+='<button type="button" class="gts-link gts-jor-otras" data-jotras>← Ver otras fechas</button>';
       }
       return out+'</div>';
     }).join('');
+    if(S.jSolo) c.insertAdjacentHTML('afterbegin','<button type="button" class="gts-link gts-jor-all" data-jall>← Ver todo el Archivo</button>');
+    jModo();
+  }
+  function jModo(){
+    var sec=$('gts-jam-sec'), pg=$('pg-agenda');
+    var hecha=Object.keys(S.jHecha).length>0;
+    if(sec){ sec.classList.toggle('gts-jmode', !!(S.jSel || hecha || S.jSolo)); sec.classList.toggle('gts-jpick', !!S.jSel); }
+    if(pg){
+      var js=S.jSolo ? S.jornadas.find(function(x){ return String(x.id)===String(S.jSolo); }) : null;
+      pg.classList.toggle('jor-solo', !!js); pg.classList.toggle('jor-np', !!(js && js.tipo!=='DJ JAM'));
+    }
+    // ¿El botón de reservar está a la vista? Si no, la barra de abajo lo reemplaza
+    S.jFormVis=false;
+    if(S._jio){ S._jio.disconnect(); S._jio=null; }
+    var b=document.querySelector('[data-jsend]');
+    if(b && 'IntersectionObserver' in window){ S._jio=new IntersectionObserver(function(es){ S.jFormVis=es[0].isIntersecting; jBar(); }); S._jio.observe(b); }
+    jBar();
+  }
+  function jBar(){
+    var bar=$('gts-bar'), fab=$('gts-fab'), info=$('gts-bar-i'), btn=$('gts-bar-btn'); if(!bar) return;
+    if(S._barOrig==null && info && btn) S._barOrig=[info.innerHTML, btn.innerHTML];
+    var j=S.jSel ? S.jornadas.find(function(x){ return x.id===S.jSel.id; }) : null;
+    var modo=!!(S.jSel || S.jSolo || Object.keys(S.jHecha).length);
+    if(j){
+      info.innerHTML='<b>'+esc(S.jSel.hora)+' hs · '+fechaCorta(j.fecha)+'</b>'+esc(jLabel(j).split(' · ')[0])+' · '+plata(jPrecio(j).final);
+      btn.innerHTML='Reservar mi horario <span class="arr">→</span>';
+    } else if(S._barOrig){ info.innerHTML=S._barOrig[0]; btn.innerHTML=S._barOrig[1]; }
+    if(modo){
+      bar.classList.toggle('show', !!(j && !S.jFormVis));
+      if(fab) fab.classList.remove('show');
+    } else if(S._actualizar) S._actualizar();
+  }
+  function jIrAlForm(){
+    var vacio=['gj-n','gj-w','gj-e','gj-i'].map($).filter(function(x){ return x && !x.value.trim(); })[0];
+    var f=document.querySelector('.gts-jor-form'); if(f) f.scrollIntoView({behavior:'smooth',block:'center'});
+    if(vacio) setTimeout(function(){ vacio.focus({preventScroll:true}); }, 350);
   }
   function jValidar(){
     var g=function(id){ var el=$(id); return el ? el.value.trim() : ''; }, D=S.datos;
@@ -8357,7 +8450,7 @@ window.GTS = (function(){
     var ok=true;
     ok = error('gj-n', D.nombre ? '' : 'Contanos cómo te llamás como artista.') && ok;
     ok = error('gj-w', (String(D.wa).replace(/\D/g,'').length>=8) ? '' : 'Dejanos un WhatsApp válido: por ahí te pasamos la seña.') && ok;
-    ok = error('gj-e', /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(D.email) ? '' : 'Revisá el email: parece incompleto.') && ok;
+    ok = error('gj-e', !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(D.email) ? 'Revisá el email: parece incompleto.' : (asdlMailFix(D.email) ? '¿Quisiste decir '+asdlMailFix(D.email)+'? Corregilo y seguimos.' : '')) && ok;
     ok = error('gj-i', D.ig ? '' : 'Dejanos tu Instagram para conocer tu propuesta.') && ok;
     if(!ok){ var b=document.querySelector('#gts-jor .gts-in.bad'); if(b) b.focus(); }
     return ok;
@@ -8410,7 +8503,13 @@ window.GTS = (function(){
         var n=$('gj-n'); if(n) setTimeout(function(){ n.focus({preventScroll:true}); }, 50);
         return;
       }
-      var s2=ev.target.closest('[data-jsend]'); if(s2) jEnviar(s2.getAttribute('data-jsend'));
+      var s2=ev.target.closest('[data-jsend]'); if(s2){ jEnviar(s2.getAttribute('data-jsend')); return; }
+      if(ev.target.closest('[data-jotras]')){ S.jSel=null; renderJornadas(); var cc=$('gts-jor'); if(cc) cc.scrollIntoView({behavior:'smooth',block:'start'}); return; }
+      if(ev.target.closest('[data-jall]')){
+        S.jSolo=null; S.jSel=null;
+        try{ var u=new URL(location.href); u.searchParams.delete('jornada'); history.replaceState(null,'',u.pathname+u.search+u.hash); }catch(e){}
+        renderJornadas(); var ct=document.getElementById('content'); if(ct) ct.scrollTop=0; window.scrollTo(0,0);
+      }
     });
     c.addEventListener('input', function(ev){
       if(/^gj-/.test(ev.target.id||'')) error(ev.target.id, '');
@@ -8423,6 +8522,7 @@ window.GTS = (function(){
   function irAJornada(){
     var q=null; try{ q=new URLSearchParams(location.search).get('jornada'); }catch(e){}
     if(!q || S._jdeep) return; S._jdeep=true;
+    if(S.jornadas.some(function(x){ return String(x.id)===String(q); })){ S.jSolo=q; renderJornadas(); }
     var d=$('gts-jam'); if(d) d.open=true;
     var el=$('jor-'+q) || $('gts-jor');
     if(el) setTimeout(function(){ el.scrollIntoView({behavior:'smooth',block:'start'}); }, 200);
@@ -8662,7 +8762,7 @@ window.GTS = (function(){
     var D=S.datos, ok=true;
     ok = error('gts-n', D.nombre ? '' : 'Contanos cómo te llamás como artista.') && ok;
     ok = error('gts-w', (String(D.wa||'').replace(/\D/g,'').length>=8) ? '' : 'Dejanos un WhatsApp válido: por ahí te confirmamos.') && ok;
-    ok = error('gts-e', /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(D.email||'') ? '' : 'Revisá el email: parece incompleto.') && ok;
+    ok = error('gts-e', !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(D.email||'') ? 'Revisá el email: parece incompleto.' : (asdlMailFix(D.email) ? '¿Quisiste decir '+asdlMailFix(D.email)+'? Corregilo y seguimos.' : '')) && ok;
     if(conIg) ok = error('gts-i', D.ig ? '' : 'Dejanos tu Instagram para conocer tu propuesta.') && ok;
     if(S.tipo==='B2B' && $('gts-b2b')) ok = error('gts-b2b', D.b2b ? '' : 'Contanos con quién vas a tocar.') && ok;
     if(!ok){ var b=document.querySelector('#gts-stage .gts-in.bad'); if(b) b.focus(); }
@@ -8978,6 +9078,7 @@ window.GTS = (function(){
     var nom=(n&&n.value||'').trim(), mail=(e&&e.value||'').trim();
     if(!nom){ err.textContent='Contanos tu nombre artístico.'; n.focus(); return; }
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)){ err.textContent='Revisá el email: parece incompleto.'; e.focus(); return; }
+    if(asdlMailFix(mail)){ err.textContent='¿Quisiste decir '+asdlMailFix(mail)+'? Corregilo y seguimos.'; e.focus(); return; }
     err.textContent='Enviando…';
     try{
       var r = await sb.from('postulaciones_jam').insert([{ nombre_artistico:nom, email:mail, acepta_novedades:!!(ok&&ok.checked), origen:'graba-tu-set' }]);
@@ -8995,17 +9096,19 @@ window.GTS = (function(){
     render();
     var w=$('gts-wiz'); if(w) w.scrollIntoView({behavior:'smooth', block:'start'});
   }
-  function barAction(){ goBook('barra'); }
+  function barAction(){ if(S.jSel){ jIrAlForm(); return; } goBook('barra'); }
   function openJam(){ var d=$('gts-jam'); if(d){ d.open=true; d.scrollIntoView({behavior:'smooth',block:'start'}); } }
   function observar(){
     if(!('IntersectionObserver' in window)) return;
     var vis={hero:true, wiz:false};
     var actualizar=function(){
+      if(S.jSel || S.jSolo || Object.keys(S.jHecha).length){ jBar(); return; }
       var mostrar = !vis.hero && !vis.wiz && !S.enviado;
       var bar=$('gts-bar'), fab=$('gts-fab');
       if(bar) bar.classList.toggle('show', mostrar);
       if(fab) fab.classList.toggle('show', mostrar);
     };
+    S._actualizar=actualizar;
     var hero=document.querySelector('.gts-hero') || $('gts-top'), wiz=$('gts-wiz'), book=$('gts-book');
     var io=new IntersectionObserver(function(es){
       es.forEach(function(e){
