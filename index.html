@@ -2245,8 +2245,9 @@ fbq('track', 'PageView');
               <div class="gts-jam-body">
                 <div>
                   <p class="gts-jam-big">7 horas.<br><span>Todos los domingos.</span></p>
-                  <p class="gts-p">Imaginá un domingo en el que artistas de distinto palo coinciden para ser parte de una misma jornada, uno detrás de otro. Todos, sin excepción, se llevan videoset, clips, fotos y su audio masterizado.</p>
-                  <p class="gts-p" style="margin-top:12px">Acá el DJ no solo viene a grabar: se encuentra con una pista que baila y celebra cada drop, sin importar el género ni la trayectoria. Open format, todos los domingos.</p>
+                  <p class="gts-p">Un día en el que artistas de distintos géneros graban su DJ set uno detrás de otro y entran juntos al registro. Todos se llevan su material completo: videoset, clips, fotos y audio masterizado.</p>
+                  <p class="gts-p" style="margin-top:12px">Pero acá no venís solo a grabar: te encontrás con otros artistas que también quieren profesionalizar su carrera, y con un público que celebra cada set, sin importar el género ni la trayectoria.</p>
+                  <p class="gts-p" style="margin-top:12px;color:#fff"><b>Eso es la DJ JAM, y podés ser parte de la próxima: elegí tu horario.</b></p>
                   <div class="gts-jam-faces" id="gts-jam-faces"></div>
                   <p class="gts-mono">Mismo valor que un Set Common · <span id="gts-jam-precio">$70.000</span></p>
                 </div>
@@ -2277,9 +2278,9 @@ fbq('track', 'PageView');
             <div class="gts-faq">
               <details><summary><em>01</em>¿Qué tengo que traer?</summary><p>Tus tracks en USB (analizados en Rekordbox) y tus auriculares. Si no tenés, te alquilamos unos por $10.000. Llegá mínimo 10 minutos antes. La tolerancia es de 10 minutos: si llegás más tarde, hay que reagendar.</p></details>
               <details><summary><em>02</em>¿Qué equipo hay en cabina?</summary><p>Pioneer XDJ-RX2 con monitores Pioneer DM-40. Si tocás con vinilos, controlador o tu propio mixer, avisanos antes de la sesión para coordinarlo.</p></details>
-              <details><summary><em>03</em>¿Cuándo confirman mi reserva?</summary><p>En menos de 24 hs te escribimos por WhatsApp. Ahí te pasamos el link de Mercado Pago para la seña de $20.000, que deja tu fecha reservada. La seña no es reembolsable, se descuenta del total y con ella te pasamos la dirección.</p></details>
+              <details><summary><em>03</em>¿Cuándo confirman mi reserva?</summary><p>En menos de 24 hs te escribimos por WhatsApp. Ahí te pasamos el link de Mercado Pago para la seña de $20.000, que deja tu fecha reservada. La seña no tiene devolución, se descuenta del total y con ella te pasamos la dirección.</p></details>
               <details><summary><em>04</em>¿Cómo pago el resto?</summary><p>La seña se descuenta del total. El resto lo pagás el día de la grabación, en efectivo o por transferencia.</p></details>
-              <details><summary><em>05</em>¿Puedo cambiar la fecha o cancelar?</summary><p>Sí: podés reprogramar hasta 48 hs antes. Si cancelás con menos de 48 hs de aviso, perdés la seña.</p></details>
+              <details><summary><em>05</em>¿Puedo cambiar la fecha o cancelar?</summary><p>Sí, podés reprogramar: avisanos con al menos 48 hs de anticipación y elegí una nueva fecha dentro de los 7 días siguientes. La seña no tiene devolución: si cancelás, se pierde.</p></details>
               <details><summary><em>06</em>¿Cuándo recibo el material?</summary><p>Entre 10 y 15 días hábiles te llega el link de descarga. Vence a los 10 días y después se elimina: bajalo apenas lo recibas.</p></details>
               <details><summary><em>07</em>¿Hay descuento si ya grabé en el Archivo?</summary><p>Sí: si ya grabaste un set con nosotros, tenés 10% OFF de comunidad. Se descuenta el día de la grabación. No aplica al Set B2B ni a la DJ JAM.</p></details>
               <details><summary><em>08</em>¿Dónde se publica mi set?</summary><p>En el canal de YouTube del Archivo y en tu ficha dentro de archivosecretodellab.com, junto a todos los artistas del registro.</p></details>
@@ -8383,7 +8384,8 @@ window.GTS = (function(){
       var listo=S.jHecha[j.id];
       if(listo) return '<div class="gts-jor sel" id="jor-'+j.id+'"'+(String(S.jSolo)===String(j.id)?' data-solo="1"':'')+'><div class="gts-jor-k">✓ Horario reservado · '+esc(jLabel(j))+'</div>'
         + '<div class="gts-jor-f">'+mayus(fechaLarga(j.fecha))+' · '+esc(listo.hora)+' hs</div>'
-        + '<p class="gts-jor-m"><b>Te guardamos el horario por 24 hs.</b> Se lo queda quien seña primero: te escribimos por WhatsApp con los datos para la seña de '+plata(senia())+' por Mercado Pago. Si en 24 hs no hay seña, el horario se libera para otro DJ.</p>'
+        + '<p class="gts-jor-m"><b>Tu horario queda guardado por 24 hs.</b> Lo asegurás con la seña de '+plata(senia())+' por Mercado Pago: se descuenta del total y no tiene devolución. Te escribimos por WhatsApp con los datos. Si en 24 hs no hay seña, el horario se libera para otro DJ.</p>'
+        + '<p class="gts-jor-m">Si necesitás reprogramar, avisanos con al menos 48 hs de anticipación y elegí una nueva fecha dentro de los 7 días siguientes.</p>'
         + '<p class="gts-fine" style="margin:0">Te mandamos todo esto a tu mail ('+esc(listo.email)+'). Si no lo ves, revisá spam o promociones.</p></div>';
       var libres=j.horarios.filter(function(x){ return jLibre(j,x); }).length, sel=(S.jSel && S.jSel.id===j.id) ? S.jSel.hora : null;
       var out='<div class="gts-jor'+(sel?' sel':'')+'" id="jor-'+j.id+'"'+(String(S.jSolo)===String(j.id)?' data-solo="1"':'')+'><div class="gts-jor-k">'+esc(jLabel(j))+'</div>'
@@ -8402,7 +8404,7 @@ window.GTS = (function(){
           + '<button type="button" class="gts-btn" style="width:100%" data-jsend="'+j.id+'">Reservar las '+esc(sel)+' hs <span class="arr">→</span></button>'
           + '<div class="gts-err" id="gj-send-err" role="alert"></div>'
           + '<p class="gts-fine" style="margin-top:6px">Al enviar, aceptás nuestra <button type="button" class="gts-priv" onclick="asdlPrivacidad()">Política de privacidad</button>.</p>'
-          + '<p class="gts-fine">Te guardamos el horario 24 hs. <b>Se lo queda quien seña primero</b> ('+plata(senia())+' por Mercado Pago, se descuenta del total). Podés reprogramar hasta 48 hs antes.</p></div>';
+          + '</div>';
         if(S.jornadas.length>1 && !S.jSolo) out+='<button type="button" class="gts-link gts-jor-otras" data-jotras>← Ver otras fechas</button>';
       }
       return out+'</div>';
@@ -8690,7 +8692,7 @@ window.GTS = (function(){
       + '<button type="button" class="gts-btn" id="gts-send">Enviar solicitud <span class="arr">→</span></button></div>'
       + '<div class="gts-err" id="gts-send-err" role="alert"></div>'
       + '<p class="gts-fine" style="margin-top:6px">Al enviar, aceptás nuestra <button type="button" class="gts-priv" onclick="asdlPrivacidad()">Política de privacidad</button>.</p>'
-      + '<p class="gts-fine"><b>No pagás nada hasta que confirmemos tu fecha.</b> Después, una seña de '+plata(senia())+' por Mercado Pago la reserva y se descuenta del total (no es reembolsable). Podés reprogramar hasta 48 hs antes; si cancelás con menos aviso, perdés la seña.</p></div>';
+      + '<p class="gts-fine"><b>No pagás nada hasta que confirmemos tu fecha.</b> Después, una seña de '+plata(senia())+' por Mercado Pago la reserva y se descuenta del total (no tiene devolución). Podés reprogramar avisando con al menos 48 hs de anticipación, para una nueva fecha dentro de los 7 días siguientes.</p></div>';
   }
   function vistaCustom(){
     var D=S.datos;
@@ -8713,11 +8715,11 @@ window.GTS = (function(){
       + '<p class="gts-p">'+(custom?'Recibimos tu idea. Ya estás en camino al Archivo.':'Pediste tu '+FMT[S.tipo].n+' para el '+fechaLarga(S.fecha)+' a las '+hhmm(S.hora)+' hs. Ya estás en camino al Archivo.')+'</p>'
       + '<ol>'
       + '<li><span><b>En menos de 24 hs te escribimos por WhatsApp</b> para confirmar '+(custom?'la propuesta y la fecha':'tu fecha')+'.</span></li>'
-      + '<li><span>Ahí te pasamos los datos para la <b>seña de '+plata(senia())+'</b> por Mercado Pago (no reembolsable). Se descuenta del total y con la seña te pasamos la dirección.</span></li>'
+      + '<li><span>Ahí te pasamos los datos para la <b>seña de '+plata(senia())+'</b> por Mercado Pago (no tiene devolución). Se descuenta del total y con la seña te pasamos la dirección.</span></li>'
       + '<li><span>El día de tu sesión, <b>llegá mínimo 10 minutos antes</b> con tus tracks en USB y tus auriculares (si no tenés, te alquilamos unos por $10.000). El resto se paga en efectivo o transferencia. La tolerancia es de 10 minutos: si llegás más tarde, hay que reagendar.</span></li>'
       + '<li><span>Entre <b>10 y 15 días hábiles</b> te llega el link de descarga. Vence a los 10 días: bajalo apenas lo recibas.</span></li>'
       + '</ol><p class="gts-fine"><b>Te mandamos todo esto a tu mail</b> ('+esc(D.email||'')+'). Si no lo ves, revisá spam o promociones.</p>'
-      + '<p class="gts-fine">Podés reprogramar hasta 48 hs antes. Si cancelás con menos de 48 hs, perdés la seña.</p>'
+      + '<p class="gts-fine">La seña no tiene devolución. Podés reprogramar avisando con al menos 48 hs de anticipación, para una nueva fecha dentro de los 7 días siguientes.</p>'
       + '<div class="gts-nav"><button type="button" class="gts-link" onclick="navTo(\'djsets\',document.querySelector(\'[data-pg=djsets]\'))">Mirá el registro mientras tanto →</button></div></div>';
   }
   // La seña nunca baja de $20.000 (Manual de Marca V3), aunque la tabla config tenga un número viejo
