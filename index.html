@@ -544,6 +544,12 @@ input[type=file]{display:none}
 .mtit{font-family:'Space Mono',monospace;font-size:17px;font-weight:700;margin-bottom:20px}
 .mcls{float:right;font-size:10px;letter-spacing:.2em;color:var(--wd);cursor:pointer;transition:color .2s}
 .mcls:hover{color:var(--w)}
+.mbox.priv{width:720px;max-height:86vh;font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.75;color:rgba(255,255,255,.82)}
+.mbox.priv h5{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#5533ff;margin:26px 0 10px}
+.mbox.priv p{margin:0 0 10px}.mbox.priv ul{margin:0 0 10px;padding-left:18px}.mbox.priv li{margin-bottom:6px}
+.mbox.priv b{color:#fff}.mbox.priv a{color:#fff;text-underline-offset:3px}
+.mbox.priv .priv-f{font-size:11px;color:rgba(255,255,255,.5);margin-top:24px}
+.gts-priv{background:none;border:0;padding:0;color:inherit;font:inherit;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 
 /* RADIO PILL */
 #radio-pill{position:fixed;bottom:calc(var(--TK) + 12px);right:16px;background:rgba(6,6,6,.94);border:1px solid var(--b);padding:10px 16px;display:none;align-items:center;gap:12px;z-index:7400;font-size:9px;letter-spacing:.18em;color:var(--wd);text-transform:uppercase}
@@ -2232,6 +2238,7 @@ fbq('track', 'PageView');
                     <label class="gts-check"><input type="checkbox" id="gts-jam-ok"> Quiero recibir novedades del Archivo por mail.</label>
                     <button class="gts-btn" type="button" style="width:100%" onclick="GTS.sendJam()">Postularme <span class="arr">→</span></button>
                     <div class="gts-err" id="gts-jam-err" role="alert"></div>
+                    <p class="gts-fine" style="margin-top:6px">Al postularte, aceptás nuestra <button type="button" class="gts-priv" onclick="asdlPrivacidad()">Política de privacidad</button>.</p>
                   </div>
                 </div>
               </div>
@@ -3839,6 +3846,63 @@ function updateActionBlockVisibility(){
 
 // ═══════════════════════════════════════════════════════
 
+// ═══ POLÍTICA DE PRIVACIDAD (Ley 25.326) · se abre desde el footer, los formularios o archivosecretodellab.com/#privacidad ═══
+function asdlPrivacidad(){
+  var M='produccion@archivosecretodellab.com', ml='<a href="mailto:'+M+'">'+M+'</a>';
+  var h=''
+  + '<p>Archivo Secreto del Lab (en adelante, "el Archivo") es un archivo audiovisual independiente de la escena electrónica under de Buenos Aires. Somos responsables de los datos que dejás en archivosecretodellab.com, en el formulario de registro y en las reservas que cargamos por Instagram o WhatsApp.</p>'
+  + '<p>Esta política explica qué datos guardamos, para qué, con quién los compartimos y cómo podés pedir verlos, corregirlos o borrarlos, según la Ley 25.326 de Protección de Datos Personales.</p>'
+  + '<p><b>Contacto para temas de datos:</b> '+ml+'</p>'
+  + '<h5>Qué datos recolectamos</h5><p>Solo pedimos lo necesario para grabar tu set y presentarte en el Archivo.</p><ul>'
+  + '<li><b>Reserva en la web o por el equipo:</b> nombre o AKA, mail, teléfono, formato de set, fecha y hora, cómo llegaste al Archivo.</li>'
+  + '<li><b>Postulación a la DJ JAM:</b> nombre o AKA, mail, géneros, links a tu música.</li>'
+  + '<li><b>Formulario de registro:</b> mail, AKA, nombre real, fecha de cumpleaños, géneros, tiempo mezclando, estilo y concepto del set, solo o B2B y partner, texto para el público, redes (Instagram, SoundCloud, YouTube), acompañante, fecha deseada, cómo llegaste.</li>'
+  + '<li><b>Seña:</b> monto y fecha del pago. El pago lo procesa Mercado Pago: nunca vemos ni guardamos datos de tu tarjeta.</li>'
+  + '<li><b>Navegación en la web:</b> páginas que visitás y pasos de la reserva, a través del píxel de Meta.</li>'
+  + '<li><b>Grabación:</b> tu imagen y el audio de tu set.</li></ul>'
+  + '<h5>Para qué los usamos</h5><ul>'
+  + '<li>Agendar tu grabación, confirmarla y mandarte la dirección, el recordatorio y el material.</li>'
+  + '<li>Armar tu ficha pública en el Archivo (solo AKA, géneros, estilo, texto para el público, redes y foto).</li>'
+  + '<li>Avisarte de nuevas ediciones de la DJ JAM, aniversarios de tu set y propuestas del Archivo. Podés darte de baja desde cualquier mail.</li>'
+  + '<li>Saber por qué canal llega la gente y mejorar la web.</li>'
+  + '<li>Cumplir obligaciones contables, como facturar.</li></ul>'
+  + '<p>Tu nombre real, tu mail, tu teléfono y tu cumpleaños nunca se publican. No vendemos ni alquilamos tus datos.</p>'
+  + '<h5>Con quién los compartimos</h5><p>Solo con los servicios que usamos para operar, y solo lo que cada uno necesita. Algunos guardan los datos fuera de Argentina; al dejarnos tus datos, prestás tu consentimiento para esa transferencia.</p><ul>'
+  + '<li><b>Supabase:</b> base de datos de reservas, postulaciones y fichas.</li>'
+  + '<li><b>Brevo:</b> envío de mails.</li>'
+  + '<li><b>Google</b> (Formularios, Sheets, Calendar, Drive): registro, agenda de grabaciones y entrega del material.</li>'
+  + '<li><b>Meta</b> (Instagram, píxel): medir visitas y anuncios.</li>'
+  + '<li><b>Mercado Pago:</b> cobro de la seña.</li>'
+  + '<li><b>GitHub:</b> alojamiento de la web.</li>'
+  + '<li><b>YouTube e Instagram:</b> publicación de los sets.</li></ul>'
+  + '<p>Dentro del Archivo, solo el equipo (producción y audio) accede a tus datos de contacto. Si una autoridad lo pide por ley, también podemos tener que compartirlos.</p>'
+  + '<h5>Tu imagen y tu set</h5>'
+  + '<p>Al grabar en el Archivo y aceptar los Términos y Condiciones del registro, autorizás que tu imagen y el audio de tu set se publiquen en YouTube, Instagram y archivosecretodellab.com, junto con tu ficha pública. Lo mismo vale para quien te acompañe y aparezca en cámara.</p>'
+  + '<p>Podés pedir en cualquier momento que corrijamos tu ficha de la web. Lo que pasa con un set ya publicado se rige por los Términos y Condiciones.</p>'
+  + '<p>El material vive en YouTube e Instagram: esas plataformas tienen sus propias políticas de privacidad.</p>'
+  + '<h5>Cookies y píxel de Meta</h5>'
+  + '<p>La web usa el píxel de Meta, que guarda cookies en tu navegador. Nos sirve para saber cuánta gente visita el Archivo, cuántos empiezan una reserva y para mostrar anuncios a quienes ya nos conocen. Meta trata esos datos según su propia política.</p>'
+  + '<p>También guardamos en tu navegador pequeñas preferencias (por ejemplo, filtros) que no salen de tu dispositivo. Podés borrar o bloquear las cookies desde la configuración de tu navegador; la web sigue funcionando igual.</p>'
+  + '<h5>Cuánto tiempo los guardamos y cómo los cuidamos</h5>'
+  + '<p>Guardamos tus datos de contacto mientras seas parte del Archivo y hasta 2 años después de tu última grabación o postulación. Los datos de pagos y facturas se guardan el tiempo que exige la ley contable. Tu set y tu ficha pública forman parte del registro permanente del Archivo.</p>'
+  + '<p>La base de datos solo es accesible para el equipo, con usuario y contraseña. Los datos de contacto no son visibles desde la web pública. Ningún sistema es 100% infalible: si ocurriera un incidente que afecte tus datos, te vamos a avisar.</p>'
+  + '<h5>Tus derechos</h5><p>Escribinos a '+ml+' con el asunto "Mis datos" para:</p><ul>'
+  + '<li><b>Acceder:</b> saber qué datos tuyos tenemos. Es gratis y podés pedirlo cada 6 meses. Respondemos en hasta 10 días corridos.</li>'
+  + '<li><b>Corregir o actualizar</b> un dato que esté mal.</li>'
+  + '<li><b>Borrar</b> tus datos de contacto (mail, teléfono, nombre real, cumpleaños). Tu set y tu ficha pública siguen siendo parte del registro del Archivo.</li>'
+  + '<li><b>Dejar de recibir mails</b> del Archivo (también desde el link de baja de cada mail).</li></ul>'
+  + '<p>Los pedidos de corrección y borrado se resuelven en hasta 5 días hábiles. Podemos pedirte que confirmes tu identidad.</p>'
+  + '<p>La AGENCIA DE ACCESO A LA INFORMACIÓN PÚBLICA, en su carácter de Órgano de Control de la Ley N° 25.326, tiene la atribución de atender las denuncias y reclamos que interpongan quienes resulten afectados en sus derechos por incumplimiento de las normas vigentes en materia de protección de datos personales.</p>'
+  + '<h5>Cambios y contacto</h5>'
+  + '<p>El Archivo está pensado para mayores de 18 años. Si cambiamos esta política, publicamos la versión nueva acá con su fecha, y si el cambio es importante te avisamos por mail.</p>'
+  + '<p class="priv-f">Última actualización: 24/10/2026 · Contacto: '+ml+' · Buenos Aires, Argentina.</p>';
+  document.getElementById('m-tit').textContent='Política de privacidad';
+  document.getElementById('m-body').innerHTML=h;
+  var b=document.querySelector('#modal .mbox'); if(b){ b.classList.add('priv'); b.scrollTop=0; }
+  document.getElementById('modal').classList.add('on');
+}
+document.addEventListener('DOMContentLoaded', function(){ try{ if(location.hash==='#privacidad') setTimeout(asdlPrivacidad, 400); }catch(err){} });
+
 // ═══ FOOTER: se arma igual en Grabá tu set y en Alquiler de equipos ═══
 function asdlFootGo(pg, ancla){
   navTo(pg, document.querySelector('.nt[data-pg="'+pg+'"]'));
@@ -3874,7 +3938,8 @@ function renderFooters(){
     + '<nav aria-label="Archivo"><h4>Archivo</h4><ul>'
     +   '<li><button type="button" onclick="asdlFootGo(\'home\')">Inicio</button></li>'
     +   '<li><button type="button" onclick="asdlFootGo(\'djsets\')">DJ Sets</button></li>'
-    +   '<li><button type="button" onclick="asdlFootGo(\'renta\')">Alquiler de equipos</button></li></ul></nav>'
+    +   '<li><button type="button" onclick="asdlFootGo(\'renta\')">Alquiler de equipos</button></li>'
+    +   '<li><button type="button" onclick="asdlPrivacidad()">Política de privacidad</button></li></ul></nav>'
     + '<nav aria-label="Grabá"><h4>Grabá</h4><ul>'
     +   '<li><button type="button" onclick="asdlFootGo(\'agenda\',\'gts-book\')">Sesiones y valores</button></li>'
     +   '<li><button type="button" onclick="asdlFootGo(\'agenda\',\'gts-faq-sec\')">Preguntas frecuentes</button></li>'
@@ -5813,7 +5878,7 @@ function renderAdminJams(c){
 }
 
 
-function closeModal(){document.getElementById('modal').classList.remove('on');}
+function closeModal(){document.getElementById('modal').classList.remove('on');var b=document.querySelector('#modal .mbox');if(b)b.classList.remove('priv');}
 
 
 // Fisher-Yates shuffle (in-place)
@@ -8215,6 +8280,7 @@ window.GTS = (function(){
       + '<div class="gts-nav"><button type="button" class="gts-link" data-ir="2">← Editar mis datos</button>'
       + '<button type="button" class="gts-btn" id="gts-send">Enviar solicitud <span class="arr">→</span></button></div>'
       + '<div class="gts-err" id="gts-send-err" role="alert"></div>'
+      + '<p class="gts-fine" style="margin-top:6px">Al enviar, aceptás nuestra <button type="button" class="gts-priv" onclick="asdlPrivacidad()">Política de privacidad</button>.</p>'
       + '<p class="gts-fine"><b>No pagás nada hasta que confirmemos tu fecha.</b> Después, una seña de '+plata(senia())+' por Mercado Pago la reserva y se descuenta del total (no es reembolsable). Podés reprogramar hasta 48 hs antes; si cancelás con menos aviso, perdés la seña.</p></div>';
   }
   function vistaCustom(){
@@ -8228,6 +8294,7 @@ window.GTS = (function(){
       + '<div class="gts-field"><label for="gts-idea">Tu idea</label><textarea class="gts-ta" id="gts-idea" placeholder="Qué querés grabar, cuántas personas, si tenés fecha en mente…">'+esc(D.idea||'')+'</textarea><div class="gts-err" id="gts-idea-err"></div></div>'
       + '<div class="gts-nav"><span></span><button type="button" class="gts-btn" id="gts-send-custom">Enviar mi idea <span class="arr">→</span></button></div>'
       + '<div class="gts-err" id="gts-send-err" role="alert"></div>'
+      + '<p class="gts-fine" style="margin-top:6px">Al enviar, aceptás nuestra <button type="button" class="gts-priv" onclick="asdlPrivacidad()">Política de privacidad</button>.</p>'
       + '<p class="gts-fine">Te escribimos en menos de 24 hs para coordinar fecha y presupuesto. No pagás nada hasta que lo confirmemos.</p></div>';
   }
   function vistaListo(){
