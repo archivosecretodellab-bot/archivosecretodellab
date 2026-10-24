@@ -1952,6 +1952,15 @@ fbq('track', 'PageView');
       .gts-in.bad{border-color:#ff6a4d}
       .gts-ta{min-height:110px;resize:vertical}
       .gts-err{font-size:12px;color:#ff8f78;margin-top:6px;min-height:0}
+      .gts-jor{border:1px solid var(--g-line);padding:18px;margin-bottom:18px;background:rgba(0,0,0,.25)}
+      .gts-jor.sel{border-color:var(--g-b2)}
+      .gts-jor-k{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--g-b2);margin-bottom:6px}
+      .gts-jor-f{font-family:'Space Mono',monospace;font-weight:700;font-size:20px;line-height:1.2;margin:0 0 6px}
+      .gts-jor-m{font-size:12px;line-height:1.6;color:var(--g-w2);margin:0 0 12px}
+      .gts-jor-m b{color:var(--g-w)}
+      .gts-jor-p{font-size:13px;margin:0 0 14px}
+      .gts-jor-p s{opacity:.5;margin-right:6px}
+      .gts-jor-form{margin-top:16px}
       .gts-hi{padding:12px 14px;border:1px solid rgba(43,26,255,.5);background:rgba(27,0,230,.12);font-size:12px;line-height:1.6;margin-bottom:14px}
       .gts-check{display:flex;gap:10px;align-items:flex-start;font-size:12px;line-height:1.6;color:var(--g-w2);cursor:pointer;margin:6px 0 14px}
       .gts-check input{margin-top:3px;accent-color:var(--g-b);width:16px;height:16px;flex-shrink:0}
@@ -2230,8 +2239,9 @@ fbq('track', 'PageView');
                 </div>
                 <div>
                   <div class="gts-jam-next" id="gts-jam-next"></div>
-                  <div class="gts-h3">Postulate a la próxima jornada.</div>
-                  <p class="gts-p" style="margin-bottom:18px">Dejanos tu nombre y tu mail. La convocatoria sale por Instagram (@archivosecretodellab) y coordinamos tu lugar antes de la jornada.</p>
+                  <div id="gts-jor"></div>
+                  <div class="gts-h3" id="gts-jam-h">Postulate a la próxima jornada.</div>
+                  <p class="gts-p" id="gts-jam-p" style="margin-bottom:18px">Dejanos tu nombre y tu mail. La convocatoria sale por Instagram (@archivosecretodellab) y coordinamos tu lugar antes de la jornada.</p>
                   <div id="gts-jam-form">
                     <div class="gts-field"><label for="gts-jam-n">Nombre artístico</label><input class="gts-in" id="gts-jam-n" autocomplete="nickname" placeholder="Tu nombre de DJ o proyecto"></div>
                     <div class="gts-field"><label for="gts-jam-e">Email</label><input class="gts-in" id="gts-jam-e" type="email" inputmode="email" autocomplete="email" placeholder="tu@email.com"></div>
@@ -2415,6 +2425,7 @@ fbq('track', 'PageView');
   <div class="anav">
     <div class="ant on" onclick="adminTab('overview')" data-at="overview">Resumen</div>
     <div class="ant" onclick="adminTab('artists')" data-at="artists">Artistas</div>
+    <div class="ant" onclick="adminTab('jornadas')" data-at="jornadas">Jornadas</div>
     <div class="ant" onclick="adminTab('jams')" data-at="jams">Dj Jams</div>
     <div class="ant" onclick="adminTab('agenda-admin')" data-at="agenda-admin">Agenda</div>
     <div class="ant" onclick="adminTab('embudo')" data-at="embudo">Embudo</div>
@@ -3902,6 +3913,7 @@ function asdlPrivacidad(){
   document.getElementById('modal').classList.add('on');
 }
 document.addEventListener('DOMContentLoaded', function(){ try{ if(location.hash==='#privacidad') setTimeout(asdlPrivacidad, 400); }catch(err){} });
+document.addEventListener('DOMContentLoaded', function(){ try{ if(new URLSearchParams(location.search).get('jornada')) setTimeout(function(){ navTo('agenda', document.querySelector('.nt[data-pg="agenda"]')); }, 300); }catch(err){} });
 
 // ═══ FOOTER: se arma igual en Grabá tu set y en Alquiler de equipos ═══
 function asdlFootGo(pg, ancla){
@@ -5349,6 +5361,7 @@ function adminTab(tab){
   const cont=document.getElementById('a-cont');
   if(tab==='overview') renderAdminOverview(cont);
   else if(tab==='artists') renderAdminArtistsMerged(cont);
+  else if(tab==='jornadas') renderAdminJornadas(cont);
   else if(tab==='jams') renderAdminJams(cont);
   else if(tab==='agenda-admin') renderAdminAgendaTab(cont);
   else if(tab==='embudo') renderAdminEmbudo(cont);
@@ -5992,6 +6005,159 @@ async function renderAdminAgendaTab(c){
 // ═══ NUEVA RESERVA desde el Panel (DJs que llegan por Instagram o WhatsApp) ═══
 // La reserva entra a la misma tabla que las de la web, así reciben los mismos mails, el calendario y el recordatorio.
 // Sin seña → al DJ le llega "las puertas están abiertas". Con seña → entra confirmada: mail de la cabina + calendario.
+// ═══════════════════════════════════════════════════════════════
+// PANEL · JORNADAS — DJ JAM, Archivo Público y Home Based con cupos.
+// El equipo abre la jornada con sus horarios; cada DJ reserva el suyo desde la web
+// (o lo carga el equipo si llegó por chat). Cada cupo es una reserva común.
+// ═══════════════════════════════════════════════════════════════
+var JOR_ADMIN = [], JOR_RES = [];
+function _jorEsc(x){ return String(x==null?'':x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function _jorLabel(j){ return j.tipo+(j.numero?' '+String(j.numero).padStart(3,'0'):'')+(j.nombre?' · '+j.nombre:''); }
+function _jorLink(j){ return 'https://archivosecretodellab.com/?jornada='+j.id; }
+function _jorHorarios(ini, n){
+  var m=/^(\d{1,2}):(\d{2})/.exec(String(ini||'')); if(!m) return [];
+  var t=(+m[1])*60+(+m[2]), out=[];
+  for(var i=0;i<n;i++){ var x=t+i*70; if(x+60>24*60) break; out.push(String(Math.floor(x/60)).padStart(2,'0')+':'+String(x%60).padStart(2,'0')); }
+  return out;   // 60 minutos de set + 10 de cambio entre DJs
+}
+function _jorPrecio(j){
+  var hoy=new Date().toISOString().slice(0,10);
+  var d=(Number(j.descuento)>0 && j.descuento_hasta && hoy<=j.descuento_hasta) ? Number(j.descuento) : 0;
+  return Math.round((Number(j.precio)||70000)*(1-d/100));
+}
+async function renderAdminJornadas(c){
+  var inp='width:100%;box-sizing:border-box;background:rgba(255,255,255,.04);border:1px solid var(--wf);color:#fff;padding:9px 10px;font-family:inherit;font-size:12px';
+  var lab='display:block;font-size:8.5px;letter-spacing:.2em;color:var(--wd);text-transform:uppercase;margin:0 0 5px';
+  var base=Math.max(Number((typeof CFG!=='undefined'&&CFG.precio_solo))||0, 70000);
+  c.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:10px;flex-wrap:wrap">'
+    +'<div><div style="font-size:9px;letter-spacing:.28em;color:#fff;text-transform:uppercase">Jornadas</div><div style="font-size:11px;color:var(--wd);margin-top:4px">Abrí la jornada, copiá el link y mandalo con la convocatoria. Cada DJ elige su horario; el cupo sin seña se libera solo a las 24 hs.</div></div>'
+    +'<button class="tdbtn" onclick="jorForm()" style="color:#fff;border-color:var(--b)">+ Nueva jornada</button></div>'
+    +'<div id="jor-box" style="display:none;margin:0 0 18px;padding:16px;border:1px solid var(--b);background:rgba(27,0,230,.06)">'
+    +'<input type="hidden" id="jf-id">'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'
+    +'<div><label style="'+lab+'">Tipo</label><select id="jf-tipo" style="'+inp+'" onchange="jorLugar()"><option>DJ JAM</option><option>Archivo Público</option><option>Home Based</option></select></div>'
+    +'<div style="display:grid;grid-template-columns:1fr 2fr;gap:10px"><div><label style="'+lab+'">Número</label><input id="jf-num" type="number" min="1" style="'+inp+'" placeholder="18"></div><div><label style="'+lab+'">Nombre (opcional)</label><input id="jf-nom" style="'+inp+'" placeholder="FEMALE DJ JAM 3"></div></div>'
+    +'<div><label style="'+lab+'">Día</label><input id="jf-fecha" type="date" style="'+inp+'"></div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><label style="'+lab+'">Primer set</label><input id="jf-ini" type="time" step="300" value="15:00" style="'+inp+'" oninput="jorAuto()"></div><div><label style="'+lab+'">Cupos</label><input id="jf-n" type="number" min="1" max="12" value="6" style="'+inp+'" oninput="jorAuto()"></div></div>'
+    +'<div style="grid-column:1/-1"><label style="'+lab+'">Horarios (60 min + 10 de cambio · se pueden editar, separados por coma)</label><input id="jf-hs" style="'+inp+'"></div>'
+    +'<div><label style="'+lab+'">Valor del cupo</label><input id="jf-precio" type="number" step="1000" value="'+base+'" style="'+inp+'"></div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><label style="'+lab+'">% OFF por reservar antes</label><input id="jf-dto" type="number" min="0" max="50" value="10" style="'+inp+'"></div><div><label style="'+lab+'">Hasta el día</label><input id="jf-hasta" type="date" style="'+inp+'"></div></div>'
+    +'<div id="jf-lugar-w" style="grid-column:1/-1;display:none"><label style="'+lab+'">Lugar (se manda en la confirmación)</label><input id="jf-lugar" style="'+inp+'" placeholder="Ache Paraje · Calle 123, CABA"></div>'
+    +'<div><label style="'+lab+'">Estado</label><select id="jf-estado" style="'+inp+'"><option value="Abierta">Abierta (se ve en la web)</option><option value="Borrador">Borrador (solo el equipo)</option><option value="Cerrada">Cerrada (no recibe más)</option></select></div>'
+    +'</div><div id="jf-msg" style="font-size:11px;min-height:16px;margin:12px 0 10px;color:var(--wd)"></div>'
+    +'<div style="display:flex;gap:8px"><button class="tdbtn" onclick="jorGuardar()" style="color:#fff;border-color:var(--b)">Guardar jornada</button><button class="tdbtn" onclick="document.getElementById(\'jor-box\').style.display=\'none\'">Cancelar</button></div></div>'
+    +'<div id="jor-list" style="font-size:11px;color:var(--wd)">Cargando…</div>';
+  await jorCargar();
+}
+async function jorCargar(){
+  var L=document.getElementById('jor-list'); if(!L) return;
+  try{
+    var r=await sb.from('jornadas').select('*').order('fecha',{ascending:false}).limit(40);
+    if(r.error) throw r.error; JOR_ADMIN=r.data||[];
+    var ids=JOR_ADMIN.map(function(j){ return j.id; });
+    JOR_RES=[];
+    if(ids.length){ var q=await sb.from('reservas').select('id,nombre_artistico,whatsapp,horario,estado,jornada_id,created_at,senia_recibida_at').in('jornada_id',ids).neq('estado','Cancelada'); JOR_RES=(q&&q.data)||[]; }
+  }catch(e){
+    L.innerHTML='<div style="color:var(--red)">No se pudieron leer las jornadas. ¿Ya corriste ASDL_jornadas.sql en Supabase?</div>'; return;
+  }
+  if(!JOR_ADMIN.length){ L.innerHTML='Todavía no hay jornadas. Tocá "+ Nueva jornada".'; return; }
+  var hoy=new Date().toISOString().slice(0,10);
+  L.innerHTML=JOR_ADMIN.map(function(j){
+    var res=JOR_RES.filter(function(x){ return x.jornada_id===j.id; });
+    var tomados=res.length, pasada=j.fecha<hoy;
+    var col={Abierta:'#5533ff',Borrador:'var(--wd)',Cerrada:'var(--wd)'}[j.estado]||'var(--wd)';
+    var filas=(j.horarios||[]).map(function(h){
+      var x=res.find(function(r){ return r.horario===h; });
+      if(!x) return '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-top:1px solid var(--wf)"><span style="color:#fff;font-family:\'Space Mono\',monospace">'+h+'</span><span>libre'+(pasada?'':' · <button class="tdbtn" style="padding:3px 8px" onclick="jorCupoForm('+j.id+',\''+h+'\')">Cargar por chat</button>')+'</span></div><div id="jc-'+j.id+'-'+h.replace(':','')+'"></div>';
+      var vence='';
+      if(x.estado==='Pendiente' && !x.senia_recibida_at){ var hs=24-Math.floor((Date.now()-new Date(x.created_at).getTime())/36e5); vence=' · sin seña, se libera en '+Math.max(hs,0)+' h'; }
+      return '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-top:1px solid var(--wf)"><span style="color:#fff;font-family:\'Space Mono\',monospace">'+h+'</span><span style="color:'+(x.estado==='Confirmada'?'var(--green)':'#fff')+'">'+_jorEsc(x.nombre_artistico)+' · '+(x.estado==='Confirmada'?'✓ Señado':'Pendiente'+vence)+'</span></div>';
+    }).join('');
+    return '<div style="border:1px solid var(--wf);padding:14px;margin-bottom:12px">'
+      +'<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start">'
+      +'<div><div style="font-size:9px;letter-spacing:.24em;color:'+col+';text-transform:uppercase">'+_jorEsc(j.estado)+(pasada?' · ya pasó':'')+'</div>'
+      +'<div style="font-size:14px;color:#fff;margin:4px 0">'+_jorEsc(_jorLabel(j))+'</div>'
+      +'<div>'+j.fecha+' · '+tomados+' de '+(j.horarios||[]).length+' cupos tomados · $'+Number(j.precio).toLocaleString('es-AR')+(Number(j.descuento)>0&&j.descuento_hasta?' ('+j.descuento+'% OFF hasta '+j.descuento_hasta+')':'')+(j.lugar?' · '+_jorEsc(j.lugar):'')+'</div></div>'
+      +'<div style="display:flex;gap:6px;flex-wrap:wrap">'
+      +'<button class="tdbtn" onclick="jorCopiar('+j.id+',this)">Copiar link</button>'
+      +'<button class="tdbtn" onclick="jorForm('+j.id+')">Editar</button>'
+      +(j.estado==='Abierta'?'<button class="tdbtn" onclick="jorEstado('+j.id+',\'Cerrada\')">Cerrar</button>':'<button class="tdbtn" onclick="jorEstado('+j.id+',\'Abierta\')">Abrir</button>')
+      +'</div></div><div style="margin-top:10px">'+filas+'</div></div>';
+  }).join('');
+}
+function jorLugar(){ var t=document.getElementById('jf-tipo').value, w=document.getElementById('jf-lugar-w'); if(w) w.style.display = t==='DJ JAM' ? 'none' : 'block'; }
+function jorAuto(){ var hs=_jorHorarios(document.getElementById('jf-ini').value, +document.getElementById('jf-n').value||0); document.getElementById('jf-hs').value=hs.join(', '); }
+function jorForm(id){
+  var b=document.getElementById('jor-box'); if(!b) return; b.style.display='block';
+  var j=id ? JOR_ADMIN.find(function(x){ return x.id===id; }) : null;
+  var set=function(k,v){ var e=document.getElementById(k); if(e) e.value=(v==null?'':v); };
+  set('jf-id', j?j.id:'');
+  if(j){
+    set('jf-tipo',j.tipo); set('jf-num',j.numero); set('jf-nom',j.nombre); set('jf-fecha',j.fecha);
+    set('jf-ini',(j.horarios||[])[0]||'15:00'); set('jf-n',(j.horarios||[]).length); set('jf-hs',(j.horarios||[]).join(', '));
+    set('jf-precio',j.precio); set('jf-dto',j.descuento); set('jf-hasta',j.descuento_hasta); set('jf-lugar',j.lugar); set('jf-estado',j.estado);
+  } else {
+    var prox=JOR_ADMIN.filter(function(x){ return x.tipo==='DJ JAM' && x.numero; }).reduce(function(m,x){ return Math.max(m,x.numero); },0);
+    set('jf-tipo','DJ JAM'); set('jf-num',prox?prox+1:''); set('jf-nom',''); set('jf-fecha',''); set('jf-hasta',''); set('jf-lugar',''); set('jf-estado','Abierta');
+    jorAuto();
+  }
+  jorLugar(); document.getElementById('jf-msg').textContent='';
+  b.scrollIntoView({behavior:'smooth',block:'start'});
+}
+async function jorGuardar(){
+  var v=function(k){ var e=document.getElementById(k); return e ? String(e.value||'').trim() : ''; };
+  var msg=document.getElementById('jf-msg'), aviso=function(t,c){ msg.textContent=t; msg.style.color=c||'var(--red)'; };
+  var hs=v('jf-hs').split(/[,\s]+/).filter(Boolean).map(function(h){ var m=/^(\d{1,2}):(\d{2})$/.exec(h); return m ? m[1].padStart(2,'0')+':'+m[2] : null; });
+  if(!v('jf-fecha')) return aviso('Falta el día.');
+  if(!hs.length || hs.indexOf(null)>-1) return aviso('Revisá los horarios: tienen que ser como 15:00, 16:10, 17:20.');
+  var tipo=v('jf-tipo');
+  if(tipo!=='DJ JAM' && !v('jf-lugar')) return aviso('Falta el lugar: es la dirección que le llega al DJ cuando seña.');
+  var fila={ tipo:tipo, numero:v('jf-num')?+v('jf-num'):null, nombre:v('jf-nom')||null, fecha:v('jf-fecha'), horarios:hs,
+    precio:+v('jf-precio')||70000, descuento:+v('jf-dto')||0, descuento_hasta:v('jf-hasta')||null,
+    lugar: tipo==='DJ JAM' ? null : v('jf-lugar'), estado:v('jf-estado')||'Abierta' };
+  aviso('Guardando…','var(--wd)');
+  var id=v('jf-id'), r;
+  try{ r = id ? await sb.from('jornadas').update(fila).eq('id',+id) : await sb.from('jornadas').insert([fila]); }catch(e){ r={error:e}; }
+  if(r && r.error) return aviso('No se pudo guardar: '+(r.error.message||r.error));
+  document.getElementById('jor-box').style.display='none';
+  await jorCargar();
+}
+async function jorEstado(id, estado){ await sb.from('jornadas').update({estado:estado}).eq('id',id); await jorCargar(); }
+function jorCopiar(id, btn){
+  var j=JOR_ADMIN.find(function(x){ return x.id===id; }); if(!j) return;
+  var t=_jorLink(j), ok=function(){ var o=btn.textContent; btn.textContent='✓ Copiado'; setTimeout(function(){ btn.textContent=o; },1500); };
+  try{ navigator.clipboard.writeText(t).then(ok, function(){ btn.textContent=t; }); }catch(e){ btn.textContent=t; }
+}
+function jorCupoForm(id, h){
+  var box=document.getElementById('jc-'+id+'-'+h.replace(':','')); if(!box) return;
+  if(box.innerHTML){ box.innerHTML=''; return; }
+  var inp='width:100%;box-sizing:border-box;background:rgba(255,255,255,.04);border:1px solid var(--wf);color:#fff;padding:8px;font-family:inherit;font-size:12px';
+  var k=id+'-'+h.replace(':','');
+  box.innerHTML='<div style="padding:10px;margin:4px 0 8px;border:1px solid var(--b);display:grid;grid-template-columns:1fr 1fr;gap:8px">'
+    +'<input id="jcn-'+k+'" style="'+inp+'" placeholder="NOMBRE ARTÍSTICO *">'
+    +'<select id="jco-'+k+'" style="'+inp+'"><option value="instagram">Instagram</option><option value="whatsapp">WhatsApp</option><option value="presencial">En persona</option><option value="otro">Otro</option></select>'
+    +'<input id="jce-'+k+'" type="email" style="'+inp+'" placeholder="Mail (para que le lleguen los mails)">'
+    +'<input id="jcw-'+k+'" style="'+inp+'" placeholder="WhatsApp">'
+    +'<label style="grid-column:1/-1;display:flex;gap:8px;align-items:center;color:#fff;font-size:11px"><input id="jcs-'+k+'" type="checkbox"> Ya pagó la seña (entra confirmado)</label>'
+    +'<div style="grid-column:1/-1;display:flex;gap:8px;align-items:center"><button class="tdbtn" style="color:#fff;border-color:var(--b)" onclick="jorCupoGuardar('+id+',\''+h+'\')">Guardar cupo</button><span id="jcm-'+k+'" style="font-size:11px"></span></div></div>';
+}
+async function jorCupoGuardar(id, h){
+  var k=id+'-'+h.replace(':',''), g=function(p){ var e=document.getElementById(p+k); return e ? (e.type==='checkbox' ? e.checked : String(e.value||'').trim()) : ''; };
+  var m=document.getElementById('jcm-'+k), j=JOR_ADMIN.find(function(x){ return x.id===id; }); if(!j) return;
+  var nombre=String(g('jcn-')).toUpperCase(), email=g('jce-'), pago=g('jcs-');
+  if(!nombre){ m.textContent='Falta el nombre.'; m.style.color='var(--red)'; return; }
+  if(email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)){ m.textContent='Ese mail no parece válido.'; m.style.color='var(--red)'; return; }
+  var senia=Math.max(Number((typeof CFG!=='undefined'&&CFG.senia))||0, 20000);
+  var fila={ nombre_artistico:nombre, email:email||null, whatsapp:g('jcw-')||null, genero:'', links:'', tipo:j.tipo, fecha:j.fecha, horario:h,
+    jornada_id:j.id, origen:g('jco-'), ya_registrado:false, mensaje:'Jornada: '+_jorLabel(j), es_comunidad:false, descuento:_jorPrecio(j)<Number(j.precio),
+    precio_base:_jorPrecio(j), senia:senia, estado: pago?'Confirmada':'Pendiente' };
+  if(pago){ fila.senia_recibida_at=new Date().toISOString(); fila.senia_monto=senia; }
+  m.textContent='Guardando…'; m.style.color='var(--wd)';
+  var r; try{ r=await sb.from('reservas').insert([fila]); }catch(e){ r={error:e}; }
+  if(r && r.error){ m.textContent='No se pudo guardar: '+(r.error.message||r.error); m.style.color='var(--red)'; return; }
+  await jorCargar();
+}
+
 function nrFormHTML(){
   var inp='width:100%;box-sizing:border-box;background:rgba(255,255,255,.04);border:1px solid var(--wf);color:#fff;padding:9px 10px;font-family:inherit;font-size:12px';
   var lab='display:block;font-size:8.5px;letter-spacing:.2em;color:var(--wd);text-transform:uppercase;margin:0 0 5px';
@@ -8037,7 +8203,8 @@ window.GTS = (function(){
 
   var S = { tipo:null, fecha:null, hora:null, paso:1, calY:0, calM:0,
             ocupados:{}, bloqueados:{}, jams:{}, cargado:false, enviado:false,
-            grabo:false, nSets:0, datos:{}, enviando:false };
+            grabo:false, nSets:0, datos:{}, enviando:false,
+            jornadas:[], jSel:null, jHecha:{}, jEnviando:false };
   var iniciado = false;
 
   // ── utilidades ──
@@ -8116,7 +8283,149 @@ window.GTS = (function(){
     (_gtsHay('JAMS')?JAMS:[]).forEach(function(j){
       if(j && j.dateISO && (j.upcoming || j.estado==='Proxima')) S.jams[j.dateISO]=1;
     });
+    await cargarJornadas(hoy);
     S.cargado = true;
+  }
+  // ── JORNADAS: DJ JAM, Archivo Público, Home Based con horarios reservables ──
+  async function cargarJornadas(hoy){
+    if(!_gtsHay('sb')) return;
+    try{
+      var r = await sb.from('jornadas').select('id,tipo,numero,nombre,fecha,horarios,precio,descuento,descuento_hasta,lugar,estado').eq('estado','Abierta').gte('fecha',hoy).order('fecha');
+      if(r.error) throw r.error;
+      S.jornadas = (r.data||[]).filter(function(j){ return j && j.fecha && Array.isArray(j.horarios) && j.horarios.length; });
+      // Los días de jornada no se ofrecen para reservas sueltas
+      S.jornadas.forEach(function(j){ S.jams[j.fecha]=1; });
+    }catch(e){ S.jornadas = []; }
+  }
+  function jLabel(j){ return j.tipo+(j.numero?' '+String(j.numero).padStart(3,'0'):'')+(j.nombre?' · '+j.nombre:''); }
+  function jMin(h){ var m=String(h).match(/^(\d{1,2}):(\d{2})/); return m ? (+m[1])*60+(+m[2]) : null; }
+  function jLibre(j, h){
+    var m=jMin(h); if(m==null) return false;
+    return noSePisa(m, 60, S.ocupados[j.fecha]||[]) && horasHasta(j.fecha, m) >= 12;
+  }
+  // Descuento por reservar antes; si es de la comunidad, se aplica el mayor de los dos (no se suman)
+  function jPrecio(j){
+    var base=Number(j.precio)||precio('Common'), hoy=iso(new Date());
+    var antes=(Number(j.descuento)>0 && j.descuento_hasta && hoy<=j.descuento_hasta) ? Number(j.descuento) : 0;
+    var com=S.grabo ? ((_gtsHay('CFG') && CFG.descuento_comunidad) ? Number(CFG.descuento_comunidad) : 10) : 0;
+    var dto=Math.max(antes, com);
+    return {base:base, final:Math.round(base*(1-dto/100)), dto:dto, motivo: dto ? (dto===com && com>=antes ? 'comunidad' : 'antes') : ''};
+  }
+  function jPrecioHTML(j){
+    var t=jPrecio(j);
+    if(!t.dto) return 'Valor <b>'+plata(t.base)+'</b>';
+    return '<s>'+plata(t.base)+'</s><b>'+plata(t.final)+'</b> · '+(t.motivo==='comunidad' ? 'de vuelta en el Archivo, '+t.dto+'% OFF' : t.dto+'% OFF reservando hasta el '+fechaCorta(j.descuento_hasta));
+  }
+  function renderJornadas(){
+    var c=$('gts-jor'); if(!c) return;
+    var hay = S.jornadas.length>0;
+    var h=$('gts-jam-h'), p=$('gts-jam-p'), nx=$('gts-jam-next');
+    if(h) h.textContent = hay ? '¿Ninguna fecha te sirve?' : 'Postulate a la próxima jornada.';
+    if(p) p.textContent = hay ? 'Dejanos tu nombre y tu mail: te avisamos cuando abra la próxima.' : 'Dejanos tu nombre y tu mail. La convocatoria sale por Instagram (@archivosecretodellab) y coordinamos tu lugar antes de la jornada.';
+    if(nx && hay) nx.style.display='none';
+    c.innerHTML = S.jornadas.map(function(j){
+      var listo=S.jHecha[j.id];
+      if(listo) return '<div class="gts-jor sel" id="jor-'+j.id+'"><div class="gts-jor-k">✓ Horario reservado · '+esc(jLabel(j))+'</div>'
+        + '<div class="gts-jor-f">'+mayus(fechaLarga(j.fecha))+' · '+esc(listo.hora)+' hs</div>'
+        + '<p class="gts-jor-m"><b>Te guardamos el horario por 24 hs.</b> Se lo queda quien seña primero: te escribimos por WhatsApp con los datos para la seña de '+plata(senia())+' por Mercado Pago. Si en 24 hs no hay seña, el horario se libera para otro DJ.</p>'
+        + '<p class="gts-fine" style="margin:0">Te mandamos todo esto a tu mail ('+esc(listo.email)+'). Si no lo ves, revisá spam o promociones.</p></div>';
+      var libres=j.horarios.filter(function(x){ return jLibre(j,x); }).length, sel=(S.jSel && S.jSel.id===j.id) ? S.jSel.hora : null;
+      var out='<div class="gts-jor'+(sel?' sel':'')+'" id="jor-'+j.id+'"><div class="gts-jor-k">'+esc(jLabel(j))+'</div>'
+        + '<div class="gts-jor-f">'+mayus(fechaLarga(j.fecha))+'</div>'
+        + '<p class="gts-jor-m">'+(libres ? '<b>Quedan '+libres+' de '+j.horarios.length+' horarios</b>' : '<b>Jornada completa</b>')+' · sets de 60 minutos'+(j.lugar ? ' · '+esc(String(j.lugar).split('·')[0].trim()) : '')+'</p>'
+        + '<p class="gts-jor-p" id="gj-precio-'+j.id+'">'+jPrecioHTML(j)+'</p>'
+        + '<div class="gts-times-g">'+j.horarios.map(function(x){ var ok=jLibre(j,x);
+            return '<button type="button" class="gts-time'+(ok?'':' no')+(sel===x?' on':'')+'"'+(ok?' data-jor="'+j.id+'" data-jh="'+esc(x)+'"':' disabled aria-disabled="true"')+'>'+esc(x)+'</button>'; }).join('')+'</div>';
+      if(sel){
+        var D=S.datos;
+        out+='<div class="gts-jor-form">'
+          + '<div class="gts-field"><label for="gj-n">Nombre artístico</label><input class="gts-in" id="gj-n" autocomplete="nickname" placeholder="Tu nombre de DJ o proyecto" value="'+esc(D.nombre||'')+'"><div class="gts-err" id="gj-n-err"></div></div>'
+          + '<div class="gts-field"><label for="gj-w">WhatsApp</label><input class="gts-in" id="gj-w" type="tel" inputmode="tel" autocomplete="tel" placeholder="+54 9 11 …" value="'+esc(D.wa||'')+'"><div class="gts-err" id="gj-w-err"></div></div>'
+          + '<div class="gts-field"><label for="gj-e">Email</label><input class="gts-in" id="gj-e" type="email" inputmode="email" autocomplete="email" placeholder="tu@email.com" value="'+esc(D.email||'')+'"><div class="gts-err" id="gj-e-err"></div></div>'
+          + '<div class="gts-field"><label for="gj-i">Instagram</label><input class="gts-in" id="gj-i" placeholder="@tuusuario" value="'+esc(D.ig||'')+'"><div class="gts-err" id="gj-i-err"></div></div>'
+          + '<button type="button" class="gts-btn" style="width:100%" data-jsend="'+j.id+'">Reservar las '+esc(sel)+' hs <span class="arr">→</span></button>'
+          + '<div class="gts-err" id="gj-send-err" role="alert"></div>'
+          + '<p class="gts-fine" style="margin-top:6px">Al enviar, aceptás nuestra <button type="button" class="gts-priv" onclick="asdlPrivacidad()">Política de privacidad</button>.</p>'
+          + '<p class="gts-fine">Te guardamos el horario 24 hs. <b>Se lo queda quien seña primero</b> ('+plata(senia())+' por Mercado Pago, se descuenta del total). Podés reprogramar hasta 48 hs antes.</p></div>';
+      }
+      return out+'</div>';
+    }).join('');
+  }
+  function jValidar(){
+    var g=function(id){ var el=$(id); return el ? el.value.trim() : ''; }, D=S.datos;
+    D.nombre=g('gj-n'); D.wa=g('gj-w'); D.email=g('gj-e'); D.ig=g('gj-i');
+    var ok=true;
+    ok = error('gj-n', D.nombre ? '' : 'Contanos cómo te llamás como artista.') && ok;
+    ok = error('gj-w', (String(D.wa).replace(/\D/g,'').length>=8) ? '' : 'Dejanos un WhatsApp válido: por ahí te pasamos la seña.') && ok;
+    ok = error('gj-e', /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(D.email) ? '' : 'Revisá el email: parece incompleto.') && ok;
+    ok = error('gj-i', D.ig ? '' : 'Dejanos tu Instagram para conocer tu propuesta.') && ok;
+    if(!ok){ var b=document.querySelector('#gts-jor .gts-in.bad'); if(b) b.focus(); }
+    return ok;
+  }
+  async function jEnviar(id){
+    if(S.jEnviando) return;
+    var j=S.jornadas.find(function(x){ return String(x.id)===String(id); }); if(!j || !S.jSel) return;
+    if(!jValidar()) return;
+    var hora=S.jSel.hora, errEl=$('gj-send-err'), btn=document.querySelector('[data-jsend="'+j.id+'"]');
+    S.jEnviando=true; if(btn){ btn.disabled=true; btn.innerHTML='Reservando…'; } if(errEl) errEl.textContent='';
+    var aviso=function(msg){ S.jSel=null; S.jEnviando=false; renderJornadas(); var c=$('jor-'+j.id); if(c){ c.insertAdjacentHTML('afterbegin','<div class="gts-hi">'+msg+'</div>'); c.scrollIntoView({behavior:'smooth',block:'start'}); } };
+    try{
+      await cargarOcupacion();
+      j=S.jornadas.find(function(x){ return String(x.id)===String(id); });
+      if(!j){ aviso('Esta jornada ya no recibe reservas. Fijate si hay otra fecha abierta.'); return; }
+      if(!jLibre(j, hora)){ aviso('Alguien acaba de tomar las '+esc(hora)+' hs. Elegí otro horario: tus datos quedan guardados.'); return; }
+      var D=S.datos, t=jPrecio(j);
+      var res = await guardarReserva({
+        nombre_artistico:D.nombre, email:D.email, whatsapp:D.wa, genero:'', links:D.ig,
+        tipo:j.tipo, fecha:j.fecha, horario:hora, jornada_id:j.id,
+        ya_registrado:S.grabo, mensaje:'Jornada: '+jLabel(j), es_comunidad:S.grabo, descuento:!!t.dto,
+        precio_base:t.final, senia:senia(), estado:'Pendiente'
+      });
+      if(!res || !res.ok) throw new Error((res&&res.error)||'error');
+      track('envio', {value:t.final, currency:'ARS'});
+      S.jHecha[j.id]={hora:hora, email:D.email}; S.jSel=null; S.jEnviando=false;
+      await cargarOcupacion(); renderJornadas();
+      var c=$('jor-'+j.id); if(c) c.scrollIntoView({behavior:'smooth',block:'start'});
+    }catch(e){
+      var em=String((e&&e.message)||'');
+      if(em.indexOf('ASDL_OCUPADO')>-1){ try{ await cargarOcupacion(); }catch(e2){} aviso('Alguien acaba de tomar las '+esc(hora)+' hs. Elegí otro horario: tus datos quedan guardados.'); return; }
+      if(em.indexOf('ASDL_JORNADA')>-1){ try{ await cargarOcupacion(); }catch(e2){} aviso('Esta jornada ya no recibe reservas. Fijate si hay otra fecha abierta.'); return; }
+      var wa='https://api.whatsapp.com/send?phone=541154705205&text='+encodeURIComponent('Hola, equipo del Archivo. Soy '+(S.datos.nombre||'')+' y quiero el horario de las '+hora+' hs en '+jLabel(j)+'.');
+      if(errEl) errEl.innerHTML = em.indexOf('ASDL_LIMITE')>-1
+        ? 'Ya recibimos varias solicitudes con este mail hoy. <a href="'+wa+'" target="_blank" rel="noopener" style="color:inherit">Escribinos por WhatsApp</a>.'
+        : 'No pudimos guardar tu reserva. Probá de nuevo o <a href="'+wa+'" target="_blank" rel="noopener" style="color:inherit">pedí el horario por WhatsApp</a>.';
+      if(btn){ btn.disabled=false; btn.innerHTML='Reservar las '+esc(hora)+' hs <span class="arr">→</span>'; }
+      S.jEnviando=false;
+    }
+  }
+  function enlazarJornadas(){
+    var c=$('gts-jor'); if(!c || c._ok) return; c._ok=true;
+    c.addEventListener('click', function(ev){
+      var b=ev.target.closest('[data-jh]');
+      if(b){
+        var keep=function(id,k){ var el=$(id); if(el) S.datos[k]=el.value.trim(); };
+        keep('gj-n','nombre'); keep('gj-w','wa'); keep('gj-e','email'); keep('gj-i','ig');
+        S.jSel={id:+b.getAttribute('data-jor'), hora:b.getAttribute('data-jh')};
+        track('eligio_fecha'); renderJornadas();
+        var n=$('gj-n'); if(n) setTimeout(function(){ n.focus({preventScroll:true}); }, 50);
+        return;
+      }
+      var s2=ev.target.closest('[data-jsend]'); if(s2) jEnviar(s2.getAttribute('data-jsend'));
+    });
+    c.addEventListener('input', function(ev){
+      if(/^gj-/.test(ev.target.id||'')) error(ev.target.id, '');
+      if(ev.target.id!=='gj-n') return;
+      clearTimeout(S._jt); var v=ev.target.value;
+      S._jt=setTimeout(async function(){ await detectar(v); S.jornadas.forEach(function(j){ var el=$('gj-precio-'+j.id); if(el) el.innerHTML=jPrecioHTML(j); }); }, 600);
+    });
+  }
+  // Link directo para mandar por Instagram o WhatsApp: archivosecretodellab.com/?jornada=18
+  function irAJornada(){
+    var q=null; try{ q=new URLSearchParams(location.search).get('jornada'); }catch(e){}
+    if(!q || S._jdeep) return; S._jdeep=true;
+    var d=$('gts-jam'); if(d) d.open=true;
+    var el=$('jor-'+q) || $('gts-jor');
+    if(el) setTimeout(function(){ el.scrollIntoView({behavior:'smooth',block:'start'}); }, 200);
   }
   function noSePisa(s, dur, oc){ return oc.every(function(iv){ return s+dur+MARGEN<=iv[0] || s>=iv[1]+MARGEN; }); }
   function horarios(fecha, tipo){
@@ -8731,6 +9040,7 @@ window.GTS = (function(){
       if(!hay){ S.calM++; if(S.calM>11){S.calM=0;S.calY++;} }
     }
     render();
+    enlazarJornadas(); renderJornadas(); irAJornada();
     // Links directos desde Instagram: ?set=common | basico | b2b | custom
     try{
       var q=new URLSearchParams(location.search).get('set');
