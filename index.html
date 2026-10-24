@@ -5846,8 +5846,9 @@ async function renderAdminAgendaTab(c){
   // Cargar reservas
   let dbReservas=[];
   try{
-    const {data}=await sb.from('reservas').select('*').order('created_at',{ascending:false}).limit(30);
+    const {data}=await sb.from('reservas').select('*').order('created_at',{ascending:false}).limit(200);
     if(data) dbReservas=data;
+    window._dbReservas = dbReservas;
   }catch(e){}
 
 
@@ -5900,13 +5901,18 @@ async function renderAdminAgendaTab(c){
     <!-- PANEL DERECHO: Reservas -->
     <div style="background:rgba(255,255,255,.03);border:1px solid var(--wf);padding:24px;overflow-y:auto">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
-        <div style="font-size:9px;letter-spacing:.28em;color:var(--b);text-transform:uppercase">Reservas — ${dbReservas.length}</div>
-        <div style="display:flex;gap:6px">
-          <button onclick="filterReservas('Pendiente',this)" class="tdbtn on-filter">Pendientes</button>
+        <div>
+          <div style="font-size:9px;letter-spacing:.28em;color:var(--b);text-transform:uppercase">Reservas — ${dbReservas.length}</div>
+          ${resumenSenias(dbReservas)}
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">
+          <button onclick="nrToggle()" class="tdbtn" style="color:#fff;border-color:var(--b);background:rgba(27,0,230,.25)">+ Nueva reserva</button>
+          <button onclick="filterReservas('Pendiente',this)" class="tdbtn">Pendientes</button>
           <button onclick="filterReservas('Confirmada',this)" class="tdbtn">Confirmadas</button>
-          <button onclick="filterReservas('all',this)" class="tdbtn">Todas</button>
+          <button onclick="filterReservas('all',this)" class="tdbtn on-filter">Todas</button>
         </div>
       </div>
+      ${nrFormHTML()}
       <div id="reservas-list">
         ${renderReservasList(dbReservas)}
       </div>
@@ -5917,6 +5923,96 @@ async function renderAdminAgendaTab(c){
   setTimeout(()=>renderAdminCal30(), 50);
 }
 
+
+// ═══ NUEVA RESERVA desde el Panel (DJs que llegan por Instagram o WhatsApp) ═══
+// La reserva entra a la misma tabla que las de la web, así reciben los mismos mails, el calendario y el recordatorio.
+// Sin seña → al DJ le llega "las puertas están abiertas". Con seña → entra confirmada: mail de la cabina + calendario.
+function nrFormHTML(){
+  var inp='width:100%;box-sizing:border-box;background:rgba(255,255,255,.04);border:1px solid var(--wf);color:#fff;padding:9px 10px;font-family:inherit;font-size:12px';
+  var lab='display:block;font-size:8.5px;letter-spacing:.2em;color:var(--wd);text-transform:uppercase;margin:0 0 5px';
+  return '<div id="nr-box" style="display:none;margin:0 0 18px;padding:16px;border:1px solid var(--b);background:rgba(27,0,230,.06)">'
+    +'<div style="font-size:9px;letter-spacing:.28em;color:#fff;text-transform:uppercase;margin-bottom:12px">Nueva reserva</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'
+    +'<div><label style="'+lab+'">Nombre artístico *</label><input id="nr-nombre" style="'+inp+'" placeholder="EN MAYÚSCULAS"></div>'
+    +'<div><label style="'+lab+'">Llegó por</label><select id="nr-origen" style="'+inp+'"><option value="instagram">Instagram</option><option value="whatsapp">WhatsApp</option><option value="presencial">En persona</option><option value="otro">Otro</option></select></div>'
+    +'<div><label style="'+lab+'">Mail (para que le lleguen los mails)</label><input id="nr-email" type="email" style="'+inp+'"></div>'
+    +'<div><label style="'+lab+'">WhatsApp</label><input id="nr-wa" style="'+inp+'" placeholder="11 5555 5555"></div>'
+    +'<div><label style="'+lab+'">Set</label><select id="nr-tipo" style="'+inp+'"><option value="Basico">Set Básico</option><option value="Common" selected>Set Common</option><option value="B2B">Set B2B</option><option value="Custom">Set Custom</option></select></div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><label style="'+lab+'">Día</label><input id="nr-fecha" type="date" style="'+inp+'"></div><div><label style="'+lab+'">Hora</label><input id="nr-hora" type="time" step="300" style="'+inp+'"></div></div>'
+    +'</div>'
+    +'<label style="display:flex;align-items:center;gap:8px;margin:14px 0 4px;font-size:11px;color:#fff;cursor:pointer"><input id="nr-senia" type="checkbox"> Ya pagó la seña (entra confirmada: le llega el mail con la dirección y la invitación del calendario)</label>'
+    +'<label style="display:flex;align-items:center;gap:8px;margin:4px 0 12px;font-size:11px;color:var(--wd);cursor:pointer"><input id="nr-comu" type="checkbox"> Ya grabó en el Archivo (10% OFF de comunidad, salvo B2B)</label>'
+    +'<div id="nr-msg" style="font-size:11px;letter-spacing:.04em;min-height:16px;margin-bottom:10px;color:var(--wd)"></div>'
+    +'<div style="display:flex;gap:8px"><button class="tdbtn" id="nr-ok" onclick="nrGuardar(false)" style="color:#fff;border-color:var(--b)">Guardar reserva</button><button class="tdbtn" onclick="nrToggle()">Cancelar</button></div>'
+    +'</div>';
+}
+function nrToggle(){
+  var b=document.getElementById('nr-box'); if(!b) return;
+  b.style.display = b.style.display==='none' ? 'block' : 'none';
+  var m=document.getElementById('nr-msg'); if(m){ m.textContent=''; m.style.color='var(--wd)'; }
+  var ok=document.getElementById('nr-ok'); if(ok){ ok.textContent='Guardar reserva'; ok.onclick=function(){ nrGuardar(false); }; }
+  // Si cambian un dato después del aviso de choque, se vuelve a revisar antes de guardar
+  if(!b._escucha){ b._escucha=true; b.addEventListener('input', function(){ var o=document.getElementById('nr-ok'); if(o && o.textContent==='Guardar igual'){ o.textContent='Guardar reserva'; o.onclick=function(){ nrGuardar(false); }; } }); }
+}
+function _nrMin(h){ var m=/^(\d{1,2}):(\d{2})/.exec(String(h||'')); return m ? (+m[1])*60+(+m[2]) : null; }
+function _nrDur(t){ t=String(t||'').toLowerCase(); return (t.indexOf('b2b')>-1||t.indexOf('custom')>-1) ? 90 : (t.indexOf('bas')>-1 ? 30 : 60); }
+async function nrGuardar(forzar){
+  var v=function(id){ var e=document.getElementById(id); return e ? String(e.value||'').trim() : ''; };
+  var c=function(id){ var e=document.getElementById(id); return !!(e && e.checked); };
+  var msg=document.getElementById('nr-msg'), ok=document.getElementById('nr-ok');
+  var nombre=v('nr-nombre').toUpperCase(), email=v('nr-email'), tipo=v('nr-tipo')||'Common', fecha=v('nr-fecha'), hora=v('nr-hora');
+  var pago=c('nr-senia'), comu=c('nr-comu') && tipo!=='B2B';
+  var aviso=function(t,col){ if(msg){ msg.textContent=t; msg.style.color=col||'var(--red)'; } };
+  if(!nombre) return aviso('Falta el nombre artístico.');
+  if(email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return aviso('Ese mail no parece válido. Revisalo o dejalo vacío.');
+  if(tipo!=='Custom' && (!fecha || !hora)) return aviso('Falta el día o la hora.');
+  // ¿Se pisa con otra sesión? (mismo margen de 10 minutos que la web)
+  if(!forzar && fecha && hora){
+    var s=_nrMin(hora), e=s+_nrDur(tipo);
+    var choca=(window._dbReservas||[]).filter(function(r){
+      if(r.fecha!==fecha || r.estado==='Cancelada') return false;
+      var rs=_nrMin(r.horario); if(rs==null) return false; var re=rs+_nrDur(r.tipo);
+      return s < re+10 && rs < e+10;
+    });
+    if(choca.length){
+      aviso('Ojo: se pisa con '+choca.map(function(r){ return r.nombre_artistico+' ('+r.horario+')'; }).join(', ')+' (incluye los 10 min entre sets). Tocá "Guardar igual" si es a propósito.','var(--orange,#fff)');
+      if(ok){ ok.textContent='Guardar igual'; ok.onclick=function(){ nrGuardar(true); }; }
+      return;
+    }
+  }
+  var claves={Basico:'precio_basico',Common:'precio_solo',B2B:'precio_b2b',Custom:'precio_custom'}, pisos={Basico:45000,Common:70000,B2B:90000,Custom:120000};
+  var base=Math.max(Number(CFG[claves[tipo]])||0, pisos[tipo]);
+  var final=comu ? Math.round(base*(1-(Number(CFG.descuento_comunidad)||10)/100)) : base;
+  var senia=Math.max(Number(CFG.senia)||0, 20000);
+  var fila={ nombre_artistico:nombre, email:email||null, whatsapp:v('nr-wa')||null, tipo:tipo, fecha:fecha||null, horario:hora||null,
+    estado: pago?'Confirmada':'Pendiente', origen:v('nr-origen')||'otro', es_comunidad:comu, descuento:comu, precio_base:final, senia:senia,
+    ya_registrado:comu, genero:'', mensaje:'Cargada desde el Panel' };
+  if(pago){ fila.senia_recibida_at=new Date().toISOString(); fila.senia_monto=senia; }
+  if(ok){ ok.disabled=true; ok.textContent='Guardando…'; }
+  try{
+    var res=await sb.from('reservas').insert([fila]);
+    if(res && res.error){ // por si todavía no se corrió el SQL de las columnas nuevas
+      ['origen','senia_recibida_at','senia_monto'].forEach(function(k){ delete fila[k]; });
+      res=await sb.from('reservas').insert([fila]);
+    }
+    if(res && res.error) throw res.error;
+    aviso(pago ? '✓ Reserva confirmada. '+(email?'Le llega el mail con la dirección y la invitación del calendario.':'Sin mail: se crea el evento, pero al DJ no le llegan mails.') : '✓ Reserva guardada. '+(email?'Le llega el mail de "las puertas están abiertas".':'Sin mail: no le llegan mails.'),'var(--green)');
+    setTimeout(function(){ adminTab('agenda-admin'); }, 1600);
+  }catch(err){
+    aviso('No se pudo guardar: '+((err&&err.message)||'error')+'.');
+    if(ok){ ok.disabled=false; ok.textContent='Guardar reserva'; ok.onclick=function(){ nrGuardar(false); }; }
+  }
+}
+
+// Señas: cuánto entró esta semana (desde el lunes) y quién todavía no pagó
+function resumenSenias(reservas){
+  var lunes=new Date(); lunes.setHours(0,0,0,0); lunes.setDate(lunes.getDate()-((lunes.getDay()+6)%7));
+  var hoy=new Date(); var hoyIso=hoy.getFullYear()+'-'+String(hoy.getMonth()+1).padStart(2,'0')+'-'+String(hoy.getDate()).padStart(2,'0');
+  var semana=reservas.filter(function(r){ return r.senia_recibida_at && new Date(r.senia_recibida_at)>=lunes; });
+  var monto=semana.reduce(function(a,r){ return a+(Number(r.senia_monto)||0); },0);
+  var esperando=reservas.filter(function(r){ return r.estado==='Pendiente' && (!r.fecha || r.fecha>=hoyIso); }).length;
+  return '<div style="font-size:10px;letter-spacing:.08em;color:var(--wd);margin-top:6px">Señas esta semana: <b style="color:#fff">'+semana.length+' · $'+monto.toLocaleString('es-AR')+'</b> &nbsp;·&nbsp; Esperando seña: <b style="color:#fff">'+esperando+'</b></div>';
+}
 function renderReservasList(reservas, filtro='all'){
   const list = filtro==='all' ? reservas : reservas.filter(r=>r.estado===filtro);
   if(!list.length) return `<div style="font-size:12px;color:var(--wd);padding:20px 0">Sin reservas${filtro!=='all'?' en este estado':''}.</div>`;
@@ -5934,10 +6030,11 @@ function renderReservasList(reservas, filtro='all'){
         <div>✉️ ${esc(r.email)}</div>
         <div>📱 ${esc(r.whatsapp||'—')}</div>
         <div>📝 ${r.ya_registrado?'Registrado':'Sin registro'}</div>
+        ${r.senia_recibida_at?`<div>💳 Seña $${(Number(r.senia_monto)||0).toLocaleString('es-AR')} · ${new Date(r.senia_recibida_at).toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit'})}</div>`:''}
       </div>
       ${r.mensaje?`<div style="font-size:10px;color:rgba(255,255,255,.35);font-style:italic;margin-bottom:8px">"${esc(r.mensaje)}"</div>`:''}
       <div style="display:flex;gap:6px;flex-wrap:wrap">
-        ${r.estado!=='Confirmada'?`<button class="tdbtn" onclick="confirmarReserva('${r.id}')" style="color:var(--green);border-color:rgba(0,201,103,.3)">✓ Confirmar</button>`:''}
+        ${r.estado!=='Confirmada'?`<button class="tdbtn" onclick="confirmarReserva('${r.id}')" title="Marca la seña como recibida y confirma: le llega al DJ el mail con la dirección y el evento del calendario" style="color:var(--green);border-color:rgba(0,201,103,.3)">✓ Seña recibida · confirmar</button>`:''}
         ${r.estado!=='Cancelada'?`<button class="tdbtn" onclick="cancelarReserva('${r.id}')" style="color:var(--red);border-color:rgba(255,59,59,.3)">✕ Cancelar</button>`:''}
       </div>
     </div>`).join('');
@@ -5946,8 +6043,8 @@ function renderReservasList(reservas, filtro='all'){
 function filterReservas(estado, el){
   document.querySelectorAll('.on-filter').forEach(b=>b.classList.remove('on-filter'));
   if(el) el.classList.add('on-filter');
-  // Re-render con filtro (simplificado, recarga tab)
-  adminTab('agenda-admin');
+  var box=document.getElementById('reservas-list');
+  if(box) box.innerHTML=renderReservasList(window._dbReservas||[], estado);
 }
 
 
@@ -5979,9 +6076,14 @@ async function adminAddFecha(){
 }
 
 
+// Un solo clic: la seña quedó registrada (fecha y monto) y la reserva pasa a Confirmada.
+// Al confirmarse, Supabase manda el mail con la dirección y crea el evento del calendario.
 async function confirmarReserva(id){
   try{
-    await sb.from('reservas').update({estado:'Confirmada'}).eq('id',id);
+    var r=(window._dbReservas||[]).find(function(x){ return String(x.id)===String(id); })||{};
+    var monto=Number(r.senia)>0 ? Math.max(Number(r.senia),20000) : 20000;
+    var res=await sb.from('reservas').update({estado:'Confirmada', senia_recibida_at:new Date().toISOString(), senia_monto:monto}).eq('id',id);
+    if(res && res.error) await sb.from('reservas').update({estado:'Confirmada'}).eq('id',id); // por si faltan las columnas de seña
     adminTab('agenda-admin');
   }catch(e){}
 }
