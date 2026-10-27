@@ -5994,11 +5994,20 @@ var JOR_ADMIN = [], JOR_RES = [];
 function _jorEsc(x){ return String(x==null?'':x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function _jorLabel(j){ return j.tipo+(j.numero?' '+String(j.numero).padStart(3,'0'):'')+(j.nombre?' · '+j.nombre:''); }
 function _jorLink(j){ return 'https://archivosecretodellab.com/?jornada='+j.id; }
-function _jorHorarios(ini, n){
+function _jorHorarios(ini, n, dur, cambio){
   var m=/^(\d{1,2}):(\d{2})/.exec(String(ini||'')); if(!m) return [];
+  dur=dur>0?dur:60; cambio=cambio>=0?cambio:10;
   var t=(+m[1])*60+(+m[2]), out=[];
-  for(var i=0;i<n;i++){ var x=t+i*70; if(x+60>24*60) break; out.push(String(Math.floor(x/60)).padStart(2,'0')+':'+String(x%60).padStart(2,'0')); }
-  return out;   // 60 minutos de set + 10 de cambio entre DJs
+  for(var i=0;i<n;i++){ var x=t+i*(dur+cambio); if(x+dur>24*60) break; out.push(String(Math.floor(x/60)).padStart(2,'0')+':'+String(x%60).padStart(2,'0')); }
+  return out;
+}
+// Acepta 11 · 11hs · 11:00 · 11.30 · 1130 y devuelve "11:00"; null si no es una hora válida
+function _jorHora(h){
+  var t=String(h||'').trim().toLowerCase().replace(/\s*hs?\.?$/,'');
+  var m=/^(\d{1,2})(?:[:.](\d{2}))?$/.exec(t) || /^(\d{2})(\d{2})$/.exec(t);
+  if(!m) return null; var H=+m[1], M=m[2]?+m[2]:0;
+  if(H>23 || M>59) return null;
+  return String(H).padStart(2,'0')+':'+String(M).padStart(2,'0');
 }
 function _jorPrecio(j){
   var hoy=new Date().toISOString().slice(0,10);
@@ -6020,8 +6029,11 @@ async function renderAdminJornadas(c){
     +'<div style="display:grid;grid-template-columns:1fr 2fr;gap:10px"><div><label style="'+lab+'">Número</label><input id="jf-num" type="number" min="1" style="'+inp+'" placeholder="18"></div><div><label style="'+lab+'">Nombre (opcional)</label><input id="jf-nom" style="'+inp+'" placeholder="FEMALE DJ JAM 3"></div></div>'
     +'<div><label style="'+lab+'">Día</label><input id="jf-fecha" type="date" style="'+inp+'" oninput="jorDia()"><div id="jf-dia" style="font-size:10px;color:var(--wd);margin-top:5px"></div></div>'
     +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><label style="'+lab+'">Primer set</label><input id="jf-ini" type="time" step="300" value="15:00" style="'+inp+'" oninput="jorAuto()"></div><div><label style="'+lab+'">Cupos</label><input id="jf-n" type="number" min="1" max="12" value="6" style="'+inp+'" oninput="jorAuto()"></div></div>'
-    +'<div style="grid-column:1/-1"><label style="'+lab+'">Horarios · 60 min de set + 10 de cambio (se pueden editar, separados por coma)</label><input id="jf-hs" style="'+inp+'"></div>'
-    +'<div><label style="'+lab+'">Valor del cupo</label><input id="jf-precio" type="number" step="1000" value="'+base+'" style="'+inp+'"></div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><label style="'+lab+'">Duración de cada set (min)</label><input id="jf-dur" type="number" min="15" max="240" step="5" value="60" style="'+inp+'" oninput="jorAuto()"></div><div><label style="'+lab+'">Cambio entre sets (min)</label><input id="jf-cambio" type="number" min="0" max="60" step="5" value="10" style="'+inp+'" oninput="jorAuto()"></div></div>'
+    +'<div style="display:flex;align-items:flex-end;padding-bottom:10px"><label style="display:flex;gap:8px;align-items:center;color:#fff;font-size:11px;cursor:pointer"><input id="jf-b2b" type="checkbox"> Jornada de B2B (cada cupo es un dúo: el formulario pide con quién toca)</label></div>'
+    +'<div style="grid-column:1/-1"><label style="'+lab+'">Horarios · se arman solos con lo de arriba, pero podés escribir los que quieras, separados por coma (ej. 11, 12:20, 13:40)</label><input id="jf-hs" style="'+inp+'"></div>'
+    +'<div style="grid-column:1/-1"><label style="'+lab+'">Detalle para los DJs (opcional · se ve en la web)</label><input id="jf-det" style="'+inp+'" placeholder="Ej. B2B con CDJs · rider técnico especial"></div>'
+    +'<div><label style="'+lab+'">Valor del cupo</label><input id="jf-precio" inputmode="numeric" value="'+base+'" style="'+inp+'" placeholder="70000"></div>'
     +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><label style="'+lab+'">% OFF por reservar antes</label><input id="jf-dto" type="number" min="0" max="50" value="10" style="'+inp+'"></div><div><label style="'+lab+'">Hasta el día</label><input id="jf-hasta" type="date" style="'+inp+'"></div></div>'
     +'<div id="jf-lugar-w" style="grid-column:1/-1;display:none"><label style="'+lab+'">Lugar (se manda en la confirmación)</label><input id="jf-lugar" style="'+inp+'" placeholder="Ache Paraje · Calle 123, CABA"></div>'
     +'<div><label style="'+lab+'">Estado</label><select id="jf-estado" style="'+inp+'"><option value="Abierta">Abierta · se ve en la web</option><option value="Borrador">Borrador · solo el equipo</option><option value="Cerrada">Cerrada · no recibe más</option></select></div>'
@@ -6121,7 +6133,8 @@ function _jzCard(j){
     +'<div class="jz-head"><div><span class="jz-chip" style="color:'+estCol+'">'+estTxt+'</span><span class="jz-chip" style="color:#fff">'+_jorEsc(j.tipo)+'</span>'
     +'<div class="jz-name">'+_jorEsc(j.tipo+(j.numero?' '+String(j.numero).padStart(3,'0'):''))+'</div>'
     +'<div class="jz-when">'+(j.nombre?_jorEsc(j.nombre)+' · ':'')+_jzFecha(j.fecha).replace(/^./,function(m){ return m.toUpperCase(); })+' <span>· '+_jzFaltan(j.fecha)+(j.lugar?' · '+_jorEsc(j.lugar):'')+'</span></div>'
-    +'<div class="jz-when" style="margin-top:6px"><span>$'+Number(j.precio).toLocaleString('es-AR')+' el cupo'+(Number(j.descuento)>0&&j.descuento_hasta?' · '+j.descuento+'% OFF hasta el '+_jzFecha(j.descuento_hasta):'')+'</span></div></div>'
+    +(j.detalle?'<div class="jz-when" style="margin-top:6px">'+_jorEsc(j.detalle)+'</div>':'')
+    +'<div class="jz-when" style="margin-top:6px"><span>'+(j.b2b?'B2B · ':'')+'sets de '+(j.duracion||60)+' min · $'+Number(j.precio).toLocaleString('es-AR')+' el cupo'+(Number(j.descuento)>0&&j.descuento_hasta?' · '+j.descuento+'% OFF hasta el '+_jzFecha(j.descuento_hasta):'')+'</span></div></div>'
     +'<div class="jz-big"><b>'+res.length+'<small>/'+tot+'</small></b><span>cupos tomados</span>'+(cobrado?'<div style="margin-top:10px;font-size:11px;color:#fff">$'+cobrado.toLocaleString('es-AR')+' en señas</div>':'')+'</div></div>'
     +'<div class="jz-bar"><i class="s" style="width:'+pct(ok.length)+'"></i><i class="p" style="width:'+pct(pe.length)+'"></i></div>'
     +'<div class="jz-legend"><span><i style="background:#1b00e6"></i><b>'+ok.length+'</b> señados</span><span><i style="background:#5533ff"></i><b>'+pe.length+'</b> esperando seña</span><span><i style="background:rgba(255,255,255,.15)"></i><b>'+libres+'</b> libres</span></div>'
@@ -6146,7 +6159,7 @@ async function jorLiberar(id, btn){
 function jorDia(){ var v=(document.getElementById('jf-fecha')||{}).value, o=document.getElementById('jf-dia'); if(!o) return; if(!v){ o.textContent=''; return; } var t=_jzFecha(v); var dom=new Date(v+'T12:00').getDay()===0; o.innerHTML=t.charAt(0).toUpperCase()+t.slice(1)+(document.getElementById('jf-tipo').value==='DJ JAM'&&!dom?' · <span style="color:#ffb020">ojo: la DJ JAM es los domingos</span>':''); }
 
 function jorLugar(){ var t=document.getElementById('jf-tipo').value, w=document.getElementById('jf-lugar-w'); if(w) w.style.display = t==='DJ JAM' ? 'none' : 'block'; try{ jorDia(); }catch(e){} }
-function jorAuto(){ var hs=_jorHorarios(document.getElementById('jf-ini').value, +document.getElementById('jf-n').value||0); document.getElementById('jf-hs').value=hs.join(', '); }
+function jorAuto(){ var g=function(k){ return document.getElementById(k); }; var hs=_jorHorarios(g('jf-ini').value, +g('jf-n').value||0, +g('jf-dur').value||60, g('jf-cambio').value===''?10:+g('jf-cambio').value); g('jf-hs').value=hs.join(', '); }
 function jorForm(id){
   var b=document.getElementById('jor-box'); if(!b) return; b.style.display='block';
   var j=id ? JOR_ADMIN.find(function(x){ return x.id===id; }) : null;
@@ -6156,9 +6169,11 @@ function jorForm(id){
     set('jf-tipo',j.tipo); set('jf-num',j.numero); set('jf-nom',j.nombre); set('jf-fecha',j.fecha);
     set('jf-ini',(j.horarios||[])[0]||'15:00'); set('jf-n',(j.horarios||[]).length); set('jf-hs',(j.horarios||[]).join(', '));
     set('jf-precio',j.precio); set('jf-dto',j.descuento); set('jf-hasta',j.descuento_hasta); set('jf-lugar',j.lugar); set('jf-estado',j.estado);
+    set('jf-dur',j.duracion||60); set('jf-cambio',j.cambio==null?10:j.cambio); set('jf-det',j.detalle||''); document.getElementById('jf-b2b').checked=!!j.b2b;
   } else {
     var prox=JOR_ADMIN.filter(function(x){ return x.tipo==='DJ JAM' && x.numero; }).reduce(function(m,x){ return Math.max(m,x.numero); },0);
     set('jf-tipo','DJ JAM'); set('jf-num',prox?prox+1:''); set('jf-nom',''); set('jf-fecha',''); set('jf-hasta',''); set('jf-lugar',''); set('jf-estado','Abierta');
+    set('jf-dur',60); set('jf-cambio',10); set('jf-det',''); document.getElementById('jf-b2b').checked=false;
     jorAuto();
   }
   jorLugar(); jorDia(); document.getElementById('jf-msg').textContent='';
@@ -6167,18 +6182,27 @@ function jorForm(id){
 async function jorGuardar(){
   var v=function(k){ var e=document.getElementById(k); return e ? String(e.value||'').trim() : ''; };
   var msg=document.getElementById('jf-msg'), aviso=function(t,c){ msg.textContent=t; msg.style.color=c||'var(--red)'; };
-  var hs=v('jf-hs').split(/[,\s]+/).filter(Boolean).map(function(h){ var m=/^(\d{1,2}):(\d{2})$/.exec(h); return m ? m[1].padStart(2,'0')+':'+m[2] : null; });
+  var crudos=v('jf-hs').split(/[,;]+|\s{2,}/).map(function(h){ return h.trim(); }).filter(Boolean);
+  if(crudos.length===1 && /\s/.test(crudos[0])) crudos=crudos[0].split(/\s+/);
+  var malos=crudos.filter(function(h){ return !_jorHora(h); });
+  var hs=crudos.map(_jorHora).filter(Boolean).filter(function(h,i,a){ return a.indexOf(h)===i; }).sort();
   if(!v('jf-fecha')) return aviso('Falta el día.');
-  if(!hs.length || hs.indexOf(null)>-1) return aviso('Revisá los horarios: tienen que ser como 15:00, 16:10, 17:20.');
+  if(malos.length) return aviso('No entiendo estos horarios: '+malos.join(', ')+'. Escribilos como 11, 12:20 o 13.40.');
+  if(!hs.length) return aviso('Faltan los horarios.');
+  var dur=+v('jf-dur')||60, cambio=v('jf-cambio')===''?10:+v('jf-cambio');
   var tipo=v('jf-tipo');
   if(tipo!=='DJ JAM' && !v('jf-lugar')) return aviso('Falta el lugar: es la dirección que le llega al DJ cuando seña.');
   var fila={ tipo:tipo, numero:v('jf-num')?+v('jf-num'):null, nombre:v('jf-nom')||null, fecha:v('jf-fecha'), horarios:hs,
-    precio:+v('jf-precio')||70000, descuento:+v('jf-dto')||0, descuento_hasta:v('jf-hasta')||null,
-    lugar: tipo==='DJ JAM' ? null : v('jf-lugar'), estado:v('jf-estado')||'Abierta' };
+    precio:+String(v('jf-precio')).replace(/\D/g,'')||70000, descuento:+v('jf-dto')||0, descuento_hasta:v('jf-hasta')||null,
+    lugar: tipo==='DJ JAM' ? null : v('jf-lugar'), estado:v('jf-estado')||'Abierta',
+    duracion:dur, cambio:cambio, detalle:v('jf-det')||null, b2b:!!(document.getElementById('jf-b2b')||{}).checked };
   aviso('Guardando…','var(--wd)');
   var id=v('jf-id'), r;
   try{ r = id ? await sb.from('jornadas').update(fila).eq('id',+id) : await sb.from('jornadas').insert([fila]); }catch(e){ r={error:e}; }
-  if(r && r.error) return aviso('No se pudo guardar: '+(r.error.message||r.error));
+  if(r && r.error){
+    var em=String(r.error.message||r.error);
+    return aviso(/duracion|cambio|detalle|b2b/.test(em) ? 'Falta un paso en Supabase: corré ASDL_jornadas_v2.sql y volvé a guardar.' : 'No se pudo guardar: '+em);
+  }
   document.getElementById('jor-box').style.display='none';
   await jorCargar();
 }
@@ -8343,6 +8367,7 @@ window.GTS = (function(){
     }
     rows.forEach(function(x){ var iv=intervalo(x.horario, x.tipo); if(iv && x.fecha){ (ocup[x.fecha]=ocup[x.fecha]||[]).push(iv); } });
     S.ocupados = ocup;
+    S.tomados = {}; rows.forEach(function(x){ if(x.fecha && x.horario) S.tomados[x.fecha+'|'+String(x.horario).slice(0,5)]=1; });
     if(_gtsHay('blockedDates')) Object.keys(blockedDates).forEach(function(k){ if(blockedDates[k]) S.bloqueados[k]=1; });
     (_gtsHay('JAMS')?JAMS:[]).forEach(function(j){
       if(j && j.dateISO && (j.upcoming || j.estado==='Proxima')) S.jams[j.dateISO]=1;
@@ -8354,7 +8379,9 @@ window.GTS = (function(){
   async function cargarJornadas(hoy){
     if(!_gtsHay('sb')) return;
     try{
-      var r = await sb.from('jornadas').select('id,tipo,numero,nombre,fecha,horarios,precio,descuento,descuento_hasta,lugar,estado').eq('estado','Abierta').gte('fecha',hoy).order('fecha');
+      var base='id,tipo,numero,nombre,fecha,horarios,precio,descuento,descuento_hasta,lugar,estado';
+      var r = await sb.from('jornadas').select(base+',duracion,cambio,detalle,b2b').eq('estado','Abierta').gte('fecha',hoy).order('fecha');
+      if(r.error) r = await sb.from('jornadas').select(base).eq('estado','Abierta').gte('fecha',hoy).order('fecha');   // si todavía no se corrió el SQL v2
       if(r.error) throw r.error;
       S.jornadas = (r.data||[]).filter(function(j){ return j && j.fecha && Array.isArray(j.horarios) && j.horarios.length; });
       // Los días de jornada no se ofrecen para reservas sueltas
@@ -8363,9 +8390,10 @@ window.GTS = (function(){
   }
   function jLabel(j){ return j.tipo+(j.numero?' '+String(j.numero).padStart(3,'0'):'')+(j.nombre?' · '+j.nombre:''); }
   function jMin(h){ var m=String(h).match(/^(\d{1,2}):(\d{2})/); return m ? (+m[1])*60+(+m[2]) : null; }
+  // En una jornada los horarios los define el equipo: un horario está libre si nadie lo tomó
   function jLibre(j, h){
     var m=jMin(h); if(m==null) return false;
-    return noSePisa(m, 60, S.ocupados[j.fecha]||[]) && horasHasta(j.fecha, m) >= 12;
+    return !(S.tomados||{})[j.fecha+'|'+String(h).slice(0,5)] && horasHasta(j.fecha, m) >= 12;
   }
   // Descuento por reservar antes. El 10% de comunidad no aplica a la DJ JAM ni a las jornadas (Manual de Marca V3)
   function jPrecio(j){
@@ -8397,7 +8425,8 @@ window.GTS = (function(){
       var libres=j.horarios.filter(function(x){ return jLibre(j,x); }).length, sel=(S.jSel && S.jSel.id===j.id) ? S.jSel.hora : null;
       var out='<div class="gts-jor'+(sel?' sel':'')+'" id="jor-'+j.id+'"'+(String(S.jSolo)===String(j.id)?' data-solo="1"':'')+'><div class="gts-jor-k">'+esc(jLabel(j))+'</div>'
         + '<div class="gts-jor-f">'+mayus(fechaLarga(j.fecha))+'</div>'
-        + '<p class="gts-jor-m">'+(libres ? '<b>Quedan '+libres+' de '+j.horarios.length+' horarios</b>' : '<b>Jornada completa</b>')+' · sets de 60 minutos'+(j.lugar ? ' · '+esc(String(j.lugar).split('·')[0].trim()) : '')+'</p>'
+        + '<p class="gts-jor-m">'+(libres ? '<b>Quedan '+libres+' de '+j.horarios.length+' horarios</b>' : '<b>Jornada completa</b>')+' · '+(j.b2b?'sets B2B':'sets')+' de '+(Number(j.duracion)||60)+' minutos'+(j.lugar ? ' · '+esc(String(j.lugar).split('·')[0].trim()) : '')+'</p>'
+        + (j.detalle ? '<p class="gts-jor-m" style="color:#fff">'+esc(j.detalle)+'</p>' : '')
         + '<p class="gts-jor-p" id="gj-precio-'+j.id+'">'+jPrecioHTML(j)+'</p>'
         + '<div class="gts-times-g">'+j.horarios.map(function(x){ var ok=jLibre(j,x);
             return '<button type="button" class="gts-time'+(ok?'':' no')+(sel===x?' on':'')+'"'+(ok?' data-jor="'+j.id+'" data-jh="'+esc(x)+'"':' disabled aria-disabled="true"')+'>'+esc(x)+'</button>'; }).join('')+'</div>';
@@ -8408,6 +8437,7 @@ window.GTS = (function(){
           + '<div class="gts-field"><label for="gj-w">WhatsApp</label><input class="gts-in" id="gj-w" type="tel" inputmode="tel" autocomplete="tel" placeholder="+54 9 11 …" value="'+esc(D.wa||'')+'"><div class="gts-err" id="gj-w-err"></div></div>'
           + '<div class="gts-field"><label for="gj-e">Email</label><input class="gts-in" id="gj-e" type="email" inputmode="email" autocomplete="email" placeholder="tu@email.com" value="'+esc(D.email||'')+'"><div class="gts-err" id="gj-e-err"></div></div>'
           + '<div class="gts-field"><label for="gj-i">Instagram</label><input class="gts-in" id="gj-i" placeholder="@tuusuario" value="'+esc(D.ig||'')+'"><div class="gts-err" id="gj-i-err"></div></div>'
+          + (j.b2b ? '<div class="gts-field"><label for="gj-b">Con quién hacés el B2B</label><input class="gts-in" id="gj-b" placeholder="Nombre artístico de tu dupla" value="'+esc(D.b2b||'')+'"><div class="gts-err" id="gj-b-err"></div></div>' : '')
           + '<button type="button" class="gts-btn" style="width:100%" data-jsend="'+j.id+'">Reservar las '+esc(sel)+' hs <span class="arr">→</span></button>'
           + '<div class="gts-err" id="gj-send-err" role="alert"></div>'
           + '<p class="gts-fine" style="margin-top:6px">Al enviar, aceptás nuestra <button type="button" class="gts-priv" onclick="asdlPrivacidad()">Política de privacidad</button>.</p>'
@@ -8457,6 +8487,7 @@ window.GTS = (function(){
     var g=function(id){ var el=$(id); return el ? el.value.trim() : ''; }, D=S.datos;
     D.nombre=g('gj-n'); D.wa=g('gj-w'); D.email=g('gj-e'); D.ig=g('gj-i');
     var ok=true;
+    if($('gj-b')){ D.b2b=g('gj-b'); ok = error('gj-b', D.b2b ? '' : 'Contanos con quién vas a tocar.') && ok; }
     ok = error('gj-n', D.nombre ? '' : 'Contanos cómo te llamás como artista.') && ok;
     ok = error('gj-w', (String(D.wa).replace(/\D/g,'').length>=8) ? '' : 'Dejanos un WhatsApp válido: por ahí te pasamos la seña.') && ok;
     ok = error('gj-e', !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(D.email) ? 'Revisá el email: parece incompleto.' : (asdlMailFix(D.email) ? '¿Quisiste decir '+asdlMailFix(D.email)+'? Corregilo y seguimos.' : '')) && ok;
@@ -8480,7 +8511,7 @@ window.GTS = (function(){
       var res = await guardarReserva({
         nombre_artistico:D.nombre, email:D.email, whatsapp:D.wa, genero:'', links:D.ig,
         tipo:j.tipo, fecha:j.fecha, horario:hora, jornada_id:j.id,
-        ya_registrado:S.grabo, mensaje:'Jornada: '+jLabel(j), es_comunidad:false, descuento:!!t.dto,
+        ya_registrado:S.grabo, mensaje:'Jornada: '+jLabel(j)+(j.b2b && D.b2b ? ' · B2B con: '+D.b2b : ''), es_comunidad:false, descuento:!!t.dto,
         precio_base:t.final, senia:senia(), estado:'Pendiente'
       });
       if(!res || !res.ok) throw new Error((res&&res.error)||'error');
@@ -8506,7 +8537,7 @@ window.GTS = (function(){
       var b=ev.target.closest('[data-jh]');
       if(b){
         var keep=function(id,k){ var el=$(id); if(el) S.datos[k]=el.value.trim(); };
-        keep('gj-n','nombre'); keep('gj-w','wa'); keep('gj-e','email'); keep('gj-i','ig');
+        keep('gj-n','nombre'); keep('gj-w','wa'); keep('gj-e','email'); keep('gj-i','ig'); keep('gj-b','b2b');
         S.jSel={id:+b.getAttribute('data-jor'), hora:b.getAttribute('data-jh')};
         track('eligio_fecha'); renderJornadas();
         var n=$('gj-n'); if(n) setTimeout(function(){ n.focus({preventScroll:true}); }, 50);
