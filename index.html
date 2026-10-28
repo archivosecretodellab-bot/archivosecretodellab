@@ -1941,6 +1941,7 @@ fbq('track', 'PageView');
       .gts-time:hover{border-color:var(--g-b2)}
       .gts-time.on{background:var(--g-b);border-color:var(--g-b)}
       .gts-time.no{opacity:.25;cursor:not-allowed;text-decoration:line-through}
+      .gts-time-fin{display:block;font-size:10px;opacity:.6;margin-top:2px}
       .gts-note{font-size:12px;line-height:1.6;color:var(--g-w2);margin-top:12px}
       .gts-note.warn{color:#ffb4a0}
       .gts-nav{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:26px;flex-wrap:wrap}
@@ -6029,7 +6030,7 @@ async function renderAdminJornadas(c){
     +'<div style="display:grid;grid-template-columns:1fr 2fr;gap:10px"><div><label style="'+lab+'">Número</label><input id="jf-num" type="number" min="1" style="'+inp+'" placeholder="18"></div><div><label style="'+lab+'">Nombre (opcional)</label><input id="jf-nom" style="'+inp+'" placeholder="FEMALE DJ JAM 3"></div></div>'
     +'<div><label style="'+lab+'">Día</label><input id="jf-fecha" type="date" style="'+inp+'" oninput="jorDia()"><div id="jf-dia" style="font-size:10px;color:var(--wd);margin-top:5px"></div></div>'
     +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><label style="'+lab+'">Primer set</label><input id="jf-ini" type="time" step="300" value="15:00" style="'+inp+'" oninput="jorAuto()"></div><div><label style="'+lab+'">Cupos</label><input id="jf-n" type="number" min="1" max="12" value="6" style="'+inp+'" oninput="jorAuto()"></div></div>'
-    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><label style="'+lab+'">Duración de cada set (min)</label><input id="jf-dur" type="number" min="15" max="240" step="5" value="60" style="'+inp+'" oninput="jorAuto()"></div><div><label style="'+lab+'">Cambio entre sets (min)</label><input id="jf-cambio" type="number" min="0" max="60" step="5" value="10" style="'+inp+'" oninput="jorAuto()"></div></div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><label style="'+lab+'">Duración de cada set (min)</label><input id="jf-dur" type="number" min="15" max="240" step="5" value="60" style="'+inp+'" oninput="jorAuto()"><div style="display:flex;gap:6px;margin-top:6px">'+[60,70,90].map(function(m){ return '<button type="button" class="jz-btn jf-durq" data-m="'+m+'" onclick="jorDur('+m+')">'+m+' min</button>'; }).join('')+'</div></div><div><label style="'+lab+'">Cambio entre sets (min)</label><input id="jf-cambio" type="number" min="0" max="60" step="5" value="10" style="'+inp+'" oninput="jorAuto()"></div></div>'
     +'<div style="display:flex;align-items:flex-end;padding-bottom:10px"><label style="display:flex;gap:8px;align-items:center;color:#fff;font-size:11px;cursor:pointer"><input id="jf-b2b" type="checkbox"> Jornada de B2B (cada cupo es un dúo: el formulario pide con quién toca)</label></div>'
     +'<div style="grid-column:1/-1"><label style="'+lab+'">Horarios · se arman solos con lo de arriba, pero podés escribir los que quieras, separados por coma (ej. 11, 12:20, 13:40)</label><input id="jf-hs" style="'+inp+'"></div>'
     +'<div style="grid-column:1/-1"><label style="'+lab+'">Detalle para los DJs (opcional · se ve en la web)</label><input id="jf-det" style="'+inp+'" placeholder="Ej. B2B con CDJs · rider técnico especial"></div>'
@@ -6159,7 +6160,22 @@ async function jorLiberar(id, btn){
 function jorDia(){ var v=(document.getElementById('jf-fecha')||{}).value, o=document.getElementById('jf-dia'); if(!o) return; if(!v){ o.textContent=''; return; } var t=_jzFecha(v); var dom=new Date(v+'T12:00').getDay()===0; o.innerHTML=t.charAt(0).toUpperCase()+t.slice(1)+(document.getElementById('jf-tipo').value==='DJ JAM'&&!dom?' · <span style="color:#ffb020">ojo: la DJ JAM es los domingos</span>':''); }
 
 function jorLugar(){ var t=document.getElementById('jf-tipo').value, w=document.getElementById('jf-lugar-w'); if(w) w.style.display = t==='DJ JAM' ? 'none' : 'block'; try{ jorDia(); }catch(e){} }
-function jorAuto(){ var g=function(k){ return document.getElementById(k); }; var hs=_jorHorarios(g('jf-ini').value, +g('jf-n').value||0, +g('jf-dur').value||60, g('jf-cambio').value===''?10:+g('jf-cambio').value); g('jf-hs').value=hs.join(', '); }
+// Horarios que ya tienen una reserva en la jornada que se está editando
+function _jorTomadas(){
+  var id=+((document.getElementById('jf-id')||{}).value||0); if(!id) return [];
+  return JOR_RES.filter(function(x){ return x.jornada_id===id; }).map(function(x){ return { h:_jorHora(String(x.horario||'').slice(0,5)), n:x.nombre_artistico||'Sin nombre' }; }).filter(function(x){ return x.h; });
+}
+function _jorDurMarca(){ var d=+((document.getElementById('jf-dur')||{}).value||0); document.querySelectorAll('.jf-durq').forEach(function(b){ var on=+b.dataset.m===d; b.style.background=on?'#fff':''; b.style.color=on?'#000':''; }); }
+function jorDur(m){ var e=document.getElementById('jf-dur'); if(!e) return; e.value=m; jorAuto(); }
+function jorAuto(){ var g=function(k){ return document.getElementById(k); }; var hs=_jorHorarios(g('jf-ini').value, +g('jf-n').value||0, +g('jf-dur').value||60, g('jf-cambio').value===''?10:+g('jf-cambio').value);
+  _jorDurMarca();
+  var tom=_jorTomadas(), fuera=tom.filter(function(t){ return hs.indexOf(t.h)<0; }), msg=g('jf-msg');
+  if(fuera.length){
+    if(msg){ msg.textContent='Ojo: así se correría '+fuera.map(function(t){ return t.n+' ('+t.h+')'; }).join(', ')+'. Dejé los horarios como estaban: si hace falta moverlos, escribilos a mano y avisale a quien reservó.'; msg.style.color='var(--red)'; }
+    return;
+  }
+  if(msg && tom.length){ msg.textContent='Los horarios ya reservados quedan en su lugar.'; msg.style.color='var(--wd)'; }
+  g('jf-hs').value=hs.join(', '); }
 function jorForm(id){
   var b=document.getElementById('jor-box'); if(!b) return; b.style.display='block';
   var j=id ? JOR_ADMIN.find(function(x){ return x.id===id; }) : null;
@@ -6176,7 +6192,7 @@ function jorForm(id){
     set('jf-dur',60); set('jf-cambio',10); set('jf-det',''); document.getElementById('jf-b2b').checked=false;
     jorAuto();
   }
-  jorLugar(); jorDia(); document.getElementById('jf-msg').textContent='';
+  jorLugar(); jorDia(); document.getElementById('jf-msg').textContent=''; _jorDurMarca();
   b.scrollIntoView({behavior:'smooth',block:'start'});
 }
 async function jorGuardar(){
@@ -6189,6 +6205,8 @@ async function jorGuardar(){
   if(!v('jf-fecha')) return aviso('Falta el día.');
   if(malos.length) return aviso('No entiendo estos horarios: '+malos.join(', ')+'. Escribilos como 11, 12:20 o 13.40.');
   if(!hs.length) return aviso('Faltan los horarios.');
+  var perdidos=_jorTomadas().filter(function(t){ return hs.indexOf(t.h)<0; });
+  if(perdidos.length) return aviso('No guardé: estos horarios ya están reservados y no están en la lista: '+perdidos.map(function(t){ return t.n+' ('+t.h+')'; }).join(', ')+'. Volvé a escribirlos o cancelá esa reserva primero.');
   var dur=+v('jf-dur')||60, cambio=v('jf-cambio')===''?10:+v('jf-cambio');
   var tipo=v('jf-tipo');
   if(tipo!=='DJ JAM' && !v('jf-lugar')) return aviso('Falta el lugar: es la dirección que le llega al DJ cuando seña.');
@@ -8429,15 +8447,19 @@ window.GTS = (function(){
         + (j.detalle ? '<p class="gts-jor-m" style="color:#fff">'+esc(j.detalle)+'</p>' : '')
         + '<p class="gts-jor-p" id="gj-precio-'+j.id+'">'+jPrecioHTML(j)+'</p>'
         + '<div class="gts-times-g">'+j.horarios.map(function(x){ var ok=jLibre(j,x);
-            return '<button type="button" class="gts-time'+(ok?'':' no')+(sel===x?' on':'')+'"'+(ok?' data-jor="'+j.id+'" data-jh="'+esc(x)+'"':' disabled aria-disabled="true"')+'>'+esc(x)+'</button>'; }).join('')+'</div>';
+            var fin=jMin(x), du=Number(j.duracion)||60; fin=(fin==null)?'':String(Math.floor((fin+du)/60)%24).padStart(2,'0')+':'+String((fin+du)%60).padStart(2,'0');
+            return '<button type="button" class="gts-time'+(ok?'':' no')+(sel===x?' on':'')+'"'+(ok?' data-jor="'+j.id+'" data-jh="'+esc(x)+'"':' disabled aria-disabled="true"')+'>'+esc(x)+(fin?'<span class="gts-time-fin">a '+fin+'</span>':'')+'</button>'; }).join('')+'</div>';
       if(sel){
         var D=S.datos;
         out+='<div class="gts-jor-form">'
+          + (j.b2b ? '<div class="gts-jor-k" style="margin:4px 0 10px">DJ 1</div>' : '')
           + '<div class="gts-field"><label for="gj-n">Nombre artístico</label><input class="gts-in" id="gj-n" autocomplete="nickname" placeholder="Tu nombre de DJ o proyecto" value="'+esc(D.nombre||'')+'"><div class="gts-err" id="gj-n-err"></div></div>'
           + '<div class="gts-field"><label for="gj-w">WhatsApp</label><input class="gts-in" id="gj-w" type="tel" inputmode="tel" autocomplete="tel" placeholder="+54 9 11 …" value="'+esc(D.wa||'')+'"><div class="gts-err" id="gj-w-err"></div></div>'
           + '<div class="gts-field"><label for="gj-e">Email</label><input class="gts-in" id="gj-e" type="email" inputmode="email" autocomplete="email" placeholder="tu@email.com" value="'+esc(D.email||'')+'"><div class="gts-err" id="gj-e-err"></div></div>'
           + '<div class="gts-field"><label for="gj-i">Instagram</label><input class="gts-in" id="gj-i" placeholder="@tuusuario" value="'+esc(D.ig||'')+'"><div class="gts-err" id="gj-i-err"></div></div>'
-          + (j.b2b ? '<div class="gts-field"><label for="gj-b">Con quién hacés el B2B</label><input class="gts-in" id="gj-b" placeholder="Nombre artístico de tu dupla" value="'+esc(D.b2b||'')+'"><div class="gts-err" id="gj-b-err"></div></div>' : '')
+          + (j.b2b ? '<div class="gts-jor-k" style="margin:18px 0 10px">DJ 2</div>'
+              + '<div class="gts-field"><label for="gj-b">Nombre artístico</label><input class="gts-in" id="gj-b" placeholder="Nombre artístico de tu dupla" value="'+esc(D.b2b||'')+'"><div class="gts-err" id="gj-b-err"></div></div>'
+              + '<div class="gts-field"><label for="gj-b2e">Email</label><input class="gts-in" id="gj-b2e" type="email" inputmode="email" placeholder="email@detudupla.com" value="'+esc(D.b2bEmail||'')+'"><div class="gts-err" id="gj-b2e-err"></div></div>' : '')
           + '<button type="button" class="gts-btn" style="width:100%" data-jsend="'+j.id+'">Reservar las '+esc(sel)+' hs <span class="arr">→</span></button>'
           + '<div class="gts-err" id="gj-send-err" role="alert"></div>'
           + '<p class="gts-fine" style="margin-top:6px">Al enviar, aceptás nuestra <button type="button" class="gts-priv" onclick="asdlPrivacidad()">Política de privacidad</button>.</p>'
@@ -8488,6 +8510,7 @@ window.GTS = (function(){
     D.nombre=g('gj-n'); D.wa=g('gj-w'); D.email=g('gj-e'); D.ig=g('gj-i');
     var ok=true;
     if($('gj-b')){ D.b2b=g('gj-b'); ok = error('gj-b', D.b2b ? '' : 'Contanos con quién vas a tocar.') && ok; }
+    if($('gj-b2e')){ D.b2bEmail=g('gj-b2e'); ok = error('gj-b2e', !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(D.b2bEmail) ? 'Revisá el email de tu dupla: parece incompleto.' : (asdlMailFix(D.b2bEmail) ? '¿Quisiste decir '+asdlMailFix(D.b2bEmail)+'? Corregilo y seguimos.' : '')) && ok; }
     ok = error('gj-n', D.nombre ? '' : 'Contanos cómo te llamás como artista.') && ok;
     ok = error('gj-w', (String(D.wa).replace(/\D/g,'').length>=8) ? '' : 'Dejanos un WhatsApp válido: por ahí te pasamos la seña.') && ok;
     ok = error('gj-e', !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(D.email) ? 'Revisá el email: parece incompleto.' : (asdlMailFix(D.email) ? '¿Quisiste decir '+asdlMailFix(D.email)+'? Corregilo y seguimos.' : '')) && ok;
@@ -8509,9 +8532,9 @@ window.GTS = (function(){
       if(!jLibre(j, hora)){ aviso('Alguien acaba de tomar las '+esc(hora)+' hs. Elegí otro horario: tus datos quedan guardados.'); return; }
       var D=S.datos, t=jPrecio(j);
       var res = await guardarReserva({
-        nombre_artistico:D.nombre, email:D.email, whatsapp:D.wa, genero:'', links:D.ig,
+        nombre_artistico:(j.b2b && D.b2b ? D.nombre+' B2B '+D.b2b : D.nombre), email:D.email, whatsapp:D.wa, genero:'', links:D.ig,
         tipo:j.tipo, fecha:j.fecha, horario:hora, jornada_id:j.id,
-        ya_registrado:S.grabo, mensaje:'Jornada: '+jLabel(j)+(j.b2b && D.b2b ? ' · B2B con: '+D.b2b : ''), es_comunidad:false, descuento:!!t.dto,
+        ya_registrado:S.grabo, mensaje:'Jornada: '+jLabel(j)+(j.b2b && D.b2b ? ' · B2B con: '+D.b2b+(D.b2bEmail ? ' ('+D.b2bEmail+')' : '') : ''), es_comunidad:false, descuento:!!t.dto,
         precio_base:t.final, senia:senia(), estado:'Pendiente'
       });
       if(!res || !res.ok) throw new Error((res&&res.error)||'error');
@@ -8537,7 +8560,7 @@ window.GTS = (function(){
       var b=ev.target.closest('[data-jh]');
       if(b){
         var keep=function(id,k){ var el=$(id); if(el) S.datos[k]=el.value.trim(); };
-        keep('gj-n','nombre'); keep('gj-w','wa'); keep('gj-e','email'); keep('gj-i','ig'); keep('gj-b','b2b');
+        keep('gj-n','nombre'); keep('gj-w','wa'); keep('gj-e','email'); keep('gj-i','ig'); keep('gj-b','b2b'); keep('gj-b2e','b2bEmail');
         S.jSel={id:+b.getAttribute('data-jor'), hora:b.getAttribute('data-jh')};
         track('eligio_fecha'); renderJornadas();
         var n=$('gj-n'); if(n) setTimeout(function(){ n.focus({preventScroll:true}); }, 50);
