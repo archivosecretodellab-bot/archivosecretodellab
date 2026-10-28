@@ -6253,12 +6253,14 @@ function jorCupoForm(id, h){
   var g=document.getElementById('jzg-'+id); if(!g) return;
   var prev=document.getElementById('jz-cf'); var mismo=prev && prev.getAttribute('data-k')===id+'-'+h; if(prev) prev.remove(); if(mismo) return;
   var inp='width:100%;box-sizing:border-box;background:rgba(0,0,0,.4);border:1px solid var(--wf);color:#fff;padding:10px;font-family:inherit;font-size:12px';
-  var k=id+'-'+h.replace(':','');
+  var k=id+'-'+h.replace(':',''), jb=(JOR_ADMIN.find(function(x){ return x.id===id; })||{}).b2b;
   var d=document.createElement('div'); d.id='jz-cf'; d.className='jz-cf'; d.setAttribute('data-k', id+'-'+h);
   d.innerHTML='<div style="grid-column:1/-1" class="jz-kick">Cargar el cupo de las '+h+' hs</div>'
-    +'<input id="jcn-'+k+'" style="'+inp+'" placeholder="NOMBRE ARTÍSTICO *">'
+    +'<input id="jcn-'+k+'" style="'+inp+'" placeholder="'+(jb?'DJ 1 · NOMBRE ARTÍSTICO *':'NOMBRE ARTÍSTICO *')+'">'
+    +(jb?'<input id="jcb-'+k+'" style="'+inp+'" placeholder="DJ 2 · NOMBRE ARTÍSTICO *">':'')
     +'<select id="jco-'+k+'" style="'+inp+'"><option value="instagram">Llegó por Instagram</option><option value="whatsapp">Llegó por WhatsApp</option><option value="presencial">En persona</option><option value="otro">Otro</option></select>'
     +'<input id="jce-'+k+'" type="email" style="'+inp+'" placeholder="Mail (para que le lleguen los mails)">'
+    +(jb?'<input id="jcf-'+k+'" type="email" style="'+inp+'" placeholder="DJ 2 · Mail">':'')
     +'<input id="jcw-'+k+'" style="'+inp+'" placeholder="WhatsApp">'
     +'<label style="grid-column:1/-1;display:flex;gap:8px;align-items:center;color:#fff;font-size:11px"><input id="jcs-'+k+'" type="checkbox"> Ya pagó la seña (entra confirmado y le llega el mail con la dirección)</label>'
     +'<div style="grid-column:1/-1;display:flex;gap:8px;align-items:center;flex-wrap:wrap"><button class="jz-cta" onclick="jorCupoGuardar('+id+',\''+h+'\')">Guardar cupo</button><button class="jz-btn" onclick="document.getElementById(\'jz-cf\').remove()">Cancelar</button><span id="jcm-'+k+'" style="font-size:11px"></span></div>';
@@ -6269,11 +6271,16 @@ async function jorCupoGuardar(id, h){
   var m=document.getElementById('jcm-'+k), j=JOR_ADMIN.find(function(x){ return x.id===id; }); if(!j) return;
   var nombre=String(g('jcn-')).toUpperCase(), email=g('jce-'), pago=g('jcs-');
   if(!nombre){ m.textContent='Falta el nombre.'; m.style.color='var(--red)'; return; }
+  var dj2=String(g('jcb-')).toUpperCase(), mail2=g('jcf-');
+  if(j.b2b && !dj2){ m.textContent='Falta el nombre del DJ 2.'; m.style.color='var(--red)'; return; }
+  if(mail2 && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(mail2)){ m.textContent='El mail del DJ 2 no parece válido.'; m.style.color='var(--red)'; return; }
+  if(mail2 && asdlMailFix(mail2)){ m.textContent='DJ 2: ¿quisiste decir '+asdlMailFix(mail2)+'?'; m.style.color='var(--red)'; return; }
+  if(dj2) nombre=nombre+' B2B '+dj2;
   if(email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)){ m.textContent='Ese mail no parece válido.'; m.style.color='var(--red)'; return; }
   if(email && asdlMailFix(email)){ m.textContent='¿Quisiste decir '+asdlMailFix(email)+'?'; m.style.color='var(--red)'; return; }
   var senia=Math.max(Number((typeof CFG!=='undefined'&&CFG.senia))||0, 20000);
   var fila={ nombre_artistico:nombre, email:email||null, whatsapp:g('jcw-')||null, genero:'', links:'', tipo:j.tipo, fecha:j.fecha, horario:h,
-    jornada_id:j.id, origen:g('jco-'), ya_registrado:false, mensaje:'Jornada: '+_jorLabel(j), es_comunidad:false, descuento:_jorPrecio(j)<Number(j.precio),
+    jornada_id:j.id, origen:g('jco-'), ya_registrado:false, mensaje:'Jornada: '+_jorLabel(j)+(dj2?' · B2B con: '+dj2+(mail2?' ('+mail2+')':''):''), es_comunidad:false, descuento:_jorPrecio(j)<Number(j.precio),
     precio_base:_jorPrecio(j), senia:senia, estado: pago?'Confirmada':'Pendiente' };
   if(pago){ fila.senia_recibida_at=new Date().toISOString(); fila.senia_monto=senia; }
   m.textContent='Guardando…'; m.style.color='var(--wd)';
