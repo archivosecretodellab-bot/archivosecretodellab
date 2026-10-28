@@ -6108,7 +6108,7 @@ async function jorCargar(){
   var html = vivas.length ? vivas.map(_jzCard).join('') : '<div class="jz-empty">No hay jornadas por delante. <button class="jz-btn" onclick="jorForm()" style="margin-left:8px">+ Nueva jornada</button></div>';
   if(pasadas.length) html+='<details class="jz-past"><summary>Jornadas pasadas ('+pasadas.length+')</summary>'+pasadas.map(function(j){
       var n=JOR_RES.filter(function(x){ return x.jornada_id===j.id; }).length;
-      return '<div class="jz-prow"><span><b>'+_jorEsc(_jorLabel(j))+'</b> · '+_jzFecha(j.fecha)+'</span><span>'+n+' de '+(j.horarios||[]).length+' cupos</span></div>'; }).join('')+'</details>';
+      return '<div class="jz-prow"><span><b>'+_jorEsc(_jorLabel(j))+'</b> · '+_jzFecha(j.fecha)+'</span><span>'+n+' de '+(j.horarios||[]).length+' cupos <button class="jz-btn" style="margin-left:8px;padding:4px 8px" onclick="jorEliminar('+j.id+',this)">🗑</button></span></div><div id="jzdel-'+j.id+'" style="font-size:11px;color:var(--red)"></div>'; }).join('')+'</details>';
   L.innerHTML=html;
 }
 function _jzCard(j){
@@ -6142,7 +6142,9 @@ function _jzCard(j){
     +'<div class="jz-acts"><button class="jz-cta" onclick="jorCopiar('+j.id+',this)">⧉ Copiar link</button>'
     +'<a class="jz-btn" href="'+_jorLink(j)+'" target="_blank" rel="noopener">Ver en la web ↗</a>'
     +'<button class="jz-btn" onclick="jorForm('+j.id+')">Editar</button>'
-    +(j.estado==='Abierta'?'<button class="jz-btn" onclick="jorEstado('+j.id+',\'Cerrada\')">Cerrar</button>':'<button class="jz-btn" onclick="jorEstado('+j.id+',\'Abierta\')">Abrir</button>')+'</div>'
+    +(j.estado==='Abierta'?'<button class="jz-btn" onclick="jorEstado('+j.id+',\'Cerrada\')">Cerrar</button>':'<button class="jz-btn" onclick="jorEstado('+j.id+',\'Abierta\')">Abrir</button>')
+    +'<button class="jz-btn" onclick="jorEliminar('+j.id+',this)">🗑 Eliminar</button></div>'
+    +'<div id="jzdel-'+j.id+'" style="font-size:11px;color:var(--red);margin-top:8px"></div>'
     +'<div class="jz-slots" id="jzg-'+j.id+'">'+slots+'</div></div>';
 }
 async function jorSenia(id){
@@ -6222,6 +6224,23 @@ async function jorGuardar(){
     return aviso(/duracion|cambio|detalle|b2b/.test(em) ? 'Falta un paso en Supabase: corré ASDL_jornadas_v2.sql y volvé a guardar.' : 'No se pudo guardar: '+em);
   }
   document.getElementById('jor-box').style.display='none';
+  await jorCargar();
+}
+// Eliminar una jornada. Solo si no tiene reservas activas (pendientes o señadas).
+async function jorEliminar(id, btn){
+  var j=JOR_ADMIN.find(function(x){ return x.id===id; }); if(!j) return;
+  var out=document.getElementById('jzdel-'+id), dice=function(t){ if(out) out.textContent=t; };
+  var activas=JOR_RES.filter(function(x){ return x.jornada_id===id; });
+  if(activas.length){ dice('No se puede eliminar: tiene '+activas.length+' reserva'+(activas.length>1?'s':'')+' ('+activas.map(function(x){ return (x.nombre_artistico||'Sin nombre')+' · '+String(x.horario||'').slice(0,5); }).join(', ')+'). Liberalas primero o cerrá la jornada.'); return; }
+  if(btn && !btn.dataset.seguro){ btn.dataset.seguro='1'; var t=btn.innerHTML; btn.innerHTML='¿Seguro? Se borra para siempre'; btn.style.borderColor='var(--red)'; setTimeout(function(){ if(btn.isConnected){ delete btn.dataset.seguro; btn.innerHTML=t; btn.style.borderColor=''; } }, 5000); return; }
+  dice('Eliminando…');
+  try{
+    // Las reservas canceladas de esta jornada se desvinculan (no se borran) para que la base deje eliminarla
+    await sb.from('reservas').update({jornada_id:null}).eq('jornada_id',id).eq('estado','Cancelada');
+    var r=await sb.from('jornadas').delete().eq('id',id).select('id');
+    if(r.error) throw r.error;
+    if(!r.data || !r.data.length){ dice('Supabase no dejó eliminarla: falta el permiso de borrar jornadas. Avisale a Claude.'); return; }
+  }catch(e){ dice('No se pudo eliminar: '+String((e&&e.message)||e)); return; }
   await jorCargar();
 }
 async function jorEstado(id, estado){ await sb.from('jornadas').update({estado:estado}).eq('id',id); await jorCargar(); }
