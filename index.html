@@ -6098,7 +6098,7 @@ async function jorCargar(){
     if(r.error) throw r.error; JOR_ADMIN=r.data||[];
     var ids=JOR_ADMIN.map(function(j){ return j.id; });
     JOR_RES=[];
-    if(ids.length){ var q=await sb.from('reservas').select('id,nombre_artistico,whatsapp,email,horario,estado,jornada_id,created_at,senia,senia_monto,senia_recibida_at').in('jornada_id',ids).neq('estado','Cancelada'); JOR_RES=(q&&q.data)||[]; }
+    if(ids.length){ var q=await sb.from('reservas').select('id,nombre_artistico,whatsapp,email,horario,estado,jornada_id,created_at,senia,senia_monto,senia_recibida_at,mensaje').in('jornada_id',ids).neq('estado','Cancelada'); JOR_RES=(q&&q.data)||[]; }
   }catch(e){
     L.innerHTML='<div class="jz-empty" style="color:var(--red)">No se pudieron leer las jornadas. ¿Ya corriste ASDL_jornadas.sql en Supabase?</div>'; return;
   }
@@ -6122,13 +6122,14 @@ function _jzCard(j){
     var x=res.find(function(r){ return r.horario===h; }), k=j.id+'-'+h.replace(':','');
     if(!x) return '<div class="jz-slot libre"><div class="t">'+h+'</div><div class="e">Libre</div><div class="b"><button onclick="jorCupoForm('+j.id+',\''+h+'\')">+ Cargar por chat</button></div></div>';
     var nom=_jorEsc(x.nombre_artistico);
-    if(x.estado==='Confirmada') return '<div class="jz-slot ok"><div class="t">'+h+'</div><div class="n">'+nom+'</div><div class="e">✓ Señado'+(x.senia_monto?' · $'+Number(x.senia_monto).toLocaleString('es-AR'):'')+'</div></div>';
+    var ed='<button onclick="jorResForm('+j.id+',\''+x.id+'\')">✏️ Editar</button>';
+    if(x.estado==='Confirmada') return '<div class="jz-slot ok"><div class="t">'+h+'</div><div class="n">'+nom+'</div><div class="e">✓ Señado'+(x.senia_monto?' · $'+Number(x.senia_monto).toLocaleString('es-AR'):'')+'</div><div class="b">'+ed+'</div></div>';
     var hs=Math.max(24-Math.floor((Date.now()-new Date(x.created_at).getTime())/36e5),0);
     var wa=_jzWa(x.whatsapp), txt='¡Hola '+String(x.nombre_artistico||'')+'! Te guardamos las '+h+' hs en la '+_jorLabel(j)+' ('+_jzFecha(j.fecha)+'). Para quedártelas, la seña es de $'+Math.max(Number(x.senia)||0,20000).toLocaleString('es-AR')+' por Mercado Pago. ¿Te paso los datos?';
     return '<div class="jz-slot pend" id="jzs-'+k+'"><div class="t">'+h+'</div><div class="n">'+nom+'</div><div class="e">⏳ Sin seña · se libera en '+hs+' h</div>'
       +'<div class="b"><button class="ok" onclick="jorSenia(\''+x.id+'\')">✓ Seña recibida</button>'
       +(wa?'<a href="https://wa.me/'+wa+'?text='+encodeURIComponent(txt)+'" target="_blank" rel="noopener">💬 Pedir seña</a>':'')
-      +'<button onclick="jorLiberar(\''+x.id+'\',this)">Liberar</button></div></div>';
+      +'<button onclick="jorLiberar(\''+x.id+'\',this)">Liberar</button>'+ed+'</div></div>';
   }).join('');
   return '<div class="jz-card'+(j.estado==='Abierta'?'':' off')+'" id="jz-'+j.id+'">'
     +'<div class="jz-head"><div><span class="jz-chip" style="color:'+estCol+'">'+estTxt+'</span><span class="jz-chip" style="color:#fff">'+_jorEsc(j.tipo)+'</span>'
@@ -6156,7 +6157,15 @@ async function jorSenia(id){
 }
 async function jorLiberar(id, btn){
   if(btn && btn.textContent!=='¿Seguro? Liberar'){ btn.textContent='¿Seguro? Liberar'; btn.style.borderColor='var(--red)'; setTimeout(function(){ if(btn.isConnected){ btn.textContent='Liberar'; btn.style.borderColor=''; } }, 4000); return; }
-  await sb.from('reservas').update({estado:'Cancelada'}).eq('id',id);
+  if(btn){ btn.textContent='Liberando…'; btn.disabled=true; }
+  var r; try{ r=await sb.from('reservas').update({estado:'Cancelada'}).eq('id',id).select('id'); }catch(e){ r={error:e}; }
+  var falla = (r && r.error) ? 'No se pudo liberar: '+String(r.error.message||r.error) : ((!r || !r.data || !r.data.length) ? 'Supabase no dejó liberar este horario. Mandale una captura a Claude.' : '');
+  if(falla){
+    var box=document.getElementById('jre-m') || (btn && btn.parentNode);
+    if(box) box.insertAdjacentHTML(box.id==='jre-m'?'beforeend':'afterend','<div style="color:var(--red);font-size:11px;margin-top:6px">'+falla+'</div>');
+    if(btn){ btn.textContent='Liberar'; btn.disabled=false; btn.style.borderColor=''; }
+    return;
+  }
   await jorCargar();
 }
 function jorDia(){ var v=(document.getElementById('jf-fecha')||{}).value, o=document.getElementById('jf-dia'); if(!o) return; if(!v){ o.textContent=''; return; } var t=_jzFecha(v); var dom=new Date(v+'T12:00').getDay()===0; o.innerHTML=t.charAt(0).toUpperCase()+t.slice(1)+(document.getElementById('jf-tipo').value==='DJ JAM'&&!dom?' · <span style="color:#ffb020">ojo: la DJ JAM es los domingos</span>':''); }
@@ -6265,6 +6274,61 @@ function jorCupoForm(id, h){
     +'<label style="grid-column:1/-1;display:flex;gap:8px;align-items:center;color:#fff;font-size:11px"><input id="jcs-'+k+'" type="checkbox"> Ya pagó la seña (entra confirmado y le llega el mail con la dirección)</label>'
     +'<div style="grid-column:1/-1;display:flex;gap:8px;align-items:center;flex-wrap:wrap"><button class="jz-cta" onclick="jorCupoGuardar('+id+',\''+h+'\')">Guardar cupo</button><button class="jz-btn" onclick="document.getElementById(\'jz-cf\').remove()">Cancelar</button><span id="jcm-'+k+'" style="font-size:11px"></span></div>';
   g.appendChild(d); var n=document.getElementById('jcn-'+k); if(n) n.focus();
+}
+// Editar un cupo ya tomado: datos de los DJs y horario
+function _jorDuo(x){
+  var m=/B2B con:\s*([^(·]+?)\s*(?:\(([^)\s]+)\))?\s*(?:·|$)/.exec(String(x.mensaje||''));
+  var nom=String(x.nombre_artistico||''), dj2=m?m[1].trim():'', dj1=nom;
+  if(dj2 && nom.toUpperCase().endsWith(' B2B '+dj2.toUpperCase())) dj1=nom.slice(0, nom.length-(' B2B '+dj2).length);
+  else if(!dj2 && / B2B /i.test(nom)){ var p=nom.split(/ B2B /i); dj1=p[0]; dj2=p.slice(1).join(' B2B '); }
+  return { dj1:dj1, dj2:dj2, mail2:(m&&m[2])||'' };
+}
+function jorResForm(jid, rid){
+  var j=JOR_ADMIN.find(function(x){ return x.id===jid; }), x=JOR_RES.find(function(r){ return String(r.id)===String(rid); }); if(!j||!x) return;
+  var g=document.getElementById('jzg-'+jid); if(!g) return;
+  var prev=document.getElementById('jz-cf'); var mismo=prev && prev.getAttribute('data-k')==='e-'+rid; if(prev) prev.remove(); if(mismo) return;
+  var inp='width:100%;box-sizing:border-box;background:rgba(0,0,0,.4);border:1px solid var(--wf);color:#fff;padding:10px;font-family:inherit;font-size:12px';
+  var lab='display:block;font-size:8.5px;letter-spacing:.2em;color:var(--wd);text-transform:uppercase;margin:0 0 5px';
+  var d=_jorDuo(x), b2b=!!(j.b2b||d.dj2), e=_jorEsc;
+  var ocupados=JOR_RES.filter(function(r){ return r.jornada_id===jid && String(r.id)!==String(rid); }).map(function(r){ return r.horario; });
+  var opts=(j.horarios||[]).filter(function(h){ return h===x.horario || ocupados.indexOf(h)<0; }).map(function(h){ return '<option'+(h===x.horario?' selected':'')+'>'+h+'</option>'; }).join('');
+  var c=document.createElement('div'); c.id='jz-cf'; c.className='jz-cf'; c.setAttribute('data-k','e-'+rid);
+  c.innerHTML='<div style="grid-column:1/-1" class="jz-kick">Editar el cupo de las '+e(x.horario)+' hs</div>'
+    +'<div><label style="'+lab+'">'+(b2b?'DJ 1 · ':'')+'Nombre artístico *</label><input id="jre-n" style="'+inp+'" value="'+e(d.dj1)+'"></div>'
+    +(b2b?'<div><label style="'+lab+'">DJ 2 · Nombre artístico *</label><input id="jre-b" style="'+inp+'" value="'+e(d.dj2)+'"></div>':'')
+    +'<div><label style="'+lab+'">'+(b2b?'DJ 1 · ':'')+'Mail</label><input id="jre-e" type="email" style="'+inp+'" value="'+e(x.email||'')+'"></div>'
+    +(b2b?'<div><label style="'+lab+'">DJ 2 · Mail</label><input id="jre-f" type="email" style="'+inp+'" value="'+e(d.mail2)+'"></div>':'')
+    +'<div><label style="'+lab+'">WhatsApp</label><input id="jre-w" style="'+inp+'" value="'+e(x.whatsapp||'')+'"></div>'
+    +'<div><label style="'+lab+'">Horario (solo los libres)</label><select id="jre-h" style="'+inp+'">'+opts+'</select></div>'
+    +'<div style="grid-column:1/-1;display:flex;gap:8px;align-items:center;flex-wrap:wrap"><button class="jz-cta" onclick="jorResGuardar('+jid+',\''+rid+'\')">Guardar cambios</button><button class="jz-btn" onclick="document.getElementById(\'jz-cf\').remove()">Cancelar</button><span id="jre-m" style="font-size:11px"></span></div>'
+    +'<div style="grid-column:1/-1;border-top:1px solid var(--wf);padding-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">'
+    +'<button class="jz-btn" style="color:var(--red);border-color:rgba(255,59,59,.4)" onclick="jorLiberar(\''+rid+'\',this)">Liberar</button>'
+    +'<span style="font-size:10px;color:var(--wd)">'+(x.estado==='Confirmada'?'Este cupo ya está señado: si lo liberás, borrá también el evento en Google Calendar. La seña no tiene devolución.':'El horario vuelve a quedar libre en la web.')+' Tocá dos veces para confirmar.</span></div>';
+  g.appendChild(c); c.scrollIntoView({behavior:'smooth',block:'center'});
+}
+async function jorResGuardar(jid, rid){
+  var j=JOR_ADMIN.find(function(x){ return x.id===jid; }), x=JOR_RES.find(function(r){ return String(r.id)===String(rid); }); if(!j||!x) return;
+  var v=function(id){ var el=document.getElementById(id); return el ? String(el.value||'').trim() : ''; };
+  var m=document.getElementById('jre-m'), mal=function(t){ m.textContent=t; m.style.color='var(--red)'; };
+  var n1=v('jre-n').toUpperCase(), n2=v('jre-b').toUpperCase(), m1=v('jre-e'), m2=v('jre-f'), h=v('jre-h');
+  var okMail=function(t){ return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(t); };
+  if(!n1) return mal('Falta el nombre'+(document.getElementById('jre-b')?' del DJ 1':'')+'.');
+  if(document.getElementById('jre-b') && !n2) return mal('Falta el nombre del DJ 2.');
+  if(m1 && !okMail(m1)) return mal('El mail'+(n2?' del DJ 1':'')+' no parece válido.');
+  if(m1 && asdlMailFix(m1)) return mal('¿Quisiste decir '+asdlMailFix(m1)+'?');
+  if(m2 && !okMail(m2)) return mal('El mail del DJ 2 no parece válido.');
+  if(m2 && asdlMailFix(m2)) return mal('DJ 2: ¿quisiste decir '+asdlMailFix(m2)+'?');
+  if(h!==x.horario && JOR_RES.some(function(r){ return r.jornada_id===jid && r.horario===h && String(r.id)!==String(rid); })) return mal('Ese horario ya está tomado.');
+  // El mensaje conserva todo lo que tenía, menos el dato viejo del B2B
+  var resto=String(x.mensaje||'Jornada: '+_jorLabel(j)).replace(/\s*·\s*B2B con:[^·]*/,'').trim();
+  var fila={ nombre_artistico: n2 ? n1+' B2B '+n2 : n1, email:m1||null, whatsapp:v('jre-w')||null, horario:h,
+    mensaje: resto+(n2?' · B2B con: '+n2+(m2?' ('+m2+')':''):'') };
+  m.textContent='Guardando…'; m.style.color='var(--wd)';
+  var r; try{ r=await sb.from('reservas').update(fila).eq('id',rid).select('id'); }catch(e){ r={error:e}; }
+  if(r && r.error) return mal('No se pudo guardar: '+(r.error.message||r.error));
+  if(!r || !r.data || !r.data.length) return mal('Supabase no dejó guardar el cambio. Avisale a Claude.');
+  await jorCargar();
+  if(h!==x.horario){ var c=document.getElementById('jz-'+jid); if(c) c.insertAdjacentHTML('afterbegin','<div style="border:1px solid #5533ff;padding:10px 12px;margin-bottom:12px;font-size:11px;color:#fff">Horario cambiado a las '+h+' hs. Si ya estaba señado, mové también el evento en Google Calendar y avisale al DJ.</div>'); }
 }
 async function jorCupoGuardar(id, h){
   var k=id+'-'+h.replace(':',''), g=function(p){ var e=document.getElementById(p+k); return e ? (e.type==='checkbox' ? e.checked : String(e.value||'').trim()) : ''; };
