@@ -6265,6 +6265,7 @@ function jorCupoForm(id, h){
   var k=id+'-'+h.replace(':',''), jb=(JOR_ADMIN.find(function(x){ return x.id===id; })||{}).b2b;
   var d=document.createElement('div'); d.id='jz-cf'; d.className='jz-cf'; d.setAttribute('data-k', id+'-'+h);
   d.innerHTML='<div style="grid-column:1/-1" class="jz-kick">Cargar el cupo de las '+h+' hs</div>'
+    +(jb?_jorModoHTML('jcdu-'+k, false, 'jcb-'+k, 'jcn-'+k, 'NOMBRE DEL DÚO *', 'DJ 1 · NOMBRE ARTÍSTICO *'):'')
     +'<input id="jcn-'+k+'" style="'+inp+'" placeholder="'+(jb?'DJ 1 · NOMBRE ARTÍSTICO *':'NOMBRE ARTÍSTICO *')+'">'
     +(jb?'<input id="jcb-'+k+'" style="'+inp+'" placeholder="DJ 2 · NOMBRE ARTÍSTICO *">':'')
     +'<select id="jco-'+k+'" style="'+inp+'"><option value="instagram">Llegó por Instagram</option><option value="whatsapp">Llegó por WhatsApp</option><option value="presencial">En persona</option><option value="otro">Otro</option></select>'
@@ -6276,9 +6277,17 @@ function jorCupoForm(id, h){
   g.appendChild(d); var n=document.getElementById('jcn-'+k); if(n) n.focus();
 }
 // Editar un cupo ya tomado: datos de los DJs y horario
+// B2B: "Cada uno con su nombre" (DJ1 B2B DJ2) o "Con un nombre de dúo" (ej. SKULLTWINS, igual con dos mails)
+function _jorModoHTML(grupo, duo, ocultarId, nombreId, txtDuo, txtDos){
+  var r=function(v,t){ return '<label style="display:flex;gap:6px;align-items:center;cursor:pointer"><input type="radio" name="'+grupo+'" value="'+v+'"'+((v==='1')===!!duo?' checked':'')+' data-o="'+ocultarId+'" data-n="'+nombreId+'" data-td="'+_jorEsc(txtDuo)+'" data-t2="'+_jorEsc(txtDos)+'" onchange="_jorModo(this)"> '+t+'</label>'; };
+  return '<div style="grid-column:1/-1;display:flex;gap:16px;flex-wrap:wrap;font-size:11px;color:#fff;align-items:center"><span style="font-size:8.5px;letter-spacing:.2em;color:var(--wd);text-transform:uppercase">¿Cómo se presentan?</span>'+r('2','Cada uno con su nombre')+r('1','Con un nombre de dúo')+'</div>';
+}
+function _jorModo(el){ var duo=el.value==='1', o=document.getElementById(el.dataset.o), n=document.getElementById(el.dataset.n); if(o) o.style.display=duo?'none':''; if(n){ var t=duo?el.dataset.td:el.dataset.t2; if(n.tagName==='INPUT') n.placeholder=t; else n.textContent=t; } }
+function _jorEsDuo(grupo){ var r=document.querySelector('input[name="'+grupo+'"]:checked'); return !!(r && r.value==='1'); }
 function _jorDuo(x){
   var m=/B2B con:\s*([^(·]+?)\s*(?:\(([^)\s]+)\))?\s*(?:·|$)/.exec(String(x.mensaje||''));
   var nom=String(x.nombre_artistico||''), dj2=m?m[1].trim():'', dj1=nom;
+  if(dj2 && dj2.toUpperCase()===nom.toUpperCase()) return { dj1:nom, dj2:'', mail2:(m&&m[2])||'', duo:true };
   if(dj2 && nom.toUpperCase().endsWith(' B2B '+dj2.toUpperCase())) dj1=nom.slice(0, nom.length-(' B2B '+dj2).length);
   else if(!dj2 && / B2B /i.test(nom)){ var p=nom.split(/ B2B /i); dj1=p[0]; dj2=p.slice(1).join(' B2B '); }
   return { dj1:dj1, dj2:dj2, mail2:(m&&m[2])||'' };
@@ -6294,8 +6303,9 @@ function jorResForm(jid, rid){
   var opts=(j.horarios||[]).filter(function(h){ return h===x.horario || ocupados.indexOf(h)<0; }).map(function(h){ return '<option'+(h===x.horario?' selected':'')+'>'+h+'</option>'; }).join('');
   var c=document.createElement('div'); c.id='jz-cf'; c.className='jz-cf'; c.setAttribute('data-k','e-'+rid);
   c.innerHTML='<div style="grid-column:1/-1" class="jz-kick">Editar el cupo de las '+e(x.horario)+' hs</div>'
-    +'<div><label style="'+lab+'">'+(b2b?'DJ 1 · ':'')+'Nombre artístico *</label><input id="jre-n" style="'+inp+'" value="'+e(d.dj1)+'"></div>'
-    +(b2b?'<div><label style="'+lab+'">DJ 2 · Nombre artístico *</label><input id="jre-b" style="'+inp+'" value="'+e(d.dj2)+'"></div>':'')
+    +(b2b?_jorModoHTML('jre-du', d.duo, 'jre-bw', 'jre-nl', 'Nombre del dúo *', 'DJ 1 · Nombre artístico *'):'')
+    +'<div><label id="jre-nl" style="'+lab+'">'+(d.duo?'Nombre del dúo *':(b2b?'DJ 1 · ':'')+'Nombre artístico *')+'</label><input id="jre-n" style="'+inp+'" value="'+e(d.dj1)+'"></div>'
+    +(b2b?'<div id="jre-bw"'+(d.duo?' style="display:none"':'')+'><label style="'+lab+'">DJ 2 · Nombre artístico *</label><input id="jre-b" style="'+inp+'" value="'+e(d.dj2)+'"></div>':'')
     +'<div><label style="'+lab+'">'+(b2b?'DJ 1 · ':'')+'Mail</label><input id="jre-e" type="email" style="'+inp+'" value="'+e(x.email||'')+'"></div>'
     +(b2b?'<div><label style="'+lab+'">DJ 2 · Mail</label><input id="jre-f" type="email" style="'+inp+'" value="'+e(d.mail2)+'"></div>':'')
     +'<div><label style="'+lab+'">WhatsApp</label><input id="jre-w" style="'+inp+'" value="'+e(x.whatsapp||'')+'"></div>'
@@ -6310,10 +6320,10 @@ async function jorResGuardar(jid, rid){
   var j=JOR_ADMIN.find(function(x){ return x.id===jid; }), x=JOR_RES.find(function(r){ return String(r.id)===String(rid); }); if(!j||!x) return;
   var v=function(id){ var el=document.getElementById(id); return el ? String(el.value||'').trim() : ''; };
   var m=document.getElementById('jre-m'), mal=function(t){ m.textContent=t; m.style.color='var(--red)'; };
-  var n1=v('jre-n').toUpperCase(), n2=v('jre-b').toUpperCase(), m1=v('jre-e'), m2=v('jre-f'), h=v('jre-h');
+  var duo=_jorEsDuo('jre-du'), n1=v('jre-n').toUpperCase(), n2=duo?'':v('jre-b').toUpperCase(), m1=v('jre-e'), m2=v('jre-f'), h=v('jre-h');
   var okMail=function(t){ return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(t); };
-  if(!n1) return mal('Falta el nombre'+(document.getElementById('jre-b')?' del DJ 1':'')+'.');
-  if(document.getElementById('jre-b') && !n2) return mal('Falta el nombre del DJ 2.');
+  if(!n1) return mal(duo?'Falta el nombre del dúo.':'Falta el nombre'+(document.getElementById('jre-b')?' del DJ 1':'')+'.');
+  if(document.getElementById('jre-b') && !duo && !n2) return mal('Falta el nombre del DJ 2.');
   if(m1 && !okMail(m1)) return mal('El mail'+(n2?' del DJ 1':'')+' no parece válido.');
   if(m1 && asdlMailFix(m1)) return mal('¿Quisiste decir '+asdlMailFix(m1)+'?');
   if(m2 && !okMail(m2)) return mal('El mail del DJ 2 no parece válido.');
@@ -6322,7 +6332,7 @@ async function jorResGuardar(jid, rid){
   // El mensaje conserva todo lo que tenía, menos el dato viejo del B2B
   var resto=String(x.mensaje||'Jornada: '+_jorLabel(j)).replace(/\s*·\s*B2B con:[^·]*/,'').trim();
   var fila={ nombre_artistico: n2 ? n1+' B2B '+n2 : n1, email:m1||null, whatsapp:v('jre-w')||null, horario:h,
-    mensaje: resto+(n2?' · B2B con: '+n2+(m2?' ('+m2+')':''):'') };
+    mensaje: resto+(duo?' · B2B con: '+n1+(m2?' ('+m2+')':''):(n2?' · B2B con: '+n2+(m2?' ('+m2+')':''):'')) };
   m.textContent='Guardando…'; m.style.color='var(--wd)';
   var r; try{ r=await sb.from('reservas').update(fila).eq('id',rid).select('id'); }catch(e){ r={error:e}; }
   if(r && r.error) return mal('No se pudo guardar: '+(r.error.message||r.error));
@@ -6335,8 +6345,8 @@ async function jorCupoGuardar(id, h){
   var m=document.getElementById('jcm-'+k), j=JOR_ADMIN.find(function(x){ return x.id===id; }); if(!j) return;
   var nombre=String(g('jcn-')).toUpperCase(), email=g('jce-'), pago=g('jcs-');
   if(!nombre){ m.textContent='Falta el nombre.'; m.style.color='var(--red)'; return; }
-  var dj2=String(g('jcb-')).toUpperCase(), mail2=g('jcf-');
-  if(j.b2b && !dj2){ m.textContent='Falta el nombre del DJ 2.'; m.style.color='var(--red)'; return; }
+  var duo=!!j.b2b && _jorEsDuo('jcdu-'+k), dj2=duo?'':String(g('jcb-')).toUpperCase(), mail2=g('jcf-');
+  if(j.b2b && !duo && !dj2){ m.textContent='Falta el nombre del DJ 2.'; m.style.color='var(--red)'; return; }
   if(mail2 && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(mail2)){ m.textContent='El mail del DJ 2 no parece válido.'; m.style.color='var(--red)'; return; }
   if(mail2 && asdlMailFix(mail2)){ m.textContent='DJ 2: ¿quisiste decir '+asdlMailFix(mail2)+'?'; m.style.color='var(--red)'; return; }
   if(dj2) nombre=nombre+' B2B '+dj2;
@@ -6344,7 +6354,7 @@ async function jorCupoGuardar(id, h){
   if(email && asdlMailFix(email)){ m.textContent='¿Quisiste decir '+asdlMailFix(email)+'?'; m.style.color='var(--red)'; return; }
   var senia=Math.max(Number((typeof CFG!=='undefined'&&CFG.senia))||0, 20000);
   var fila={ nombre_artistico:nombre, email:email||null, whatsapp:g('jcw-')||null, genero:'', links:'', tipo:j.tipo, fecha:j.fecha, horario:h,
-    jornada_id:j.id, origen:g('jco-'), ya_registrado:false, mensaje:'Jornada: '+_jorLabel(j)+(dj2?' · B2B con: '+dj2+(mail2?' ('+mail2+')':''):''), es_comunidad:false, descuento:_jorPrecio(j)<Number(j.precio),
+    jornada_id:j.id, origen:g('jco-'), ya_registrado:false, mensaje:'Jornada: '+_jorLabel(j)+(duo?' · B2B con: '+nombre+(mail2?' ('+mail2+')':''):(dj2?' · B2B con: '+dj2+(mail2?' ('+mail2+')':''):'')), es_comunidad:false, descuento:_jorPrecio(j)<Number(j.precio),
     precio_base:_jorPrecio(j), senia:senia, estado: pago?'Confirmada':'Pendiente' };
   if(pago){ fila.senia_recibida_at=new Date().toISOString(); fila.senia_monto=senia; }
   m.textContent='Guardando…'; m.style.color='var(--wd)';
@@ -8541,14 +8551,20 @@ window.GTS = (function(){
             return '<button type="button" class="gts-time'+(ok?'':' no')+(sel===x?' on':'')+'"'+(ok?' data-jor="'+j.id+'" data-jh="'+esc(x)+'"':' disabled aria-disabled="true"')+'>'+esc(x)+(fin?'<span class="gts-time-fin">a '+fin+'</span>':'')+'</button>'; }).join('')+'</div>';
       if(sel){
         var D=S.datos;
+        var duo=!!(j.b2b && D.duo);
+        var campoNombre='<div class="gts-field"><label for="gj-n">'+(duo?'Nombre del dúo':'Nombre artístico')+'</label><input class="gts-in" id="gj-n" autocomplete="nickname" placeholder="'+(duo?'Cómo se presentan juntos':'Tu nombre de DJ o proyecto')+'" value="'+esc(D.nombre||'')+'"><div class="gts-err" id="gj-n-err"></div></div>';
         out+='<div class="gts-jor-form">'
+          + (j.b2b ? '<p class="gts-jor-m" style="margin:0 0 8px"><b>¿Cómo se presentan?</b></p>'
+              + '<label class="gts-check"><input type="radio" name="gj-duo" onclick="asdlJDuo(0)"'+(duo?'':' checked')+'> Cada uno con su nombre</label>'
+              + '<label class="gts-check" style="margin-bottom:14px"><input type="radio" name="gj-duo" onclick="asdlJDuo(1)"'+(duo?' checked':'')+'> Con un nombre de dúo</label>' : '')
+          + (duo ? campoNombre : '')
           + (j.b2b ? '<div class="gts-jor-k" style="margin:4px 0 10px">DJ 1</div>' : '')
-          + '<div class="gts-field"><label for="gj-n">Nombre artístico</label><input class="gts-in" id="gj-n" autocomplete="nickname" placeholder="Tu nombre de DJ o proyecto" value="'+esc(D.nombre||'')+'"><div class="gts-err" id="gj-n-err"></div></div>'
+          + (duo ? '' : campoNombre)
           + '<div class="gts-field"><label for="gj-w">WhatsApp</label><input class="gts-in" id="gj-w" type="tel" inputmode="tel" autocomplete="tel" placeholder="+54 9 11 …" value="'+esc(D.wa||'')+'"><div class="gts-err" id="gj-w-err"></div></div>'
           + '<div class="gts-field"><label for="gj-e">Email</label><input class="gts-in" id="gj-e" type="email" inputmode="email" autocomplete="email" placeholder="tu@email.com" value="'+esc(D.email||'')+'"><div class="gts-err" id="gj-e-err"></div></div>'
           + '<div class="gts-field"><label for="gj-i">Instagram</label><input class="gts-in" id="gj-i" placeholder="@tuusuario" value="'+esc(D.ig||'')+'"><div class="gts-err" id="gj-i-err"></div></div>'
           + (j.b2b ? '<div class="gts-jor-k" style="margin:18px 0 10px">DJ 2</div>'
-              + '<div class="gts-field"><label for="gj-b">Nombre artístico</label><input class="gts-in" id="gj-b" placeholder="Nombre artístico de tu dupla" value="'+esc(D.b2b||'')+'"><div class="gts-err" id="gj-b-err"></div></div>'
+              + (duo ? '' : '<div class="gts-field"><label for="gj-b">Nombre artístico</label><input class="gts-in" id="gj-b" placeholder="Nombre artístico de tu dupla" value="'+esc(D.b2b||'')+'"><div class="gts-err" id="gj-b-err"></div></div>')
               + '<div class="gts-field"><label for="gj-b2e">Email</label><input class="gts-in" id="gj-b2e" type="email" inputmode="email" placeholder="email@detudupla.com" value="'+esc(D.b2bEmail||'')+'"><div class="gts-err" id="gj-b2e-err"></div></div>' : '')
           + '<button type="button" class="gts-btn" style="width:100%" data-jsend="'+j.id+'">Reservar las '+esc(sel)+' hs <span class="arr">→</span></button>'
           + '<div class="gts-err" id="gj-send-err" role="alert"></div>'
@@ -8601,7 +8617,7 @@ window.GTS = (function(){
     var ok=true;
     if($('gj-b')){ D.b2b=g('gj-b'); ok = error('gj-b', D.b2b ? '' : 'Contanos con quién vas a tocar.') && ok; }
     if($('gj-b2e')){ D.b2bEmail=g('gj-b2e'); ok = error('gj-b2e', !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(D.b2bEmail) ? 'Revisá el email de tu dupla: parece incompleto.' : (asdlMailFix(D.b2bEmail) ? '¿Quisiste decir '+asdlMailFix(D.b2bEmail)+'? Corregilo y seguimos.' : '')) && ok; }
-    ok = error('gj-n', D.nombre ? '' : 'Contanos cómo te llamás como artista.') && ok;
+    ok = error('gj-n', D.nombre ? '' : (D.duo && $('gj-b2e') ? 'Contanos el nombre del dúo.' : 'Contanos cómo te llamás como artista.')) && ok;
     ok = error('gj-w', (String(D.wa).replace(/\D/g,'').length>=8) ? '' : 'Dejanos un WhatsApp válido: por ahí te pasamos la seña.') && ok;
     ok = error('gj-e', !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(D.email) ? 'Revisá el email: parece incompleto.' : (asdlMailFix(D.email) ? '¿Quisiste decir '+asdlMailFix(D.email)+'? Corregilo y seguimos.' : '')) && ok;
     ok = error('gj-i', D.ig ? '' : 'Dejanos tu Instagram para conocer tu propuesta.') && ok;
@@ -8622,9 +8638,9 @@ window.GTS = (function(){
       if(!jLibre(j, hora)){ aviso('Alguien acaba de tomar las '+esc(hora)+' hs. Elegí otro horario: tus datos quedan guardados.'); return; }
       var D=S.datos, t=jPrecio(j);
       var res = await guardarReserva({
-        nombre_artistico:(j.b2b && D.b2b ? D.nombre+' B2B '+D.b2b : D.nombre), email:D.email, whatsapp:D.wa, genero:'', links:D.ig,
+        nombre_artistico:(j.b2b && !D.duo && D.b2b ? D.nombre+' B2B '+D.b2b : D.nombre), email:D.email, whatsapp:D.wa, genero:'', links:D.ig,
         tipo:j.tipo, fecha:j.fecha, horario:hora, jornada_id:j.id,
-        ya_registrado:S.grabo, mensaje:'Jornada: '+jLabel(j)+(j.b2b && D.b2b ? ' · B2B con: '+D.b2b+(D.b2bEmail ? ' ('+D.b2bEmail+')' : '') : ''), es_comunidad:false, descuento:!!t.dto,
+        ya_registrado:S.grabo, mensaje:'Jornada: '+jLabel(j)+(!j.b2b ? '' : (D.duo ? ' · B2B con: '+D.nombre+(D.b2bEmail ? ' ('+D.b2bEmail+')' : '') : (D.b2b ? ' · B2B con: '+D.b2b+(D.b2bEmail ? ' ('+D.b2bEmail+')' : '') : ''))), es_comunidad:false, descuento:!!t.dto,
         precio_base:t.final, senia:senia(), estado:'Pendiente'
       });
       if(!res || !res.ok) throw new Error((res&&res.error)||'error');
@@ -8644,6 +8660,14 @@ window.GTS = (function(){
       S.jEnviando=false;
     }
   }
+  // B2B: cambia entre "cada uno con su nombre" y "nombre de dúo" sin perder lo escrito
+  window.asdlJDuo=function(d){
+    var keep=function(id,k){ var el=$(id); if(el) S.datos[k]=el.value.trim(); };
+    keep('gj-n','nombre'); keep('gj-w','wa'); keep('gj-e','email'); keep('gj-i','ig'); keep('gj-b','b2b'); keep('gj-b2e','b2bEmail');
+    if(!!S.datos.duo===!!d) return;
+    S.datos.duo=!!d; renderJornadas();
+    var n=$('gj-n'); if(n) n.focus({preventScroll:true});
+  };
   function enlazarJornadas(){
     var c=$('gts-jor'); if(!c || c._ok) return; c._ok=true;
     c.addEventListener('click', function(ev){
