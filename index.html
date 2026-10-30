@@ -329,6 +329,7 @@ background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0
 
 .hero{position:absolute;bottom:52px;left:40px;z-index:30;pointer-events:none}
 .h-eye{font-size:10px;letter-spacing:.34em;color:var(--wd);text-transform:uppercase;margin-bottom:15px}
+h1.h-eye{margin-top:0;font-weight:inherit;font-family:inherit;line-height:inherit}
 .h-c{font-family:'Space Mono',monospace;font-weight:700;line-height:.87;letter-spacing:-.04em;margin-bottom:20px}
 .h-w{display:block;font-size:clamp(64px,8.2vw,116px);color:var(--w)}
 .h-n{display:block;font-size:clamp(72px,9.4vw,140px);color:var(--b);text-shadow:0 0 90px var(--bg),0 0 3px rgba(27,0,230,.5);-webkit-text-stroke:.5px var(--b);font-feature-settings:"tnum" 1;letter-spacing:-.05em}
@@ -1533,12 +1534,6 @@ fbq('track', 'PageView');
 <div id="noise"></div>
 <div id="scan"></div>
 <div id="term-cursor"></div>
-<div aria-hidden="true" style="position:absolute;left:-9999px;font-size:1px;color:transparent;pointer-events:none">
-  <h1>Archivo Secreto del Lab — Grabación de DJ Sets en Buenos Aires · Registro Audiovisual de la Escena Electrónica Porteña</h1>
-  <h2>Grabá tu DJ set en Buenos Aires · Cabina DJ profesional · Archivo electrónico porteño · Más de 200 sets</h2>
-  <p>Si buscás dónde grabar tu DJ set en Buenos Aires, el Archivo Secreto del Lab es un espacio de grabación para DJs en Argentina con más de 200 sets en el archivo: un archivo audiovisual vivo de la escena electrónica porteña. Grabamos con producción audiovisual profesional y booking online, en formatos DJ JAM, Common Liveset y Custom Liveset, para techno, house, minimal y electrónica underground de Buenos Aires — sin géneros ni límites. Es el hogar de DJs emergentes y consolidados que buscan un registro audiovisual independiente, hecho desde Buenos Aires, Argentina.</p>
-</div>
-
 <!-- TICKER (CNN style) -->
 <div id="ticker">
   <div class="tk-tag" id="tk-tag" onclick="tickerTagClick()" role="link" tabindex="0" title="Archivo Secreto del Lab" aria-label="Archivo Secreto del Lab" onkeydown="if(event.key==='Enter'){tickerTagClick();}">ASDL</div>
@@ -1589,7 +1584,7 @@ fbq('track', 'PageView');
       <div class="vline"></div>
       <div id="cl"></div>
       <div class="hero">
-        <div class="h-eye">Grabación de DJ sets en Buenos Aires<br><br>Registro audiovisual de la escena porteña</div>
+        <h1 class="h-eye">Grabación de DJ sets en Buenos Aires<br><br>Registro audiovisual de la escena porteña</h1>
         <div class="h-c">
           <span class="h-w">Archivo</span>
           <span class="h-n" id="ctr">000</span>
