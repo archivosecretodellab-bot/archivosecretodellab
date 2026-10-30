@@ -1,0 +1,6 @@
+# Archivo Secreto del Lab
+# Todo el sitio está abierto a buscadores.
+User-agent: *
+Allow: /
+
+Sitemap: https://archivosecretodellab.com/sitemap.xml
