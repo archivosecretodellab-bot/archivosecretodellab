@@ -42,9 +42,9 @@
   <meta name="twitter:image" content="https://raw.githubusercontent.com/archivosecretodellab-bot/archivosecretodellab/main/img/og-cover.jpg">
   <meta name="author" content="Archivo Secreto del Lab">
   <meta name="geo.region" content="AR-C">
-  <meta name="geo.placename" content="Buenos Aires">
-  <meta name="geo.position" content="-34.6037;-58.3816">
-  <meta name="ICBM" content="-34.6037, -58.3816">
+  <meta name="geo.placename" content="San Telmo, Buenos Aires">
+  <meta name="geo.position" content="-34.6210;-58.3725">
+  <meta name="ICBM" content="-34.6210, -58.3725">
 <script type="application/ld+json">
 [
   {
@@ -60,14 +60,14 @@
     "email": "produccion@archivosecretodellab.com",
     "address": {
       "@type": "PostalAddress",
-      "addressLocality": "Buenos Aires",
+      "addressLocality": "San Telmo, Buenos Aires",
       "addressRegion": "Ciudad Autónoma de Buenos Aires",
       "addressCountry": "AR"
     },
     "geo": {
       "@type": "GeoCoordinates",
-      "latitude": -34.6037,
-      "longitude": -58.3816
+      "latitude": -34.6210,
+      "longitude": -58.3725
     },
     "areaServed": {
       "@type": "City",
@@ -4120,10 +4120,10 @@ let blockedDates = {}; // {'2026-03-15': true} día completo bloqueado
 let blockedSlots = {}; // {'2026-03-15': ['11:00','13:00']} slots bloqueados
 let takenSlots = {}; // slots ya reservados (de Supabase)
 
-// Genera todos los slots del día (11:00 a 20:00 — último turno 20-21, mínimo 10min entre sets)
+// Genera todos los slots del día (11:00 a 19:00 — último turno 19-20, mínimo 10min entre sets)
 function generateDaySlots(){
   const slots = [];
-  for(let h=11; h<=20; h++) slots.push(`${String(h).padStart(2,'0')}:00`);
+  for(let h=11; h<=19; h++) slots.push(`${String(h).padStart(2,'0')}:00`);
   return slots;
 }
 
