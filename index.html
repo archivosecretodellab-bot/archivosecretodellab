@@ -5065,7 +5065,7 @@ window.openFicha = async function openFicha(id){
     if(setYt){
       return '<a href="'+setYt+'" target="_blank" rel="noopener"'
         +' style="display:block;position:relative;aspect-ratio:16/9;overflow:hidden;text-decoration:none;cursor:pointer;border:1px solid rgba(27,0,230,.3)">'
-        +'<img src="'+coverSrc+'" alt="'+esc(_artistName)+'" loading="lazy" decoding="async"'
+        +'<img src="'+coverSrc+'" alt="'+esc(_artistName)+' — DJ set en el Archivo Secreto del Lab" loading="lazy" decoding="async"'
         +' style="width:100%;height:100%;object-fit:cover;object-position:center top"'
         +' onerror="this.style.display=&quot;none&quot;;this.nextElementSibling.style.display=&quot;flex&quot;">'
         +'<div style="display:none;position:absolute;inset:0;background:#1b00e6;align-items:center;justify-content:center">'
@@ -5081,7 +5081,7 @@ window.openFicha = async function openFicha(id){
       var _pendCover = imgURL('img/covers', getCoverFilename(smEntry.artista, _coverNum));
       var _pendFecha = smEntry.fecha ? new Date(smEntry.fecha+'T12:00:00').toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric'}) : '';
       return '<div style="position:relative;aspect-ratio:16/9;overflow:hidden;border:1px solid rgba(255,255,255,.07)">'
-        +'<img src="'+_pendCover+'" alt="'+esc(_artistName)+'" loading="lazy" decoding="async"'
+        +'<img src="'+_pendCover+'" alt="'+esc(_artistName)+' — DJ set en el Archivo Secreto del Lab" loading="lazy" decoding="async"'
         +' style="width:100%;height:100%;object-fit:cover;object-position:center;filter:brightness(.4)"'
         +' onerror="this.style.display=&quot;none&quot;">'
         +'<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;background:rgba(0,0,0,.45)">'
@@ -5137,7 +5137,7 @@ window.openFicha = async function openFicha(id){
     const _ord = ['1er','2do','3er','4to','5to','6to','7mo','8vo','9no','10mo'];
     const _n = _artistSets.indexOf(s);
     const etiqueta = (_artistSets.length>1 && _n>-1 ? (_ord[_n]||(_n+1)+'º')+' set · ' : '') + (con ? 'B2B con '+con : (s.categoria || _fxTipo[s.tipo] || 'Set')) + (s.fecha ? ' · '+_fxFecha(s.fecha) : '');
-    const img = '<img src="'+cover+'" alt="'+esc(_artistName)+' · '+esc(s.id)+'" loading="lazy" decoding="async" onerror="this.style.display=&quot;none&quot;">';
+    const img = '<img src="'+cover+'" alt="'+esc(_artistName)+' — set '+esc(s.id)+' en el Archivo Secreto del Lab" loading="lazy" decoding="async" onerror="this.style.display=&quot;none&quot;">';
     if(yt){
       return '<a class="fx-set" href="'+esc(yt)+'" target="_blank" rel="noopener"><div class="fx-set-im">'+img
         + '<span class="fx-play"><i></i>Ver set</span></div>'
@@ -5228,6 +5228,7 @@ function openCropperModal(id, dataUrl){
 
   var img = document.createElement('img');
   img.src = dataUrl;
+  img.alt = 'Vista previa del recorte';
   img.style.cssText = 'max-width:100%;display:block';
   imgWrap.appendChild(img);
 
@@ -5603,7 +5604,7 @@ function renderAdminArtistsMerged(c){
       var coverUrl  = imgURL('img/covers', coverFile);
       var thumbLS   = null;
       try{ thumbLS = localStorage.getItem('thumb_'+coverSet.id); }catch(ex){}
-      var coverHTML = '<img src="'+(thumbLS||coverUrl)+'"'
+      var coverHTML = '<img alt="'+esc(a.name)+'" src="'+(thumbLS||coverUrl)+'"'
         +' style="width:48px;height:60px;object-fit:cover;object-position:center top;border:1px solid #1a1a1a;flex-shrink:0">';
 
       var genre = dj ? (dj.genre||'—') : '—';
@@ -6675,7 +6676,7 @@ function smBuildCard(s, delay){
   // ── Imagen como <img> (no background-image) — funciona con CORS ──
   var imgEl = document.createElement('img');
   imgEl.className = 'gc-set-img';
-  imgEl.alt = artNombre;
+  imgEl.alt = artNombre + ' — DJ set en el Archivo Secreto del Lab';
   imgEl.setAttribute('loading', 'lazy');
   imgEl.setAttribute('decoding', 'async');
 
@@ -7820,14 +7821,14 @@ function buildPhotoHTML(id, dj){
   // 1. Memoria (recién subida o ya cargada)
   var cached = _photoCache[id] || photos[id] || null;
   if(cached){
-    return '<img src="' + cached + '" alt="' + dj.artist + '" style="' + imgStyle + '">';
+    return '<img src="' + cached + '" alt="' + esc(dj.artist) + ', DJ en el Archivo Secreto del Lab" style="' + imgStyle + '">';
   }
   // 2. localStorage fallback SOLO desde perfil_ (NUNCA desde thumb_ porque eso son covers de sets)
   var stored = null;
   try{ stored = localStorage.getItem('perfil_'+id); }catch(e){}
   if(stored){
     photos[id] = stored; _photoCache[id] = stored;
-    return '<img src="' + stored + '" alt="' + dj.artist + '" style="' + imgStyle + '">';
+    return '<img src="' + stored + '" alt="' + esc(dj.artist) + ', DJ en el Archivo Secreto del Lab" style="' + imgStyle + '">';
   }
   // 3. GitHub raw — intenta múltiples variaciones del nombre (case-insensitive)
   var mapped = getPerfilFilename(dj.artist);
@@ -7841,7 +7842,7 @@ function buildPhotoHTML(id, dj){
   });
   // data-fallbacks guarda las URLs alternativas separadas por |
   var fallbacks = urls.slice(1).join('|');
-  return '<img src="' + urls[0] + '" alt="' + dj.artist + '" loading="lazy" decoding="async" '
+  return '<img src="' + urls[0] + '" alt="' + esc(dj.artist) + ', DJ en el Archivo Secreto del Lab" loading="lazy" decoding="async" '
     + 'style="' + imgStyle + '" '
     + (fallbacks ? 'data-fallbacks="' + fallbacks.replace(/"/g, '&quot;') + '" ' : '')
     + 'onerror="perfilImgFallback(this)">';
@@ -9106,7 +9107,7 @@ window.GTS = (function(){
     }
     function llenar(b, d){
       b.title=d.artist; b._i=d.i; b.classList.remove('ok'); b.innerHTML='';
-      var img=document.createElement('img'); img.alt=d.artist; img.decoding='async';
+      var img=document.createElement('img'); img.alt=d.artist+' — DJ set en el Archivo Secreto del Lab'; img.decoding='async';
       img.onload=function(){ b.classList.add('ok'); };
       var s=document.createElement('span'); s.textContent=d.artist;
       b.appendChild(img); b.appendChild(s);
@@ -9142,7 +9143,7 @@ window.GTS = (function(){
     var uno = function(copia){
       return GALERIA.map(function(g,i){
         return '<button type="button" class="gts-exp-i" data-k="'+i+'"'+(copia?' aria-hidden="true" tabindex="-1"':' aria-label="Ver foto: '+esc(g.c)+'"')+'>'
-          + '<img loading="lazy" decoding="async" alt="'+(copia?'':esc(g.c))+'" src="'+esc(fotoGaleria(g.n))+'"></button>';
+          + '<img loading="lazy" decoding="async" alt="'+(copia?'':'Sesión en el Archivo Secreto del Lab, San Telmo: '+esc(g.c))+'" src="'+esc(fotoGaleria(g.n))+'"></button>';
       }).join('');
     };
     t.innerHTML = uno(false) + uno(true); // dos vueltas iguales para que el movimiento no tenga cortes
@@ -9172,7 +9173,7 @@ window.GTS = (function(){
   }
   function pintarFoto(){
     var g=GALERIA[lbK]; if(!g || !lb) return;
-    var img=lb.querySelector('img'); img.src=fotoGaleria(g.n); img.alt=g.c;
+    var img=lb.querySelector('img'); img.src=fotoGaleria(g.n); img.alt='Sesión en el Archivo Secreto del Lab, San Telmo: '+g.c;
     lb.querySelector('figcaption span').textContent=g.c;
     lb.querySelector('figcaption em').textContent=(lbK+1)+' / '+GALERIA.length;
   }
