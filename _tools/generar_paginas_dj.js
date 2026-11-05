@@ -7,6 +7,8 @@ window.supabase={createClient:()=>({from:q,rpc:q,auth:{getSession:async()=>({dat
 const esc=t=>String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const slug=t=>String(t).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/Ø/gi,'o').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const gen=x=>String(x||'').split(/[·,\/|]/).map(t=>t.trim()).filter(t=>t&&!/^(sin g[eé]nero|por confirmar|—|-)$/i.test(t));
+const ytId=u=>(/(?:v=|youtu\.be\/|shorts\/|live\/)([A-Za-z0-9_-]{11})/.exec(u||'')||[])[1]||'';
+const OUT='.dj_nuevo';
 const hash=t=>[...t].reduce((h,c)=>(h*31+c.charCodeAt(0))>>>0,7);
 const fecha=f=>{const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(f||'');return m?`${m[3]}.${m[2]}.${m[1]}`:''};
 const ORD=['1er','2do','3er','4to','5to','6to','7mo','8vo','9no','10mo'];
@@ -29,7 +31,7 @@ h1{font-family:"Space Mono",monospace;font-weight:700;overflow-wrap:anywhere;fon
 .sec{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--l);padding-bottom:14px;margin:clamp(44px,6vw,76px) 0 22px}h2{font-family:"Space Mono",monospace;font-size:13px;letter-spacing:.2em;margin:0;text-transform:uppercase}.sec span{font-size:12px;color:var(--m)}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.tile{position:relative;display:block;aspect-ratio:16/9;overflow:hidden;border:1px solid rgba(27,0,230,.55);background:#10101a}.tile img{width:100%;height:100%;object-fit:cover;display:block}
 .play{position:absolute;top:0;left:0;background:var(--b);font-size:12px;padding:8px 11px}.tl{position:absolute;left:0;right:0;bottom:0;padding:26px 14px 11px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;line-height:1.5;background:linear-gradient(transparent,rgba(0,0,0,.85))}.tl b{font-weight:600}
-.sugs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.sg{display:block;border:1px solid var(--l);padding:18px}.sg:hover{border-color:var(--b)}.sn{display:block;font-family:"Space Mono",monospace;font-weight:700;font-size:17px;margin-bottom:6px;text-transform:uppercase}.sgg{display:block;font-size:10.5px;letter-spacing:.08em;color:var(--m);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sa{display:block;font-size:10px;letter-spacing:.18em;margin-top:18px;text-transform:uppercase}
+.vid{margin:0 0 12px}.vf{position:relative;aspect-ratio:16/9;background:#10101a;border:1px solid rgba(27,0,230,.55)}.vf iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}.vid figcaption{font-size:10px;letter-spacing:.12em;text-transform:uppercase;line-height:1.5;padding:11px 0 8px;color:rgba(255,255,255,.8)}.vid figcaption b{font-weight:600}.sugs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.sg{display:block;border:1px solid var(--l);padding:18px}.sg:hover{border-color:var(--b)}.sn{display:block;font-family:"Space Mono",monospace;font-weight:700;font-size:17px;margin-bottom:6px;text-transform:uppercase}.sgg{display:block;font-size:10.5px;letter-spacing:.08em;color:var(--m);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sa{display:block;font-size:10px;letter-spacing:.18em;margin-top:18px;text-transform:uppercase}
 .cta{margin-top:clamp(44px,6vw,76px);background:var(--b);padding:clamp(24px,4vw,44px);display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap}.cta p{font-family:"Space Mono",monospace;font-weight:700;font-size:clamp(20px,3vw,30px);line-height:1.2;margin:0;max-width:22ch}.cta a{background:#fff;color:#0a0a0a;font-size:11px;letter-spacing:.2em;padding:15px 20px;font-weight:600;text-transform:uppercase}
 footer{border-top:1px solid var(--l);padding:26px clamp(16px,3vw,40px);font-size:11px;line-height:1.9;color:var(--m)}
 @media(max-width:760px){.top,.grid,.sugs{grid-template-columns:1fr}.cnt{display:none}.g{font-size:10.5px;letter-spacing:.06em;white-space:nowrap}}`;
@@ -41,8 +43,9 @@ function pagina(d){
  const N=d.artist.toUpperCase(),u=`${SITE}/dj/${d.slug}/`,g=gen(d.genre).slice(0,3);
  const n=String(d.sets.length).padStart(2,'0'),foto=SITE+d.foto;
  const desc=`${N} en el Archivo Secreto del Lab: ${lista(g.map(x=>x.toLowerCase()))}. Mirá ${d.sets.length>1?'sus '+d.sets.length+' sets registrados':'su set registrado'} en Buenos Aires.`;
- const ld=[{"@context":"https://schema.org","@type":"ProfilePage",url:u,name:`${N} | Archivo Secreto del Lab`,mainEntity:{"@type":"Person",name:N,description:d.bio,image:foto,genre:g,...(d.ig.length?{sameAs:d.ig.map(h=>'https://www.instagram.com/'+h+'/')}:{})}},{"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[{"@type":"ListItem",position:1,name:"Archivo",item:SITE+'/'},{"@type":"ListItem",position:2,name:"DJs",item:SITE+'/dj/'},{"@type":"ListItem",position:3,name:N,item:u}]}];
- const tiles=[...d.sets].reverse().map(s=>`<a class="tile" href="${esc(s.yt)}" target="_blank" rel="noopener"><img src="${esc(s.cover)}" alt="${esc(N)}, set ${esc(s.id)} en el Archivo Secreto del Lab" loading="lazy"><span class="play">▶</span><span class="tl"><b>${esc(s.id)}</b>${s.ord?' · '+esc(s.ord):''}<br>${esc(s.etiqueta)}</span></a>`).join('');
+ const ult=d.sets[d.sets.length-1],ytU=ytId(ult.yt);
+ const ld=[...(ytU?[{"@context":"https://schema.org","@type":"VideoObject",name:`${N}: set ${ult.id} | Archivo Secreto del Lab`,description:`Set de ${N} en el Archivo Secreto del Lab, ${ult.etiqueta}. ${g.join(', ')}.`,thumbnailUrl:`https://i.ytimg.com/vi/${ytU}/hqdefault.jpg`,uploadDate:`${ult.fecha||'2026-01-01'}T12:00:00-03:00`,embedUrl:`https://www.youtube-nocookie.com/embed/${ytU}`,url:`https://www.youtube.com/watch?v=${ytU}`}]:[]),{"@context":"https://schema.org","@type":"ProfilePage",url:u,name:`${N} | Archivo Secreto del Lab`,mainEntity:{"@type":"Person",name:N,description:d.bio,image:foto,genre:g,...(d.ig.length?{sameAs:d.ig.map(h=>'https://www.instagram.com/'+h+'/')}:{})}},{"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[{"@type":"ListItem",position:1,name:"Archivo",item:SITE+'/'},{"@type":"ListItem",position:2,name:"DJs",item:SITE+'/dj/'},{"@type":"ListItem",position:3,name:N,item:u}]}];
+ const tiles=[...d.sets].slice(0,-1).reverse().map(s=>`<a class="tile" href="${esc(s.yt)}" target="_blank" rel="noopener"><img src="${esc(s.cover)}" alt="${esc(N)}, set ${esc(s.id)} en el Archivo Secreto del Lab" loading="lazy"><span class="play">▶</span><span class="tl"><b>${esc(s.id)}</b>${s.ord?' · '+esc(s.ord):''}<br>${esc(s.etiqueta)}</span></a>`).join('');
  const sug=d.sug.map(x=>`<a class="sg" href="${esc(x.href)}"><span class="sn">${esc(x.artist)}</span><span class="sgg">${esc(x.g)}</span><span class="sa">Ver ficha →</span></a>`).join('');
  const ig=(d.ig.length?`<div class="row"><span>Instagram</span><span class="hs">${d.ig.map(h=>`<a href="https://www.instagram.com/${h}/" target="_blank" rel="noopener">@${h}</a>`).join(' ')}</span></div>`:'')+(d.yt?`<div class="row"><span>YouTube</span><a href="${esc(d.yt)}" target="_blank" rel="noopener">${esc(d.yt.replace(/^.*youtube\.com\//,''))}</a></div>`:'');
  return `<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -60,7 +63,9 @@ ${TRACK}
 <div><span class="k">Archivo · Buenos Aires</span><h1>${esc(d.artist)}</h1><div class="g">${esc(g.join(' · '))}</div>
 <p class="bio">${esc(d.bio)}</p>
 <div><div class="row"><span>Primer registro</span><span>${fecha(d.sets[0].fecha)}</span></div><div class="row"><span>Sets en el Archivo</span><span>${n}</span></div>${ig}</div></div></section>
-<div class="sec"><h2>Sets en el Archivo</h2><span>${n}</span></div><div class="grid">${tiles}</div>
+<div class="sec"><h2>Sets en el Archivo</h2><span>${n}</span></div>
+${ytU?`<figure class="vid"><div class="vf"><iframe src="https://www.youtube-nocookie.com/embed/${ytU}" title="${esc(N)}, set ${esc(ult.id)} en el Archivo Secreto del Lab" loading="lazy" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div><figcaption><b>${esc(ult.id)}</b>${ult.ord?' · '+esc(ult.ord):''} · ${esc(ult.etiqueta)}</figcaption></figure>`:''}
+${tiles?`<div class="grid">${tiles}</div>`:''}
 <div class="sec"><h2>Descubrí otros DJs del Archivo</h2></div><div class="sugs">${sug}</div>
 <section class="cta"><p>¿Querés que tu set sea el próximo en el Archivo?</p><a href="/?ir=agenda">→ Grabá tu set</a></section></main>
 <footer>Archivo Secreto del Lab · San Telmo, Buenos Aires · Lun a dom, 11 a 19 hs, con reserva previa<br>@archivosecretodellab · produccion@archivosecretodellab.com · <a href="/#privacidad">Política de privacidad</a></footer>
@@ -85,10 +90,9 @@ const enPiloto=new Set(data.pil.map(d=>d.artist.toUpperCase())),pages=[],usados=
 const norm=t=>String(t||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[^A-Z0-9 ]/g,'').replace(/\s+/g,' ').trim();
 const existe=u=>fs.existsSync(decodeURI(u).replace(/^\//,''));
 const conImagen=u=>{if(existe(u))return u;const q=u.replace(/\.jpg$/,'.png');return existe(q)?q:''};
-const ytId=u=>(/(?:v=|youtu\.be\/|shorts\/|live\/)([A-Za-z0-9_-]{11})/.exec(u||'')||[])[1]||'';
 for(const d of data.pil){let g=slug(d.artist),k=g,i=2;while(usados[k]){k=g+'-'+i++}usados[k]=1;d.slug=k;mapa[norm(d.artist)]=k;if(d.alias)mapa[norm(d.alias)]=k}
 for(const [a,b] of Object.entries(data.alias)){if(mapa[norm(b)])mapa[norm(a)]=mapa[norm(b)]}
-if(fs.existsSync('dj'))fs.rmSync('dj',{recursive:true});
+fs.rmSync(OUT,{recursive:true,force:true});
 for(const d of data.pil){
  const f=conImagen(d.foto);if(!f)avisos.push('sin foto: '+d.artist);d.foto=f;
  d.sets.forEach(s=>{const c=conImagen(s.cover);if(!c)avisos.push('sin portada: '+d.artist+' '+s.id);s.cover=c||('https://i.ytimg.com/vi/'+ytId(s.yt)+'/hqdefault.jpg')});
@@ -97,7 +101,7 @@ for(const d of data.pil){
  d.ig=(String(d.links||'').match(/@[\w.]+/g)||[]).map(h=>h.slice(1).replace(/\.$/,''));
  d.yt=/youtube\.com\/@[\w.-]+/i.test(d.links||'')?(d.links.match(/https?:\/\/\S*youtube\.com\/@[\w.-]+/i)||[''])[0]:'';
  d.sets.forEach((s,i)=>{const cat=/PUBLICO/i.test(s.cat)?'ARCHIVO PÚBLICO':s.cat;s.ord=d.sets.length>1?ORD[i]+' set':'';s.etiqueta=(s.duo||(s.con?'B2B con '+s.con:cat))+(s.fecha?' · '+fecha(s.fecha):'')});
- fs.mkdirSync(`dj/${d.slug}`,{recursive:true});fs.writeFileSync(`dj/${d.slug}/index.html`,pagina(d));pages.push(d.slug)}
+ fs.mkdirSync(`${OUT}/${d.slug}`,{recursive:true});fs.writeFileSync(`${OUT}/${d.slug}/index.html`,pagina(d));pages.push(d.slug)}
 const ultima=d=>d.sets.map(x=>x.fecha||'').sort().pop()||'2026-11-05';
 const hoy=data.pil.map(ultima).sort().pop();
 const cuenta={};data.pil.forEach(d=>gen(d.genre).forEach(g=>{const k=g.toLowerCase();cuenta[k]=cuenta[k]||{n:0,g};cuenta[k].n++}));
@@ -122,7 +126,7 @@ function f(){var s=n(q.value),c=0;ts.forEach(function(t){var ok=(!s||t.dataset.n
 q.addEventListener('input',f);cs.forEach(function(b){b.addEventListener('click',function(){var a=b.classList.contains('on');cs.forEach(function(x){x.classList.remove('on')});if(!a){b.classList.add('on');g=b.dataset.g}else g='';f()})});
 if(window.matchMedia&&matchMedia('(hover:none)').matches&&'IntersectionObserver' in window){var o=new IntersectionObserver(function(es){es.forEach(function(e){e.target.classList.toggle('on',e.isIntersecting)})},{rootMargin:'-38% 0px -38% 0px'});ts.forEach(function(t){o.observe(t)})}
 })();`;
-fs.writeFileSync('dj/index.html',`<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+fs.writeFileSync(`${OUT}/index.html`,`<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 ${TRACK}
 <title>DJs del Archivo: la escena electrónica de Buenos Aires | Archivo Secreto del Lab</title>
 <meta name="description" content="Todos los DJs registrados en el Archivo Secreto del Lab, el registro audiovisual de la escena electrónica de Buenos Aires. Conocé a cada artista y sus sets."><link rel="canonical" href="${SITE}/dj/">
@@ -139,7 +143,9 @@ ${TRACK}
 <section class="cta"><p>¿Querés que tu set sea el próximo en el Archivo?</p><a href="/?ir=agenda">→ Grabá tu set</a></section></main>
 <footer>Archivo Secreto del Lab · San Telmo, Buenos Aires · Lun a dom, 11 a 19 hs, con reserva previa<br>@archivosecretodellab · produccion@archivosecretodellab.com · <a href="/#privacidad">Política de privacidad</a></footer>
 <script>${JSD}</script></body></html>`);
-fs.writeFileSync('dj/paginas.json',JSON.stringify(mapa));
+fs.writeFileSync(`${OUT}/paginas.json`,JSON.stringify(mapa));
+if(data.pil.length<100)throw new Error('Muy pocas páginas: no se reemplaza nada');
+fs.rmSync('dj',{recursive:true,force:true});fs.renameSync(OUT,'dj');
 fs.writeFileSync('sitemap.xml',`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url>\n    <loc>${SITE}/</loc>\n    <lastmod>${hoy}</lastmod>\n  </url>\n  <url>\n    <loc>${SITE}/dj/</loc>\n    <lastmod>${hoy}</lastmod>\n  </url>\n`+data.pil.map(d=>`  <url>\n    <loc>${SITE}/dj/${d.slug}/</loc>\n    <lastmod>${ultima(d)}</lastmod>\n  </url>\n`).join('')+`</urlset>\n`);
 console.log('PAGINAS',pages.length,'DJS sin pagina',data.fuera);console.log(avisos.join('\n'));
 await b.close()})()
