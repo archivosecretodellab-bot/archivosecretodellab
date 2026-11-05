@@ -2626,8 +2626,8 @@ var COVER_MAP = {
   'BAKAN MUSIK|1': 'BAKAN MUSIC',
   'BAKAN MUSIC|1': 'BAKAN MUSIC',
   // DJ JAM 017 (FEMALE DJ JAM 2)
-  'NĂN CAPTØR|1': 'NĂN CAPTØR',
-  'NAN CAPTOR|1': 'NĂN CAPTØR',
+  'NĂN CAPTØR|1': 'NAN CAPTOR',
+  'NAN CAPTOR|1': 'NAN CAPTOR',
   'MADEMOISELLE CHÉRIE|1': 'MADEMOISELLE CHÉRIE',
   'MADEMOISELLE CHERIE|1': 'MADEMOISELLE CHÉRIE',
   'VIVI MUSIC|1': 'VIVI',
@@ -2679,8 +2679,10 @@ function smCoverChronoNum(artista, id){
 }
 
 function getCoverFilename(artista, chronoNum){
-  var key = artista.toUpperCase() + '|' + chronoNum;
+  var key = artista.normalize('NFC').toUpperCase() + '|' + chronoNum;
   if(COVER_MAP[key]) return COVER_MAP[key];
+  var keyLimpia = String(artista||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/Ø/gi,'O').toUpperCase().trim() + '|' + chronoNum;
+  if(COVER_MAP[keyLimpia]) return COVER_MAP[keyLimpia];
   // fallback genérico
   return chronoNum > 1 ? artista + ' ' + chronoNum : artista;
 }
@@ -2736,8 +2738,8 @@ document.addEventListener('error', function(e){
 
 // ── PERFILES MAP — nombres exactos en img/perfiles/ ────────────
 var PERFILES_MAP = {
-  'NĂN CAPTØR': 'NĂN CAPTØR',
-  'NAN CAPTOR': 'NĂN CAPTØR',
+  'NĂN CAPTØR': 'NAN CAPTOR',
+  'NAN CAPTOR': 'NAN CAPTOR',
   'MADEMOISELLE CHÉRIE': 'MADEMOISELLE CHERRIE',
   'MADEMOISELLE CHERIE': 'MADEMOISELLE CHERRIE',
   'VIVI MUSIC': 'VIVI',
@@ -2926,9 +2928,11 @@ var PERFILES_MAP = {
   'SHMELLER': 'SHMELLER',
 };
 
+function _nomArchivo(t){ return String(t||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/Ø/gi,'O').toUpperCase().trim(); }
 function getPerfilFilename(artista){
-  var key = artista.toUpperCase();
+  var key = artista.normalize('NFC').toUpperCase();
   if(PERFILES_MAP[key]) return PERFILES_MAP[key];
+  if(PERFILES_MAP[_nomArchivo(artista)]) return PERFILES_MAP[_nomArchivo(artista)];
   // buscar sin B2B
   var base = artista.split(' B2B ')[0].trim().toUpperCase();
   if(PERFILES_MAP[base]) return PERFILES_MAP[base];
@@ -5070,6 +5074,8 @@ window.openFicha = async function openFicha(id){
     const coverFn = getCoverFilename(smEntry.artista, _coverNum);
     const coverSrc = imgURL('img/covers', coverFn);
     var _partesSet = _b2bPartes(smEntry.artista);
+    var _crudasSet = _b2bPartesCrudas(smEntry.artista);
+    if(_partesSet.length === 1 && _crudasSet.length > 1 && _crudasSet.some(function(pn){ var q=_nomNorm(pn); return q === _nomNorm(_artistName) || (_artistAlias && q === _nomNorm(_artistAlias)); })) _partesSet = _crudasSet;
     var _con = _partesSet.length > 1 ? _partesSet.filter(function(pn){ var q=_nomNorm(pn); return q !== _nomNorm(_artistName) && (!_artistAlias || q !== _nomNorm(_artistAlias)); }).join(' & ') : '';
     const label = (_artistSets.length > 1 ? 'Set ' + chronoNum + '/' + _artistSets.length + ' · ' : '')
       + (_con ? 'B2B con ' + _con : (smEntry.categoria || 'Set en YouTube'));
@@ -6631,6 +6637,8 @@ function _b2bPartes(nombre){
   return p.length > 1 ? p : [n];
 }
 function _esB2B(nombre){ return _b2bPartes(nombre).length > 1; }
+// Partes tal como figuran en el Sheet, sin NAME_ALIAS: "ISHIT B2B ARIKA" también es un set de ISHIT y de ARIKA.
+function _b2bPartesCrudas(nombre){ return String(nombre||'').trim().split(/\s+B2B\s+/i).map(function(x){ return x.trim(); }).filter(Boolean); }
 function _nomNorm(t){ return String(t||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[^A-Z0-9 ]/g,'').replace(/\s+/g,' ').trim(); }
 // Todos los sets de un artista, solos y B2B, en orden cronológico (una sola numeración en todo el sitio)
 function _setsDeArtista(nombre, alias){
@@ -6641,7 +6649,9 @@ function _setsDeArtista(nombre, alias){
     if(mismo(x.artista)) return true;
     try{ if(typeof NAME_ALIAS!=='undefined' && mismo(NAME_ALIAS[String(x.artista||'').toUpperCase()])) return true; }catch(e){}
     var partes = _b2bPartes(x.artista);
-    return partes.length > 1 && partes.some(mismo);
+    if(partes.length > 1 && partes.some(mismo)) return true;
+    var crudas = _b2bPartesCrudas(x.artista);
+    return crudas.length > 1 && crudas.some(mismo);
   }).sort(function(p,q){ return p.fecha < q.fecha ? -1 : p.fecha > q.fecha ? 1 : 0; });
 }
 
