@@ -16,7 +16,7 @@ const CSS=`:root{--k:#0a0a0a;--b:#1b00e6;--w:#fff;--m:rgba(255,255,255,.62);--l:
 a{color:inherit;text-decoration:none}p,h1,h2{text-wrap:pretty}
 .hd{display:flex;justify-content:space-between;align-items:center;padding:20px clamp(16px,3vw,40px);border-bottom:1px solid var(--l)}
 .brand{font-family:"Space Mono",monospace;font-weight:700;font-size:13px;letter-spacing:.2em}.cnt{font-size:10px;letter-spacing:.2em;color:var(--m)}
-.nav{display:flex;gap:28px;padding:14px clamp(16px,3vw,40px);border-bottom:1px solid var(--l);overflow-x:auto;font-size:10px;letter-spacing:.2em;color:var(--m);white-space:nowrap}.nav .on{color:#fff;border-bottom:2px solid var(--b);padding-bottom:12px;margin-bottom:-15px}
+.nav{display:flex;gap:28px;padding:0 clamp(16px,3vw,40px);border-bottom:1px solid var(--l);overflow-x:auto;overflow-y:hidden;scrollbar-width:none;font-size:10px;letter-spacing:.2em;color:var(--m);white-space:nowrap}.nav::-webkit-scrollbar{display:none}.nav a{padding:14px 0 12px;border-bottom:2px solid transparent;flex:none}.nav .on{color:#fff;border-bottom-color:var(--b)}
 main{max-width:1180px;margin:0 auto;padding:clamp(24px,4vw,56px) clamp(16px,3vw,40px)}
 .crumb{font-size:10px;letter-spacing:.2em;color:var(--m);text-transform:uppercase;margin-bottom:36px}.crumb b{color:#fff;font-weight:400}
 .top{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(28px,5vw,72px);align-items:start}
