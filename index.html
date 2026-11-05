@@ -3944,6 +3944,14 @@ function asdlPrivacidad(){
   document.getElementById('modal').classList.add('on');
 }
 document.addEventListener('DOMContentLoaded', function(){ try{ if(location.hash==='#privacidad') setTimeout(asdlPrivacidad, 400); }catch(err){} });
+// Mapa de DJs con página propia (lo arma _tools/generar_paginas_dj.js). Si no carga, se usa la ficha de siempre.
+try{ fetch('/dj/paginas.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(m){ if(m) window._asdlPaginasDJ = m; }).catch(function(){}); }catch(err){}
+// Al volver atrás desde una página de DJ, recuperar dónde estaba la persona.
+window.addEventListener('pageshow', function(){ try{
+  var v = JSON.parse(sessionStorage.getItem('asdl_vuelta')||'null'); if(!v) return;
+  sessionStorage.removeItem('asdl_vuelta');
+  setTimeout(function(){ var c=document.getElementById('content'); if(c) c.scrollTop=v.y||0; }, 900);
+}catch(err){} });
 // Entradas desde las páginas de DJ: ?ir=djsets|agenda|renta y ?dj=NOMBRE
 document.addEventListener('DOMContentLoaded', function(){ try{
   var q=new URLSearchParams(location.search), ir=q.get('ir'), dj=q.get('dj');
@@ -3999,6 +4007,7 @@ function renderFooters(){
     + '<nav aria-label="Archivo"><h4>Archivo</h4><ul>'
     +   '<li><button type="button" onclick="asdlFootGo(\'home\')">Inicio</button></li>'
     +   '<li><button type="button" onclick="asdlFootGo(\'djsets\')">DJ Sets</button></li>'
+    +   '<li><a href="/dj/">DJs del Archivo</a></li>'
     +   '<li><button type="button" onclick="asdlFootGo(\'renta\')">Alquiler de equipos</button></li>'
     +   '<li><button type="button" onclick="asdlPrivacidad()">Política de privacidad</button></li></ul></nav>'
     + '<nav aria-label="Grabá"><h4>Grabá</h4><ul>'
@@ -5045,6 +5054,20 @@ window.openFicha = async function openFicha(id){
   }
   
   if(!dj){ console.warn('DJ no encontrado:', id); return; }
+
+  // Una sola ficha por DJ: si tiene página propia, se abre esa. El equipo con sesión iniciada sigue viendo la ficha editable.
+  if(!currentUser && window._asdlPaginasDJ){
+    var _slugDJ = window._asdlPaginasDJ[_nomNorm(dj.artist)] || (dj.alias && window._asdlPaginasDJ[_nomNorm(dj.alias)]);
+    if(_slugDJ){
+      try{
+        var _pgAct = document.body.getAttribute('data-pg') || 'home';
+        sessionStorage.setItem('asdl_vuelta', JSON.stringify({pg:_pgAct, y:(document.getElementById('content')||{}).scrollTop||0}));
+        if(_pgAct==='djsets' || _pgAct==='agenda' || _pgAct==='renta') history.replaceState(null,'','/?ir='+_pgAct);
+      }catch(err){}
+      location.href = '/dj/'+_slugDJ+'/';
+      return;
+    }
+  }
   
   const soon = dj.isSoon||SOON.includes(dj.artist);
 
