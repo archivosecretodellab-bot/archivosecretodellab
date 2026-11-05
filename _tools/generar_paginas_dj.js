@@ -1,5 +1,6 @@
 // Genera /dj/<slug>/index.html y sitemap.xml a partir de los datos de index.html.
 // Uso: desde la raíz del repo, con un servidor local en el puerto 8790:  node _tools/generar_paginas_dj.js
+// Lee el Sheet de sets (la fuente de verdad). Con SHEET_CSV=archivo.csv usa esa copia en vez de bajarlo. Si no lo puede leer, corta sin tocar nada.
 const {chromium}=require('playwright'),fs=require('fs');
 const stub=`(function(){function q(){var o={};['select','eq','order','limit','in','neq','gte','lte','not','is','ilike','single','maybeSingle','insert','update','upsert','delete','range','match','filter','or'].forEach(k=>o[k]=()=>o);o.then=(r)=>r({data:[],error:null,count:0});return o}
 window.supabase={createClient:()=>({from:q,rpc:q,auth:{getSession:async()=>({data:{session:null}}),onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}}),getUser:async()=>({data:{user:null}})},functions:{invoke:async()=>({data:null,error:null})},channel:()=>({on(){return this},subscribe(){return this}}),storage:{from:()=>({})}})}})();`;
@@ -62,12 +63,16 @@ ${TRACK}
 <div class="sec"><h2>Sets en el Archivo</h2><span>${n}</span></div><div class="grid">${tiles}</div>
 <div class="sec"><h2>Descubrí otros DJs del Archivo</h2></div><div class="sugs">${sug}</div>
 <section class="cta"><p>¿Querés que tu set sea el próximo en el Archivo?</p><a href="/?ir=agenda">→ Grabá tu set</a></section></main>
-<footer>Archivo Secreto del Lab · San Telmo, Buenos Aires · Lun a dom, 11 a 19 hs, con reserva previa<br>@archivosecretodellab · produccion@archivosecretodellab.com</footer>
+<footer>Archivo Secreto del Lab · San Telmo, Buenos Aires · Lun a dom, 11 a 19 hs, con reserva previa<br>@archivosecretodellab · produccion@archivosecretodellab.com · <a href="/#privacidad">Política de privacidad</a></footer>
 </body></html>`;
 }
 (async()=>{const b=await chromium.launch();const p=await b.newPage();
 await p.route('**/*',r=>{const u=r.request().url();if(u.includes('localhost:8790'))return r.continue();if(u.includes('supabase'))return r.fulfill({contentType:'text/javascript',body:stub});return r.abort()});
+const SHEET_URL='https://docs.google.com/spreadsheets/d/1Hlqxx29qXOldpr-CvyXfrTNqq6CsH0DY6K6kekLnnP4/gviz/tq?tqx=out:csv';
+const csv=process.env.SHEET_CSV?fs.readFileSync(process.env.SHEET_CSV,'utf8'):await (await fetch(SHEET_URL)).text();
+if(!/NOMBRE/i.test(csv.slice(0,400))||!/PUBLICADO/.test(csv))throw new Error('No se pudo leer el Sheet de sets');
 await p.goto('http://localhost:8790/',{waitUntil:'domcontentloaded'});await p.waitForTimeout(3000);
+await p.evaluate(t=>_aplicarSheet(t),csv);
 const data=await p.evaluate(()=>{const up=x=>x.toUpperCase();const pub=new Set();SM.forEach(s=>{if(s.estado==='Publicado'){pub.add(_nomNorm(s.artista));_b2bPartes(s.artista).forEach(a=>pub.add(_nomNorm(a)))}});
  const todos=DJS.filter(d=>d.bio&&d.bio.length>150&&!/ B2B /i.test(d.artist)&&pub.has(_nomNorm(d.artist))).map(d=>({artist:d.artist,genre:d.genre}));
  const ORD=['1er','2do','3er','4to','5to','6to','7mo','8vo','9no','10mo'];
@@ -93,22 +98,48 @@ for(const d of data.pil){
  d.yt=/youtube\.com\/@[\w.-]+/i.test(d.links||'')?(d.links.match(/https?:\/\/\S*youtube\.com\/@[\w.-]+/i)||[''])[0]:'';
  d.sets.forEach((s,i)=>{const cat=/PUBLICO/i.test(s.cat)?'ARCHIVO PÚBLICO':s.cat;s.ord=d.sets.length>1?ORD[i]+' set':'';s.etiqueta=(s.duo||(s.con?'B2B con '+s.con:cat))+(s.fecha?' · '+fecha(s.fecha):'')});
  fs.mkdirSync(`dj/${d.slug}`,{recursive:true});fs.writeFileSync(`dj/${d.slug}/index.html`,pagina(d));pages.push(d.slug)}
-const hoy=new Date().toISOString().slice(0,10);
-const dir=[...data.pil].sort((a,c)=>norm(a.artist).localeCompare(norm(c.artist))).map(d=>`<a class="sg" href="/dj/${d.slug}/"><span class="sn">${esc(d.artist)}</span><span class="sgg">${esc(gen(d.genre).slice(0,2).join(' · '))}</span></a>`).join('');
+const ultima=d=>d.sets.map(x=>x.fecha||'').sort().pop()||'2026-11-05';
+const hoy=data.pil.map(ultima).sort().pop();
+const cuenta={};data.pil.forEach(d=>gen(d.genre).forEach(g=>{const k=g.toLowerCase();cuenta[k]=cuenta[k]||{n:0,g};cuenta[k].n++}));
+const chips=Object.values(cuenta).sort((a,c)=>c.n-a.n).slice(0,10).map(x=>x.g);
+const dir=[...data.pil].sort((a,c)=>norm(a.artist).localeCompare(norm(c.artist))).map(d=>{const gs=gen(d.genre);return `<a class="dt" href="/dj/${d.slug}/" data-n="${esc(norm(d.artist))}" data-g="${esc(gs.join('|').toLowerCase())}">${d.foto?`<img src="${esc(encodeURI(decodeURI(d.foto)))}" alt="${esc(d.artist.toUpperCase())}, DJ en el Archivo Secreto del Lab" loading="lazy">`:''}<span class="dc">${String(d.sets.length).padStart(2,'0')}</span><span class="dx"><b>${esc(d.artist)}</b><i>${esc(gs.slice(0,2).join(' · '))}</i></span></a>`}).join('');
+const CSSD=`.dh{padding:clamp(12px,3vw,32px) 0 clamp(24px,3vw,36px)}.dh h1{font-size:clamp(46px,10vw,128px);margin:14px 0 18px;max-width:9ch}.dh p{font-size:15px;line-height:1.7;color:rgba(255,255,255,.78);max-width:52ch;margin:0;text-align:justify;hyphens:auto;-webkit-hyphens:auto}
+.dc1{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}.ch{background:transparent;border:1px solid var(--l);color:#fff;font:inherit;font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:10px 12px;cursor:pointer}.ch:hover{border-color:var(--b)}.ch.on{background:var(--b);border-color:var(--b)}
+.dq{width:100%;background:transparent;border:0;border-bottom:1px solid rgba(255,255,255,.3);color:#fff;font:inherit;font-size:14px;padding:12px 0;margin-bottom:24px;outline:0}.dq:focus{border-bottom-color:#fff}.dq::placeholder{color:var(--m)}
+.dg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}.dt{position:relative;display:block;aspect-ratio:4/5;overflow:hidden;background:#10101a}.dt[hidden]{display:none}
+.dt img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block;filter:grayscale(1) contrast(1.15) brightness(.82);transform:scale(1.01);transition:filter .4s ease,transform .5s ease}
+.dt::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,#0a0a0a 2%,rgba(27,0,230,.72) 46%,rgba(27,0,230,.22) 100%);transition:opacity .4s ease;pointer-events:none}
+.dt::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(to top,rgba(0,0,0,.88),transparent 42%);pointer-events:none}
+.dc{position:absolute;top:0;right:0;z-index:2;background:var(--b);font-size:10px;letter-spacing:.1em;padding:6px 8px}.dx{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:14px}.dx b{display:block;font-family:"Space Mono",monospace;font-size:clamp(14px,1.6vw,20px);line-height:1.1;text-transform:uppercase;overflow-wrap:anywhere}.dx i{display:block;font-style:normal;font-size:9.5px;letter-spacing:.08em;line-height:1.5;margin-top:6px;color:rgba(255,255,255,.8);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dt.on img,.dt:focus-visible img{filter:none;transform:scale(1.04)}.dt.on::after,.dt:focus-visible::after{opacity:0}
+@media(hover:hover){.dt:hover img{filter:none;transform:scale(1.04)}.dt:hover::after{opacity:0}}
+.dv{display:none;padding:48px 0;color:var(--m);font-size:14px}.dv.on{display:block}
+@media(max-width:900px){.dg{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:560px){.dg{grid-template-columns:repeat(2,minmax(0,1fr))}.dx{padding:10px}.dx i{font-size:8.5px}}
+@media(prefers-reduced-motion:reduce){.dt img,.dt::after{transition:none}}`;
+const JSD=`(function(){var q=document.getElementById('q'),ts=[].slice.call(document.querySelectorAll('.dt')),cs=[].slice.call(document.querySelectorAll('.ch')),v=document.getElementById('dv'),g='';
+function n(t){return String(t||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/Ø/gi,'O').toUpperCase().trim()}
+function f(){var s=n(q.value),c=0;ts.forEach(function(t){var ok=(!s||t.dataset.n.indexOf(s)>-1)&&(!g||t.dataset.g.split('|').indexOf(g)>-1);t.hidden=!ok;if(ok)c++});v.classList.toggle('on',!c)}
+q.addEventListener('input',f);cs.forEach(function(b){b.addEventListener('click',function(){var a=b.classList.contains('on');cs.forEach(function(x){x.classList.remove('on')});if(!a){b.classList.add('on');g=b.dataset.g}else g='';f()})});
+if(window.matchMedia&&matchMedia('(hover:none)').matches&&'IntersectionObserver' in window){var o=new IntersectionObserver(function(es){es.forEach(function(e){e.target.classList.toggle('on',e.isIntersecting)})},{rootMargin:'-38% 0px -38% 0px'});ts.forEach(function(t){o.observe(t)})}
+})();`;
 fs.writeFileSync('dj/index.html',`<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 ${TRACK}
-<title>DJs del Archivo: registro de la escena de Buenos Aires | Archivo Secreto del Lab</title>
+<title>DJs del Archivo: la escena electrónica de Buenos Aires | Archivo Secreto del Lab</title>
 <meta name="description" content="Todos los DJs registrados en el Archivo Secreto del Lab, el registro audiovisual de la escena electrónica de Buenos Aires. Conocé a cada artista y sus sets."><link rel="canonical" href="${SITE}/dj/">
+<meta property="og:title" content="DJs del Archivo | Archivo Secreto del Lab"><meta property="og:url" content="${SITE}/dj/"><meta property="og:image" content="${SITE}/img/og-cover.jpg">
 <link rel="icon" type="image/png" href="/favicon.png"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<style>${CSS}</style></head><body>
+<style>${CSS}${CSSD}</style></head><body>
 <header class="hd"><a class="brand" href="/">ARCHIVO SECRETO DEL LAB</a><span class="cnt">+200 SETS</span></header>
 <nav class="nav"><a href="/">INICIO</a><a class="on" href="/?ir=djsets">DJ SETS</a><a href="/?ir=agenda">GRABÁ TU SET</a><a href="/?ir=renta">ALQUILER DE EQUIPOS</a></nav>
-<main><div class="crumb"><a href="/">Archivo</a> / <b>DJs</b></div><h1 style="font-size:clamp(40px,7vw,80px)">DJs del Archivo</h1>
-<div class="sugs" style="margin-top:36px">${dir}</div>
+<main><div class="crumb"><a href="/">Archivo</a> / <b>DJs</b></div>
+<section class="dh"><span class="k">Registro permanente</span><h1>DJs del Archivo</h1><p>Cada artista que pasó por la cabina queda en el registro. Entrá a su ficha, mirá sus sets y descubrí la escena electrónica de Buenos Aires.</p></section>
+<div class="dc1">${chips.map(g=>`<button type="button" class="ch" data-g="${esc(g.toLowerCase())}">${esc(g)}</button>`).join('')}</div>
+<input class="dq" id="q" type="search" placeholder="Buscar artista..." aria-label="Buscar artista">
+<div class="dg">${dir}</div><div class="dv" id="dv">No encontramos artistas con esa búsqueda.</div>
 <section class="cta"><p>¿Querés que tu set sea el próximo en el Archivo?</p><a href="/?ir=agenda">→ Grabá tu set</a></section></main>
-<footer>Archivo Secreto del Lab · San Telmo, Buenos Aires · Lun a dom, 11 a 19 hs, con reserva previa<br>@archivosecretodellab · produccion@archivosecretodellab.com</footer>
-</body></html>`);
+<footer>Archivo Secreto del Lab · San Telmo, Buenos Aires · Lun a dom, 11 a 19 hs, con reserva previa<br>@archivosecretodellab · produccion@archivosecretodellab.com · <a href="/#privacidad">Política de privacidad</a></footer>
+<script>${JSD}</script></body></html>`);
 fs.writeFileSync('dj/paginas.json',JSON.stringify(mapa));
-fs.writeFileSync('sitemap.xml',`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url>\n    <loc>${SITE}/</loc>\n    <lastmod>${hoy}</lastmod>\n  </url>\n  <url>\n    <loc>${SITE}/dj/</loc>\n    <lastmod>${hoy}</lastmod>\n  </url>\n`+pages.map(s=>`  <url>\n    <loc>${SITE}/dj/${s}/</loc>\n    <lastmod>${hoy}</lastmod>\n  </url>\n`).join('')+`</urlset>\n`);
+fs.writeFileSync('sitemap.xml',`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url>\n    <loc>${SITE}/</loc>\n    <lastmod>${hoy}</lastmod>\n  </url>\n  <url>\n    <loc>${SITE}/dj/</loc>\n    <lastmod>${hoy}</lastmod>\n  </url>\n`+data.pil.map(d=>`  <url>\n    <loc>${SITE}/dj/${d.slug}/</loc>\n    <lastmod>${ultima(d)}</lastmod>\n  </url>\n`).join('')+`</urlset>\n`);
 console.log('PAGINAS',pages.length,'DJS sin pagina',data.fuera);console.log(avisos.join('\n'));
 await b.close()})()

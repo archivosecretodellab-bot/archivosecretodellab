@@ -1,0 +1,37 @@
+name: Actualizar páginas de DJ
+on:
+  schedule:
+    - cron: '0 9,15,21,3 * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+  pages: write
+jobs:
+  generar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Instalar navegador
+        run: |
+          npm install --no-save --no-package-lock playwright@1.48.2
+          npx playwright install --with-deps chromium
+      - name: Generar páginas desde el Sheet
+        run: |
+          python3 -m http.server 8790 >/dev/null 2>&1 &
+          sleep 2
+          node _tools/generar_paginas_dj.js
+      - name: Subir si hubo cambios
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          rm -rf node_modules
+          git add dj sitemap.xml
+          if git diff --cached --quiet; then echo "Sin cambios"; exit 0; fi
+          git config user.name "archivo-bot"
+          git config user.email "archivo-bot@users.noreply.github.com"
+          git commit -m "Páginas de DJ actualizadas desde el Sheet"
+          git push
+          gh api -X POST "repos/${{ github.repository }}/pages/builds" || true
