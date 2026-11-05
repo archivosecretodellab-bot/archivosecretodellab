@@ -711,6 +711,12 @@ input[type=file]{display:none}
 .soon-card{ border:1px solid rgba(27,0,230,.4); background:#0a0a14; padding:18px 20px; min-height:128px; box-sizing:border-box; font-family:'IBM Plex Mono',monospace; display:flex; flex-direction:column; justify-content:center; transition:background .35s, border-color .35s; }
 .soon-card:hover{ background:#1B00E6; border-color:#1B00E6; }
 .soon-card{ position:relative; }
+.soon-card.sc-ed{ overflow:hidden; cursor:default; -webkit-tap-highlight-color:transparent; }
+.soon-card.sc-ed:hover{ background:#0a0a14; border-color:#1B00E6; }
+.soon-card.sc-ed::before{ content:""; position:absolute; inset:0; background:radial-gradient(280px circle at var(--ax,50%) var(--ay,50%), rgba(27,0,230,.62) 0%, rgba(27,0,230,.18) 45%, transparent 72%); opacity:0; transition:opacity .25s ease; pointer-events:none; }
+.soon-card.sc-ed:hover::before, .soon-card.sc-ed.sc-on::before{ opacity:1; }
+.soon-card.sc-ed > *{ z-index:1; }
+.soon-card.sc-ed > :not(.sc-lock){ position:relative; }
 .soon-card .sc-lock{ position:absolute; top:16px; right:18px; width:20px; height:20px; color:#5533ff; }
 .soon-card .sc-title{ padding-right:34px; }
 .soon-card .sc-title{ font-family:'Space Mono',monospace; font-weight:700; font-size:14px; letter-spacing:1px; color:var(--ivory); margin-bottom:14px; }
@@ -3259,7 +3265,7 @@ function _aplicarSheet(text){
       var g=function(k){ return C[k]>=0 ? (p[C[k]]||'') : ''; };
       var nombre=g('nombre'); if(!nombre) continue;
       var est=_shNorm(g('estado'));
-      if(est==='EN EDICION'){ edicion.push({ artista:nombre, categoria:_shTipo(g('cat')).categoria }); continue; }
+      if(est==='EN EDICION' || est==='ENTREGADO'){ edicion.push({ artista:nombre, categoria:_shTipo(g('cat')).categoria, entregado:est==='ENTREGADO' }); continue; }
       var estado = est==='PUBLICADO' ? 'Publicado' : (est==='PROGRAMADO' ? 'Pendiente' : (est==='OCULTO' ? 'Oculto' : null));
       if(!estado) continue;                                   // EN EDICIÓN o vacío: todavía no se muestra
       var url=g('yt'), fecha=_shFecha(g('fecha')), tc=_shTipo(g('cat'));
@@ -3938,6 +3944,12 @@ function asdlPrivacidad(){
   document.getElementById('modal').classList.add('on');
 }
 document.addEventListener('DOMContentLoaded', function(){ try{ if(location.hash==='#privacidad') setTimeout(asdlPrivacidad, 400); }catch(err){} });
+// Entradas desde las páginas de DJ: ?ir=djsets|agenda|renta y ?dj=NOMBRE
+document.addEventListener('DOMContentLoaded', function(){ try{
+  var q=new URLSearchParams(location.search), ir=q.get('ir'), dj=q.get('dj');
+  if(dj){ setTimeout(function(){ navTo('djsets', document.querySelector('.nt[data-pg="djsets"]')); openFicha('N:'+dj); }, 400); }
+  else if(ir==='djsets'||ir==='agenda'||ir==='renta'){ setTimeout(function(){ navTo(ir, document.querySelector('.nt[data-pg="'+ir+'"]')); }, 300); }
+}catch(err){} });
 document.addEventListener('DOMContentLoaded', function(){ try{ if(new URLSearchParams(location.search).get('jornada')) setTimeout(function(){ navTo('agenda', document.querySelector('.nt[data-pg="agenda"]')); }, 300); }catch(err){} });
 
 // ═══ Mails mal tipeados (gmail.con, gmial.com, hotmal.com…): sugiere la corrección antes de enviar ═══
@@ -5515,7 +5527,7 @@ async function rzCargar(){
   // publicación (Sheet)
   var SMx=(typeof SM!=='undefined')?SM:[], pubMes=SMx.filter(function(x){ return x.estado==='Publicado' && String(x.fecha||'').slice(0,7)===mes; }).length;
   var prog=SMx.filter(function(x){ return x.estado==='Pendiente' && x.fecha>=hoy; }).sort(function(a,b){ return String(a.fecha).localeCompare(String(b.fecha)); });
-  var edic=(typeof ASDL_EDICION!=='undefined' && Array.isArray(ASDL_EDICION))?ASDL_EDICION:[];
+  var edic=(typeof ASDL_EDICION!=='undefined' && Array.isArray(ASDL_EDICION))?ASDL_EDICION.filter(function(x){ return !x.entregado; }):[];
   // reservas que entraron este mes, por canal
   var nuevas=R.filter(function(r){ return String(r.created_at||'').slice(0,7)===mes; });
   var canal={}; nuevas.forEach(function(r){ var k=({web:'Web',instagram:'Instagram',whatsapp:'WhatsApp',presencial:'En persona',otro:'Otro'})[r.origen||'web']||r.origen; canal[k]=(canal[k]||0)+1; });
@@ -6968,12 +6980,29 @@ function buildSoonCard(s){
     +'<div class="sc-row"><span class="sc-l">Estreno</span><span class="sc-v">'+fStr+'</span></div>';
   return el;
 }
+// Sombra azul que sigue al mouse o al dedo en las tarjetas que todavía no se pueden abrir.
+(function(){
+  function pos(ev){
+    var c = ev.target && ev.target.closest ? ev.target.closest('.soon-card.sc-ed') : null;
+    if(!c) return null;
+    var r = c.getBoundingClientRect();
+    c.style.setProperty('--ax', (ev.clientX-r.left)+'px');
+    c.style.setProperty('--ay', (ev.clientY-r.top)+'px');
+    return c;
+  }
+  document.addEventListener('pointermove', pos, {passive:true});
+  document.addEventListener('pointerdown', function(ev){
+    var c = pos(ev); if(!c) return;
+    c.classList.add('sc-on');
+    clearTimeout(c._scT); c._scT = setTimeout(function(){ c.classList.remove('sc-on'); }, 900);
+  }, {passive:true});
+})();
 function buildEdicionCard(e){
   var el=document.createElement('div');
-  el.className='soon-card';
+  el.className='soon-card sc-ed';
   el.innerHTML=SOON_LOCK+'<div class="sc-title">'+esc(e.artista)+'</div>'
     +'<div class="sc-row"><span class="sc-l">Tipo</span><span class="sc-v">'+esc(e.categoria||'—')+'</span></div>'
-    +'<div class="sc-row"><span class="sc-l">Estado</span><span class="sc-v">En edición</span></div>'
+    +'<div class="sc-row"><span class="sc-l">Estado</span><span class="sc-v">'+(e.entregado?'Próximamente':'En edición')+'</span></div>'
     +'<div class="sc-row"><span class="sc-l">Estreno</span><span class="sc-v">A confirmar</span></div>';
   return el;
 }
