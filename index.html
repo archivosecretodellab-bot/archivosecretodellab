@@ -3207,8 +3207,8 @@ async function mergeSupabaseSets(){
 // la web sigue con lo que ya tenía (Supabase o la copia interna).
 // Sets grabados que todavía se están editando (se muestran en "Próximamente", sin número ni fecha).
 // Esta lista es el respaldo de hoy; cuando el Sheet carga, se reemplaza por lo que diga el Sheet.
-var ASDL_EDICION = ['SIMON RULEZ','RAMA RAIA','BRVCE','GRECIA','NOZZ','NAN CAPTOR','VIVI MUSIC','MADEMOISELLE CHÉRIE','ISHIT','ANA BRUSSO','BLXNDINESE']
-  .map(function(n){ return { artista:n, categoria: /^(ISHIT|VIVI MUSIC|ANA BRUSSO|BLXNDINESE|NAN CAPTOR|MADEMOISELLE CH)/.test(n) ? 'DJ JAM 017 (FEMALE DJ JAM 2)' : 'COMMON LIVESET' }; });
+var ASDL_EDICION = ['SIMON RULEZ','RAMA RAIA','BRVCE','GRECIA','NOZZ','NAN CAPTOR','VIVI','MADEMOISELLE CHÉRIE','ISHIT','ANA BRUSSO','BLXNDINESE']
+  .map(function(n){ return { artista:n, categoria: /^(ISHIT|VIVI|ANA BRUSSO|BLXNDINESE|NAN CAPTOR|MADEMOISELLE CH)/.test(n) ? 'DJ JAM 017 (FEMALE DJ JAM 2)' : 'COMMON LIVESET' }; });
 function _shNorm(t){ return String(t||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toUpperCase().replace(/\s+/g,' ').trim(); }
 function _shYt(u){ var m=/(?:v=|youtu\.be\/|shorts\/|live\/)([A-Za-z0-9_-]{11})/.exec(String(u||'')); return m?m[1]:''; }
 function _shFecha(f){
@@ -3638,7 +3638,7 @@ const DJS = [
  {i:'194',artist:'BRVCE',alias:'BRVCE',genre:'Industrial',exp:'',bio:'Detrás de la máscara o los lentes es una persona tranquila, pero frente a los decks esa calma se vuelve energía pura. Su premisa: que la música se sienta desde los pies hasta el pecho. Industrial revienta pechos, con bombos secos y bajos pesados que no dan respiro, y en medio de esa pared de sonido, pasajes melódicos y vocales para cantar y recordar que la intensidad también se baila.',type:'',session:'Solo',links:'@brvce_techno',reg:'Oct 2026'},
  {i:'195',artist:'NOZZ',alias:'NOZZ',genre:'Hard Techno',exp:'',bio:'Hard techno explosivo y una entrega total. No hace una sesión más: arma una puesta en escena, y para su registro trajo a Bob Krous como performer en vivo, guitarra en mano, dejando hasta la última gota de energía en el estudio. Fue el encargado del set #200 del Archivo, y lo convirtió en uno de nuestros registros favoritos.',type:'',session:'Solo',links:'@nozz.madboy',reg:'Oct 2026'},
  {i:'196',artist:'NĂN CAPTØR',alias:'NĂN CAPTØR',genre:'Hard Groove · Drum & Bass · UK Garage · Breakbeat',exp:'',bio:'Su regla fundamental en la cabina: no aburrirse jamás. Esa necesidad de estímulo constante se traduce en una mezcla agresiva, inquieta y bien manija, que salta entre frecuencias rotas, hard groove, drum and bass, UK garage y pulsos densos. Lee la pista desde el cuerpo, en un ambiente oscuro pero lleno de rebote y diversión. También viene pisando fuerte como productora, con EP propio y videoclips en camino.',type:'',session:'Solo',links:'@nancaptor',reg:'Oct 2026'},
- {i:'197',artist:'VIVI MUSIC',alias:'VIVI MUSIC',genre:'House · Techno',exp:'',bio:'Una premisa simple y honesta: pasarla bien y hacer bailar. Entre el house y el techno, arma mezclas de pulso alegre y accesible, con líneas de bajo firmes y grooves bien plantados que mantienen el movimiento constante. Sin vueltas ni poses: se nota cuando alguien disfruta de verdad lo que pone, y eso llega a la pista desde el primer bombo.',type:'',session:'Solo',links:'@vivi.musicc',reg:'Oct 2026'},
+ {i:'197',artist:'VIVI',alias:'VIVI',genre:'House · Techno',exp:'',bio:'Una premisa simple y honesta: pasarla bien y hacer bailar. Entre el house y el techno, arma mezclas de pulso alegre y accesible, con líneas de bajo firmes y grooves bien plantados que mantienen el movimiento constante. Sin vueltas ni poses: se nota cuando alguien disfruta de verdad lo que pone, y eso llega a la pista desde el primer bombo.',type:'',session:'Solo',links:'@vivi.musicc',reg:'Oct 2026'},
  {i:'198',artist:'MADEMOISELLE CHÉRIE',alias:'MADEMOISELLE CHÉRIE',genre:'Hard Groove · Hypnotic Techno · Hard Bounce',exp:'',bio:'Directo desde México, con una identidad sonora y visual clarísima: inspiración gótica, imaginario femme fatale y una lectura filosa de la pista. Sus sesiones son rápidas y percusivas, y cruzan hard groove, hypnotic techno y hard bounce con texturas de jazz, funk, R&B y ritmos latinos. Swing con filo nocturno, para bailar sin respiro y saborear cada detalle rítmico.',type:'',session:'Solo',links:'@dj.mademoisellecherie',reg:'Oct 2026'},
  {i:'199',artist:'ANA BRUSSO',alias:'ANA BRUSSO',genre:'Hardcore · Rawstyle · Industrial',exp:'',bio:'Juega en las ligas de la velocidad y la distorsión sin pedir disculpas: bpms altos y pegada seca, entre hardcore, rawstyle e industrial directo a la mandíbula. Lejos de ser ruido sin rumbo, arma un relato con sentido, con quiebres y armonías que le dan dramatismo a cada drop. Busca esa comunión donde la pista se prende fuego y conecta con su misma locura.',type:'',session:'Solo',links:'@sritabrusso.dj',reg:'Oct 2026'},
  {i:'200',artist:'BLXNDINESE',alias:'BLXNDINESE',genre:'Dubstep · Riddim',exp:'',bio:'Para Blxndinese, la cabina es una extensión de todo su universo artístico: el escenario, la danza, la performance, el tatuaje, el diseño y las letras. Toda esa carga decanta en los decks como necesidad de conectar y sacudir el presente. Bajos densos, atmósferas dramáticas y la pegada cruda del dubstep y el riddim, cruzados sin prejuicios con himnos de rock, pop, trap y rap.',type:'',session:'Solo',links:'@blxndinese',reg:'Oct 2026'},
@@ -5078,7 +5078,7 @@ window.openFicha = async function openFicha(id){
     if(_partesSet.length === 1 && _crudasSet.length > 1 && _crudasSet.some(function(pn){ var q=_nomNorm(pn); return q === _nomNorm(_artistName) || (_artistAlias && q === _nomNorm(_artistAlias)); })) _partesSet = _crudasSet;
     var _con = _partesSet.length > 1 ? _partesSet.filter(function(pn){ var q=_nomNorm(pn); return q !== _nomNorm(_artistName) && (!_artistAlias || q !== _nomNorm(_artistAlias)); }).join(' & ') : '';
     const label = (_artistSets.length > 1 ? 'Set ' + chronoNum + '/' + _artistSets.length + ' · ' : '')
-      + (_con ? 'B2B con ' + _con : (smEntry.categoria || 'Set en YouTube'));
+      + (_etiquetaDuo(smEntry, _artistName, _artistAlias) || (_con ? 'B2B con ' + _con : (smEntry.categoria || 'Set en YouTube')));
 
     if(setYt){
       return '<a href="'+setYt+'" target="_blank" rel="noopener"'
@@ -5154,7 +5154,7 @@ window.openFicha = async function openFicha(id){
     const con = partes.length > 1 ? partes.filter(function(pn){ var q=_nomNorm(pn); return q !== _nomNorm(_artistName) && (!_artistAlias || q !== _nomNorm(_artistAlias)); }).join(' & ') : '';
     const _ord = ['1er','2do','3er','4to','5to','6to','7mo','8vo','9no','10mo'];
     const _n = _artistSets.indexOf(s);
-    const etiqueta = (_artistSets.length>1 && _n>-1 ? (_ord[_n]||(_n+1)+'º')+' set · ' : '') + (con ? 'B2B con '+con : (s.categoria || _fxTipo[s.tipo] || 'Set')) + (s.fecha ? ' · '+_fxFecha(s.fecha) : '');
+    const etiqueta = (_artistSets.length>1 && _n>-1 ? (_ord[_n]||(_n+1)+'º')+' set · ' : '') + (_etiquetaDuo(s, _artistName, _artistAlias) || (con ? 'B2B con '+con : (s.categoria || _fxTipo[s.tipo] || 'Set'))) + (s.fecha ? ' · '+_fxFecha(s.fecha) : '');
     const img = '<img src="'+cover+'" alt="'+esc(_artistName)+' — set '+esc(s.id)+' en el Archivo Secreto del Lab" loading="lazy" decoding="async" onerror="this.style.display=&quot;none&quot;">';
     if(yt){
       return '<a class="fx-set" href="'+esc(yt)+'" target="_blank" rel="noopener"><div class="fx-set-im">'+img
@@ -6638,6 +6638,19 @@ function _b2bPartes(nombre){
 }
 function _esB2B(nombre){ return _b2bPartes(nombre).length > 1; }
 // Partes tal como figuran en el Sheet, sin NAME_ALIAS: "ISHIT B2B ARIKA" también es un set de ISHIT y de ARIKA.
+// En la ficha de un integrante, el set del dúo se presenta con el nombre del dúo: "SPACEGIRLS en la DJ JAM 013 (primera DJ JAM femenina)".
+function _etiquetaDuo(s, nombre, alias){
+  try{
+    var duo = NAME_ALIAS[String(s.artista||'').toUpperCase()];
+    var crudas = _b2bPartesCrudas(s.artista);
+    if(!duo || crudas.length < 2 || _b2bPartes(s.artista).length > 1) return '';
+    var a=_nomNorm(nombre), b=_nomNorm(alias);
+    if(!crudas.some(function(p){ var q=_nomNorm(p); return q===a || (b && q===b); })) return '';
+    var m = /DJ JAM\s*\d+/i.exec(String(s.categoria||''));
+    var cat = m ? m[0].toUpperCase() : (s.categoria||'');
+    return duo + (cat ? ' en la ' + cat : '') + (/013/.test(cat) ? ' (primera DJ JAM femenina)' : '');
+  }catch(e){ return ''; }
+}
 function _b2bPartesCrudas(nombre){ return String(nombre||'').trim().split(/\s+B2B\s+/i).map(function(x){ return x.trim(); }).filter(Boolean); }
 function _nomNorm(t){ return String(t||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[^A-Z0-9 ]/g,'').replace(/\s+/g,' ').trim(); }
 // Todos los sets de un artista, solos y B2B, en orden cronológico (una sola numeración en todo el sitio)
