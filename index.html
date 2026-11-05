@@ -12,14 +12,13 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://raw.githubusercontent.com">
 <link rel="preconnect" href="https://www.youtube.com">
 <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
 <link rel="dns-prefetch" href="https://mpitudvbhvymedzkxwvp.supabase.co">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/archivosecretodellab-bot/archivosecretodellab/main/favicon.png">
-<link rel="apple-touch-icon" href="https://raw.githubusercontent.com/archivosecretodellab-bot/archivosecretodellab/main/favicon.png">
-<link rel="shortcut icon" href="https://raw.githubusercontent.com/archivosecretodellab-bot/archivosecretodellab/main/favicon.png">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/favicon.png">
+<link rel="shortcut icon" href="/favicon.png">
 <title>Registro audiovisual de música electrónica | Archivo Secreto del Lab</title>
 <meta name="description" content="Grabá tu DJ set en San Telmo, Buenos Aires: video editado, audio masterizado, fotos y clips. Más de 200 sets de la escena electrónica porteña. Reservá online.">
 <meta name="robots" content="index, follow">
@@ -32,14 +31,14 @@
   <meta property="og:type" content="website">
   <meta property="og:locale" content="es_AR">
   <meta property="og:site_name" content="Archivo Secreto del Lab">
-  <meta property="og:image" content="https://raw.githubusercontent.com/archivosecretodellab-bot/archivosecretodellab/main/img/og-cover.jpg">
+  <meta property="og:image" content="https://archivosecretodellab.com/img/og-cover.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="Archivo Secreto del Lab — Escena electrónica porteña">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Registro audiovisual de música electrónica | Archivo Secreto del Lab">
   <meta name="twitter:description" content="Registro audiovisual independiente. Más de 200 DJ sets. Escena electrónica de Buenos Aires.">
-  <meta name="twitter:image" content="https://raw.githubusercontent.com/archivosecretodellab-bot/archivosecretodellab/main/img/og-cover.jpg">
+  <meta name="twitter:image" content="https://archivosecretodellab.com/img/og-cover.jpg">
   <meta name="author" content="Archivo Secreto del Lab">
   <meta name="geo.region" content="AR-C">
   <meta name="geo.placename" content="San Telmo, Buenos Aires">
@@ -54,8 +53,8 @@
     "alternateName": "ASDL",
     "description": "Registro audiovisual independiente de la escena electrónica porteña. Grabación profesional de DJ sets en Buenos Aires con producción audiovisual completa. Archivo de más de 200 sets.",
     "url": "https://archivosecretodellab.com",
-    "logo": "https://raw.githubusercontent.com/archivosecretodellab-bot/archivosecretodellab/main/img/og-cover.jpg",
-    "image": "https://raw.githubusercontent.com/archivosecretodellab-bot/archivosecretodellab/main/img/og-cover.jpg",
+    "logo": "https://archivosecretodellab.com/img/og-cover.jpg",
+    "image": "https://archivosecretodellab.com/img/og-cover.jpg",
     "telephone": "+54 9 11 5470-5205",
     "email": "produccion@archivosecretodellab.com",
     "address": {
@@ -164,7 +163,7 @@ body::before{
   content:'';
   position:fixed;
   inset:-20px;
-  background:url('https://raw.githubusercontent.com/archivosecretodellab-bot/archivosecretodellab/main/img/bg-hero.png') center center / cover no-repeat;
+  background:url('/img/bg-hero.png') center center / cover no-repeat;
   filter:blur(2px) brightness(.5) saturate(1.25) contrast(1.1);
   transform:scale(1.02);
   z-index:0;
@@ -1586,7 +1585,7 @@ fbq('track', 'PageView');
         <h1 class="h-eye">Grabación de DJ sets en Buenos Aires<br><br>Registro audiovisual de música electrónica</h1>
         <div class="h-c">
           <span class="h-w">Archivo</span>
-          <span class="h-n" id="ctr">000</span>
+          <span class="h-n" id="ctr">+200</span>
           <span class="h-w">Sets</span>
         </div>
         <div class="h-d">Hogar de DJs emergentes y consolidados<br>Sin géneros, sin límites</div>
@@ -1692,7 +1691,7 @@ fbq('track', 'PageView');
           <!-- Stats — 6 métricas curadas en 2 filas × 3 cards -->
           <div class="arc-stats">
             <div class="arc-stat">
-              <div class="arc-stat-n" id="arc-stat-sets">—</div>
+              <div class="arc-stat-n" id="arc-stat-sets">+100</div>
               <div class="arc-stat-l">Artistas en el archivo</div>
             </div>
             <div class="arc-stat">
@@ -1707,7 +1706,7 @@ fbq('track', 'PageView');
 
           <div class="arc-stats" style="margin-top:3px">
             <div class="arc-stat">
-              <div class="arc-stat-n" id="arc-stat-jams">—</div>
+              <div class="arc-stat-n" id="arc-stat-jams">+10</div>
               <div class="arc-stat-l">DJ Jams realizadas</div>
             </div>
             <div class="arc-stat">
@@ -2698,7 +2697,7 @@ function imgURL(folder, filename){
 document.addEventListener('error', function(e){
   var el = e.target;
   if(el && el.tagName === 'IMG' && el.dataset.pngRetry !== '1'
-     && el.src.indexOf('raw.githubusercontent.com') > -1
+     && el.src.indexOf('/img/') > -1
      && /\.jpe?g(\?|#|$)/i.test(el.src)){
     el.dataset.pngRetry = '1';
     e.stopImmediatePropagation();
@@ -2893,7 +2892,7 @@ var PERFILES_MAP = {
   // ── Perfiles nuevos — confirmar archivo .jpg en img/perfiles/ con el nombre indicado ──
   'AVENIX': 'AVENIX',
   'AXEL MORALEZ': 'AXEL MORALEZ',
-  'BAKAN MUSIK': 'BAKAN MUSIK',
+  'BAKAN MUSIK': 'BAKAN MUSIC',
   'BARBARA POLA': 'BARBARA POLA',
   'EXE MENDEZ': 'EXE MENDEZ',
   'LE ROSA NEGRA': 'LE ROSA NEGRA',
@@ -2909,7 +2908,7 @@ var PERFILES_MAP = {
   'PAIVA': 'P4IVA',
   'TINXXH': 'TINXH',
   'ISHIT B2B ARIKA': 'SPACEGIRLS',
-  'BAKAN MUSIC': 'BAKAN MUSIK',
+  'BAKAN MUSIC': 'BAKAN MUSIC',
   'AXEL MORALES': 'AXEL MORALEZ',
   'SHMELLER': 'SHMELLER',
 };
@@ -2922,7 +2921,7 @@ function getPerfilFilename(artista){
   if(PERFILES_MAP[base]) return PERFILES_MAP[base];
   return artista.toUpperCase(); // fallback: archivos en GitHub son UPPERCASE
 }
-const IMG_BASE = 'https://raw.githubusercontent.com/archivosecretodellab-bot/archivosecretodellab/main';
+const IMG_BASE = '';
 // contactos importados de Google Sheets
 
 
