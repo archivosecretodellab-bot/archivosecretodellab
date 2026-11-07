@@ -1534,6 +1534,23 @@ fbq('track', 'PageView');
 .gts-face span{white-space:normal!important;text-overflow:clip!important;line-height:1.25}
 @media(max-width:380px){.logo{font-size:12px;letter-spacing:.14em}.hdr-meta{font-size:10px;letter-spacing:.12em;white-space:nowrap}}
 </style>
+<style id="asdl-movil-liviano">
+/* ═══ MODO LIVIANO EN CELULARES (nov 2026) ═══
+   En pantallas táctiles o angostas se apagan los efectos que obligan al celu a redibujar
+   la pantalla todo el tiempo: ruido animado, scanlines, glows con blur + mezcla, puntito que late,
+   y el blur/zoom de las tarjetas. El fondo del inicio usa una versión ya oscurecida (26 KB en vez de 875 KB). */
+@media (max-width:900px), (hover:none) and (pointer:coarse){
+  #noise,#scan,.cursor-aura,#term-cursor{display:none !important}
+  body::before{background-image:url('/img/bg-hero-m.jpg') !important;filter:none !important;transform:none !important;inset:0 !important}
+  #pg-home::before,#pg-home::after,#pg-agenda::before,#pg-agenda .contact-row::after,
+  #pg-archivo .hero-archivo::before,#pg-archivo .hero-archivo::after,#pg-renta::before{
+    animation:none !important;filter:none !important;mix-blend-mode:normal !important;will-change:auto !important}
+  .dot{animation:none !important}
+  .gc-set{will-change:auto !important;transition:border-color .2s ease !important}
+  .gc-set:hover{transform:none !important;box-shadow:0 0 0 1px var(--b) !important}
+  .gc-set .gc-set-img,.gc-set:hover .gc-set-img{filter:none !important;transition:none !important}
+}
+</style>
 </head>
 <body>
 <noscript><img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=1133425549194108&ev=PageView&noscript=1"/></noscript>
